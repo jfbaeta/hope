@@ -1,0 +1,6 @@
+multipath -ll
+multipathd show maps
+hwinfo --disk
+file /dev/disk/by-id/wwn-*
+file /dev/disk/by-id/wwn-* | grep -v part
+file /dev/disk/by-id/dm-uuid-mpath-*
