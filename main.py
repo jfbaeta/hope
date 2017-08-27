@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 
+from models import *
+
 def create_pvs(pvs):
 	print 'Type the amount of Physical Volumes for Data:',
 	pv_amount = int(raw_input())
