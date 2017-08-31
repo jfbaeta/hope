@@ -3,14 +3,6 @@
 from models import *
 import re
 
-def detect_lun_amount():
-
-	file = open('multi-grep.txt', 'r')
-	regex_uuid = re.compile(r'\w{33}')
-	uuids = re.findall(regex_uuid, file.read())
-	
-	print 'Total amount of LUNs: %s' % len(uuids)
-
 def detect_luns():
 
 	luns = []
@@ -26,8 +18,8 @@ def detect_luns():
 	file.close()
 
 	file = open('multi-grep.txt', 'r')
-	regex_sysfs = re.compile(r'dm-\d{1,3}')
-	sysfss = re.findall(regex_sysfs, file.read())
+	regex_devmap = re.compile(r'dm-\d{1,3}')
+	devmaps = re.findall(regex_devmap, file.read())
 	file.close()
 
 	file = open('multi-grep.txt', 'r')
@@ -55,18 +47,22 @@ def detect_luns():
 	while lun_list_index < lun_list_count:
 		name = names[lun_list_index]
 		uuid = uuids[lun_list_index]
-		sysfs = sysfss[lun_list_index]
+		devmap = devmaps[lun_list_index]
 		vendor = vendors[lun_list_index]
 		product = products[lun_list_index]
 		size_n = sizes_n[lun_list_index]
 		size_m = sizes_m[lun_list_index]
-		luns.append(PhysicalVolume(name=name, uuid=uuid, sysfs=sysfs, vendor=vendor, product=product, size_n=size_n, size_m=size_m))
+		luns.append(PhysicalVolume(name=name, uuid=uuid, devmap=devmap, vendor=vendor, product=product, size_n=size_n, size_m=size_m))
 		lun_list_index+=1
 
-	print luns
-	print luns[0].name
-	print luns[0].uuid
-	print luns[7].sysfs
+	teste = '| Lun Name: %s | Lun UUID: %s | Storage: %s %s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product)
+	string_val = '+' + ('-' * (len(teste) -2)) + '+'
+	print string_val
+	print teste
+	print string_val
+	
+	#print 'Lun Name: %s | Lun UUID: %s | Storage: %s %s' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product)
+	#print 'Lun Name: %s | Lun UUID: %s | Storage: %s %s' % (luns[1].name, luns[1].uuid, luns[1].vendor, luns[1].product)
 
 def create_pvs(pvs):
 	print 'Type the amount of Physical Volumes for Data:',
