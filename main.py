@@ -1,6 +1,100 @@
 # -*- coding: UTF-8 -*-
 
 from models import *
+import re
+
+def detect_pvs():
+	print 'Detecting Multipath LUNs...'
+	
+	file = open('multi-grep.txt', 'r')
+
+	regex_name = re.compile(r'(^\w+)(?:\s)')
+	regex_uuid = re.compile(r'\w{33}')
+	regex_sysfs = re.compile(r'dm-\d{1,3}')
+	regex_vendor = re.compile(r'(\w+)(?:,)')
+	regex_product = re.compile(r'(?:,)(\w+)')
+	regex_size_n = re.compile(r'(?:size=)(\d+\.?\d*?)')
+	regex_size_m = re.compile(r'([MGT])(?:[\s])')
+	regex_discard = re.compile(r'(\:|\+)')
+
+	for line in file:
+
+		name = re.findall(regex_name, line)
+		if name:
+			lun_dict = {}
+			name = str(name[0])
+			lun_dict['name_key'] = name
+			print lun_dict
+
+		uuid = re.findall(regex_uuid, line)
+		if uuid:
+			uuid = str(uuid[0])
+			lun_dict['uuid_key'] = uuid
+			print lun_dict
+
+		sysfs = re.findall(regex_sysfs, line)
+		if sysfs:
+			sysfs = str(sysfs[0])
+			lun_dict['sysfs_key'] = sysfs
+			print lun_dict
+
+		vendor = re.findall(regex_vendor, line)
+		if vendor:
+			vendor = str(vendor[0])
+			lun_dict['vendor_key'] = vendor
+			print lun_dict
+
+		product = re.findall(regex_product, line)
+		if product:
+			product = str(product[0])
+			lun_dict['product_key'] = product
+			print lun_dict
+
+		size_n = re.findall(regex_size_n, line)
+		if size_n:
+			size_n = str(size_n[0])
+			lun_dict['size_n_key'] = size_n
+			print lun_dict
+
+		size_m = re.findall(regex_size_m, line)
+		if size_m:
+			size_m = str(size_m[0])
+			lun_dict['size_m_key'] = size_m
+			print lun_dict
+
+		print len(lun_dict)
+		if len(lun_dict) == 7:
+			print 'Igual a 7'
+			luns.append(PhysicalVolume(name=name, uuid=uuid, wwid='', sysfs=sysfs, vendor=vendor, product=product, size_n=size_n, size_m=size_m))
+			del lun_dict
+
+		cnt+=1
+	print len(luns)
+	print type(luns)
+	print luns.name
+
+
+
+	#luns.append(PhysicalVolume(name=name, uuid=uuid, wwid='', sysfs=sysfs, vendor=vendor, product=product, size_n=size_n, size_m=size_m))
+
+		#lun = PhysicalVolume(name=name, uuid=uuid, wwid='', sysfs=sysfs, vendor=vendor, product=product, size_n=size_n, size_m=size_m)
+		#print lun.name
+		#print lun.uuid
+		#print lun.sysfs
+		#print lun.vendor
+		#print lun.product
+		#print lun.size_n
+		#print lun.size_m
+		#luns.append(lun)
+
+		#print 'Nome da Lun: %s' % (name[0])
+		#print 'UUID da Lun: %s' % (uuid[0])
+		#print 'DM da Lun: %s' % (sysfs[0])
+		#print 'Vendor do Storage: %s' % (vendor[0])
+		#print 'Modelo do Storage: %s' % (product[0])
+		#print 'Tamanho da Lun: %s%s' % (size_n[0], size_m[0])
+
+	file.close()
 
 def create_pvs(pvs):
 	print 'Type the amount of Physical Volumes for Data:',
@@ -123,6 +217,7 @@ def menu():
 	option =''
 	
 	while(option != 'Q' and option != 'q' and option != 'E' and option != 'e'):
+		print 'Detect Multipath LUNs (0)'
 		print 'Create Physical Volumes (1)'
 		print 'Create Volume Groups (2)'
 		print 'Create Logical Volumes (3)'
@@ -130,6 +225,9 @@ def menu():
 		print 'Quit/Exit (Q,q,E,e)'
 		print 'Choose your Option:',
 		option = raw_input()
+
+		if(option == '0'):
+			detect_pvs()
 
 		if(option == '1'):
 			create_pvs(pvs)
@@ -144,7 +242,24 @@ def menu():
 		if(option == '4'):
 			create_fss(fss)
 
-		if(option != '1' and option != '2' and option != '3' and option != '4' and option != 'Q' and option != 'q' and option !='E' and option !='e'):
+		if(option != '0' and option != '1' and option != '2' and option != '3' and option != '4' and option != 'Q' and option != 'q' and option !='E' and option !='e'):
 			print 'Invalid Option!'
 
-menu()
+#menu()
+#detect_pvs()
+luns = PhysicalVolume.gen_luns('multi-grep.txt')
+
+print len(luns)
+print luns[0]
+print luns[1]
+print luns[2]
+print luns[3]
+print luns[4]
+print luns[5]
+print luns[6]
+print luns[7]
+
+
+
+
+
