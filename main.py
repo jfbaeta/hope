@@ -41,7 +41,7 @@ def detect_luns():
 	string_val = '+' + ('-' * (len(teste0) -2)) + '+'
 	print string_val
 	print teste0
-	print '| Name: \033[1;32;40m%s\033[0m | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
+	print '| Name: \033[1;32m%s\033[0m | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
 	print teste1
 	print teste2
 	print teste3
