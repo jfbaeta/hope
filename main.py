@@ -5,64 +5,51 @@ import re
 
 def detect_luns():
 
+	temp_lun_list = []
+
+	regex_list = [
+		re.compile(r'(\w+)(?:\s\()'),\
+		re.compile(r'\w{33}'),\
+		re.compile(r'dm-\d{1,3}'),\
+		re.compile(r'(\w+)(?:,)'),\
+		re.compile(r'(?:,)(\w+)'),\
+		re.compile(r'(?:size=)(\d+\.?\d*?)'),\
+		re.compile(r'([MGT])(?:[\s])')
+		]
+	
+	for regex_index in regex_list:
+		file = open('multi-grep.txt', 'r')
+		regex_result = re.findall(regex_index, file.read())
+		temp_lun_list.append(regex_result)
+		file.close()
+
+	lun_list = zip(*temp_lun_list)
+
 	luns = []
 
-	file = open('multi-grep.txt', 'r')
-	regex_name = re.compile(r'(\w+)(?:\s\()')
-	names = re.findall(regex_name, file.read())
-	file.close()
-
-	file = open('multi-grep.txt', 'r')
-	regex_uuid = re.compile(r'\w{33}')
-	uuids = re.findall(regex_uuid, file.read())
-	file.close()
-
-	file = open('multi-grep.txt', 'r')
-	regex_devmap = re.compile(r'dm-\d{1,3}')
-	devmaps = re.findall(regex_devmap, file.read())
-	file.close()
-
-	file = open('multi-grep.txt', 'r')
-	regex_vendor = re.compile(r'(\w+)(?:,)')
-	vendors = re.findall(regex_vendor, file.read())
-	file.close()
-
-	file = open('multi-grep.txt', 'r')
-	regex_product = re.compile(r'(?:,)(\w+)')
-	products = re.findall(regex_product, file.read())
-	file.close()
-
-	file = open('multi-grep.txt', 'r')
-	regex_size_n = re.compile(r'(?:size=)(\d+\.?\d*?)')
-	sizes_n = re.findall(regex_size_n, file.read())
-	file.close()
-
-	file = open('multi-grep.txt', 'r')
-	regex_size_m = re.compile(r'([MGT])(?:[\s])')
-	sizes_m = re.findall(regex_size_m, file.read())
-	file.close()
-
-	lun_list_count = len(names)
-	lun_list_index=0
-	while lun_list_index < lun_list_count:
-		name = names[lun_list_index]
-		uuid = uuids[lun_list_index]
-		devmap = devmaps[lun_list_index]
-		vendor = vendors[lun_list_index]
-		product = products[lun_list_index]
-		size_n = sizes_n[lun_list_index]
-		size_m = sizes_m[lun_list_index]
-		luns.append(PhysicalVolume(name=name, uuid=uuid, devmap=devmap, vendor=vendor, product=product, size_n=size_n, size_m=size_m))
-		lun_list_index+=1
-
-	teste = '| Lun Name: %s | Lun UUID: %s | Storage: %s %s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product)
-	string_val = '+' + ('-' * (len(teste) -2)) + '+'
+	for attr_index in lun_list:
+		luns.append(PhysicalVolume(name=attr_index[0], uuid=attr_index[1], devmap=attr_index[2], vendor=attr_index[3], product=attr_index[4], size_n=attr_index[5], size_m=attr_index[6]))
+		
+	teste0 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
+	teste1 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[1].name, luns[1].uuid, luns[1].vendor, luns[1].product, luns[1].size_n, luns[1].size_m)
+	teste2 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[2].name, luns[2].uuid, luns[2].vendor, luns[2].product, luns[2].size_n, luns[2].size_m)
+	teste3 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[3].name, luns[3].uuid, luns[3].vendor, luns[3].product, luns[3].size_n, luns[3].size_m)
+	teste4 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[4].name, luns[4].uuid, luns[4].vendor, luns[4].product, luns[4].size_n, luns[4].size_m)
+	teste5 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[5].name, luns[5].uuid, luns[5].vendor, luns[5].product, luns[5].size_n, luns[5].size_m)
+	teste6 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[6].name, luns[6].uuid, luns[6].vendor, luns[6].product, luns[6].size_n, luns[6].size_m)
+	teste7 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[7].name, luns[7].uuid, luns[7].vendor, luns[7].product, luns[7].size_n, luns[7].size_m)
+	string_val = '+' + ('-' * (len(teste0) -2)) + '+'
 	print string_val
-	print teste
+	print teste0
+	print '| Name: \033[1;32;40m%s\033[0m | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
+	print teste1
+	print teste2
+	print teste3
+	print teste4
+	print teste5
+	print teste6
+	print teste7
 	print string_val
-	
-	#print 'Lun Name: %s | Lun UUID: %s | Storage: %s %s' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product)
-	#print 'Lun Name: %s | Lun UUID: %s | Storage: %s %s' % (luns[1].name, luns[1].uuid, luns[1].vendor, luns[1].product)
 
 def create_pvs(pvs):
 	print 'Type the amount of Physical Volumes for Data:',
