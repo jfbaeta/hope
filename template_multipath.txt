@@ -1,0 +1,55 @@
+defaults {
+	user_friendly_names yes
+	no_path_retry fail
+	rr_min_io_rq 32
+	path_checker tur
+}
+
+devices {
+	device {
+		vendor "IBM"
+		product "2145"
+		path_grouping_policy group_by_prio
+		prio "alua"
+		path_checker "tur"
+		failback "immediate"
+		no_path_retry "fail"
+		rr_min_io_rq 32
+		dev_loss_tmo 120
+	}
+}
+
+multipaths {
+	multipath {
+		wwid $wwid_pv_rootvg
+		alias $alias_pv_rootvg
+	}
+	multipath {
+		wwid $wwid_pv_usr_sap
+		alias $alias_pv_usr_sap
+	}
+	multipath {
+        	wwid $wwid_pv_hana_data_01
+        	alias $alias_pv_hana_data_01
+	}
+	multipath {
+        	wwid $wwid_pv_hana_data_02
+        	alias $alias_pv_hana_data_02
+	}
+	multipath {
+        	wwid $wwid_pv_hana_data_03
+        	alias $alias_pv_hana_data_03
+	}
+	multipath {
+        	wwid $wwid_pv_hana_data_04
+        	alias $alias_pv_hana_data_04
+	}
+	multipath {
+        	wwid $wwid_pv_hana_log_01
+        	alias $alias_pv_hana_log_01
+	}
+	multipath {
+        	wwid $wwid_pv_shared_01
+        	alias $alias_pv_hana_shared_01
+	}
+}

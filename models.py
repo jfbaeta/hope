@@ -2,11 +2,11 @@
 
 class PhysicalVolume(object):
 	"""class PhysicalVolume"""
-	def __init__(self, name, devmap, uuid, vendor, product, size_n, size_m):
+	def __init__(self, name, devmap, wwid, vendor, product, size_n, size_m):
 		super(PhysicalVolume, self).__init__()
 		self.name = name
 		self.devmap = devmap
-		self.uuid = uuid
+		self.wwid = wwid
 		self.vendor = vendor
 		self.product = product
 		self.size_n = size_n

@@ -3,6 +3,8 @@
 from models import *
 import re
 
+luns = []
+
 def detect_luns():
 
 	temp_lun_list = []
@@ -25,23 +27,24 @@ def detect_luns():
 
 	lun_list = zip(*temp_lun_list)
 
-	luns = []
+	
 
 	for attr_index in lun_list:
-		luns.append(PhysicalVolume(name=attr_index[0], uuid=attr_index[1], devmap=attr_index[2], vendor=attr_index[3], product=attr_index[4], size_n=attr_index[5], size_m=attr_index[6]))
-		
-	teste0 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
-	teste1 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[1].name, luns[1].uuid, luns[1].vendor, luns[1].product, luns[1].size_n, luns[1].size_m)
-	teste2 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[2].name, luns[2].uuid, luns[2].vendor, luns[2].product, luns[2].size_n, luns[2].size_m)
-	teste3 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[3].name, luns[3].uuid, luns[3].vendor, luns[3].product, luns[3].size_n, luns[3].size_m)
-	teste4 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[4].name, luns[4].uuid, luns[4].vendor, luns[4].product, luns[4].size_n, luns[4].size_m)
-	teste5 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[5].name, luns[5].uuid, luns[5].vendor, luns[5].product, luns[5].size_n, luns[5].size_m)
-	teste6 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[6].name, luns[6].uuid, luns[6].vendor, luns[6].product, luns[6].size_n, luns[6].size_m)
-	teste7 = '| Name: %s | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[7].name, luns[7].uuid, luns[7].vendor, luns[7].product, luns[7].size_n, luns[7].size_m)
+		luns.append(PhysicalVolume(name=attr_index[0], wwid=attr_index[1], devmap=attr_index[2], vendor=attr_index[3], product=attr_index[4], size_n=attr_index[5], size_m=attr_index[6]))
+	
+	
+	teste0 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].wwid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
+	teste1 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[1].name, luns[1].wwid, luns[1].vendor, luns[1].product, luns[1].size_n, luns[1].size_m)
+	teste2 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[2].name, luns[2].wwid, luns[2].vendor, luns[2].product, luns[2].size_n, luns[2].size_m)
+	teste3 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[3].name, luns[3].wwid, luns[3].vendor, luns[3].product, luns[3].size_n, luns[3].size_m)
+	teste4 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[4].name, luns[4].wwid, luns[4].vendor, luns[4].product, luns[4].size_n, luns[4].size_m)
+	teste5 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[5].name, luns[5].wwid, luns[5].vendor, luns[5].product, luns[5].size_n, luns[5].size_m)
+	teste6 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[6].name, luns[6].wwid, luns[6].vendor, luns[6].product, luns[6].size_n, luns[6].size_m)
+	teste7 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[7].name, luns[7].wwid, luns[7].vendor, luns[7].product, luns[7].size_n, luns[7].size_m)
 	string_val = '+' + ('-' * (len(teste0) -2)) + '+'
 	print string_val
 	print teste0
-	print '| Name: \033[1;32m%s\033[0m | UUID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].uuid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
+	print '| Name: \033[1;32m%s\033[0m | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].wwid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
 	print teste1
 	print teste2
 	print teste3
@@ -50,6 +53,14 @@ def detect_luns():
 	print teste6
 	print teste7
 	print string_val
+
+def create_multipath_conf():
+	detect_luns()
+	for i in luns:
+		h_index = luns.index(i) + 1
+		print h_index, i.name , i.wwid
+
+
 
 def create_pvs(pvs):
 	print 'Type the amount of Physical Volumes for Data:',
@@ -169,38 +180,36 @@ def menu():
 	lvs = []
 	fss = []
 
-	option =''
+	option = True
 	
-	while(option != 'Q' and option != 'q' and option != 'E' and option != 'e'):
-		print 'Detect Multipath LUNs (0)'
-		print 'Create Physical Volumes (1)'
-		print 'Create Volume Groups (2)'
-		print 'Create Logical Volumes (3)'
-		print 'Create File Systems (4)'
-		print 'Quit/Exit (Q,q,E,e)'
+	while option:
+		print '(1) Detect Multipath LUNs'
+		print '(2) Create /etc/multipath.conf file'
+		print '(3) Create Physical Volumes'
+		print '(4) Create Volume Groups'
+		print '(5) Create Logical Volumes'
+		print '(6) Create File Systems'
+		print '(Q,q,E,e) Quit/Exit'
 		print 'Choose your Option:',
 		option = raw_input()
 
-		if(option == '0'):
-			detect_pvs()
-
-		if(option == '1'):
+		if (option == '1'):
+			detect_luns()
+		elif (option == '2'):
+			create_multipath_conf()
+		elif (option == '3'):
 			create_pvs(pvs)
-
-		if(option == '2'):
+		elif (option == '4'):
 			create_vgs(vgs)
-
-
-		if(option == '3'):
+		elif (option == '5'):
 			create_lvs(lvs)
-
-		if(option == '4'):
+		elif (option == '6'):
 			create_fss(fss)
-
-		if(option != '0' and option != '1' and option != '2' and option != '3' and option != '4' and option != 'Q' and option != 'q' and option !='E' and option !='e'):
+		elif (option in [ 'q' , 'Q' , 'e' , 'E' ]):
+			break
+		else:
 			print 'Invalid Option!'
 
-#menu()
-detect_luns()
+menu()
 
 
