@@ -27,12 +27,18 @@ def detect_luns():
 
 	lun_list = zip(*temp_lun_list)
 
-	
+	print lun_list
 
-	for attr_index in lun_list:
-		luns.append(PhysicalVolume(name=attr_index[0], wwid=attr_index[1], devmap=attr_index[2], vendor=attr_index[3], product=attr_index[4], size_n=attr_index[5], size_m=attr_index[6]))
-	
-	
+	for lun_index in lun_list:
+		lun_name = lun_index[0]
+		lun_wwid = lun_index[1]
+		lun_devmap = lun_index[2]
+		lun_vendor = lun_index[3]
+		lun_product = lun_index[4]
+		lun_size_n = lun_index[5]
+		lun_size_m = lun_index[6]
+		luns.append(PhysicalVolume(name=lun_name, wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
+
 	teste0 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].wwid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
 	teste1 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[1].name, luns[1].wwid, luns[1].vendor, luns[1].product, luns[1].size_n, luns[1].size_m)
 	teste2 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[2].name, luns[2].wwid, luns[2].vendor, luns[2].product, luns[2].size_n, luns[2].size_m)
