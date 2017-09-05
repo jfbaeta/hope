@@ -5,6 +5,7 @@ import re
 
 def detect_luns():
 
+	global luns
 	luns = []
 
 	temp_lun_list = []
@@ -61,12 +62,51 @@ def detect_luns():
 	print string_val
 
 def create_multipath_conf():
+	
 	detect_luns()
-	for i in luns:
-		h_index = luns.index(i) + 1
-		print h_index, i.name , i.wwid
+	#for i in luns:
+	#	h_index = luns.index(i) + 1
+	#	print h_index, i.name , i.wwid
 
+	multipath_file = open('template_multipath.txt', 'r')
 
+	alias_pv_rootvg = 'rootvg'
+	alias_pv_usr_sap = 'usr_sap'
+	alias_pv_hana_data_01 = 'hana_data_01'
+	alias_pv_hana_data_02 = 'hana_data_02'
+	alias_pv_hana_data_03 = 'hana_data_03'
+	alias_pv_hana_data_04 = 'hana_data_04'
+	alias_pv_hana_log_01 = 'hana_log_01'
+	alias_pv_hana_shared_01 = 'hana_shared_01'
+
+	wwid_pv_rootvg = luns[0].wwid
+	wwid_pv_usr_sap = luns[1].wwid
+	wwid_pv_hana_data_01 = luns[2].wwid
+	wwid_pv_hana_data_02 = luns[3].wwid
+	wwid_pv_hana_data_03 = luns[4].wwid
+	wwid_pv_hana_data_04 = luns[5].wwid
+	wwid_pv_hana_log_01 = luns[6].wwid
+	wwid_pv_hana_shared_01 = luns[7].wwid
+
+	print alias_pv_rootvg
+	print alias_pv_usr_sap
+	print alias_pv_hana_data_01
+	print alias_pv_hana_data_02
+	print alias_pv_hana_data_03
+	print alias_pv_hana_data_04
+	print alias_pv_hana_log_01
+	print alias_pv_hana_shared_01
+
+	print wwid_pv_rootvg
+	print wwid_pv_usr_sap
+	print wwid_pv_hana_data_01
+	print wwid_pv_hana_data_02
+	print wwid_pv_hana_data_03
+	print wwid_pv_hana_data_04
+	print wwid_pv_hana_log_01
+	print wwid_pv_hana_shared_01
+
+	multipath_file.close()
 
 def create_pvs(pvs):
 
