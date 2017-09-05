@@ -3,9 +3,9 @@
 from models import *
 import re
 
-luns = []
-
 def detect_luns():
+
+	luns = []
 
 	temp_lun_list = []
 
@@ -69,6 +69,7 @@ def create_multipath_conf():
 
 
 def create_pvs(pvs):
+
 	print 'Type the amount of Physical Volumes for Data:',
 	pv_amount = int(raw_input())
 
