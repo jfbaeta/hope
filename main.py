@@ -3,6 +3,22 @@
 from models import *
 import re
 
+def create_lun():
+	
+	disco = PhysicalVolume(name='mpathA', wwid='360050768028101875000000000000fff', devmap='dm-10', vendor='IBM', product='2145', size_n='512', size_m='G')
+
+	disco.get_name()
+
+	disco.change_name('mpathB')
+
+	disco.get_name()
+
+	disco.change_name(name='mpathC')
+
+	disco.get_name()
+
+	exit()
+
 def detect_luns():
 
 	global luns
@@ -16,7 +32,7 @@ def detect_luns():
 		re.compile(r'dm-\d{1,3}'),\
 		re.compile(r'(\w+)(?:,)'),\
 		re.compile(r'(?:,)(\w+)'),\
-		re.compile(r'(?:size=)(\d+\.?\d*?)'),\
+		re.compile(r'(?:size=)(\d+\.?\d*)'),\
 		re.compile(r'([MGT])(?:[\s])')
 		]
 	
@@ -28,8 +44,6 @@ def detect_luns():
 
 	lun_list = zip(*temp_lun_list)
 
-	print lun_list
-
 	for lun_index in lun_list:
 		lun_name = lun_index[0]
 		lun_wwid = lun_index[1]
@@ -40,26 +54,25 @@ def detect_luns():
 		lun_size_m = lun_index[6]
 		luns.append(PhysicalVolume(name=lun_name, wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
 
-	teste0 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].wwid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
-	teste1 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[1].name, luns[1].wwid, luns[1].vendor, luns[1].product, luns[1].size_n, luns[1].size_m)
-	teste2 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[2].name, luns[2].wwid, luns[2].vendor, luns[2].product, luns[2].size_n, luns[2].size_m)
-	teste3 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[3].name, luns[3].wwid, luns[3].vendor, luns[3].product, luns[3].size_n, luns[3].size_m)
-	teste4 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[4].name, luns[4].wwid, luns[4].vendor, luns[4].product, luns[4].size_n, luns[4].size_m)
-	teste5 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[5].name, luns[5].wwid, luns[5].vendor, luns[5].product, luns[5].size_n, luns[5].size_m)
-	teste6 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[6].name, luns[6].wwid, luns[6].vendor, luns[6].product, luns[6].size_n, luns[6].size_m)
-	teste7 = '| Name: %s | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[7].name, luns[7].wwid, luns[7].vendor, luns[7].product, luns[7].size_n, luns[7].size_m)
-	string_val = '+' + ('-' * (len(teste0) -2)) + '+'
-	print string_val
-	print teste0
-	print '| Name: \033[1;32m%s\033[0m | WWID: %s | Storage: %s %s | Size: %s%s |' % (luns[0].name, luns[0].wwid, luns[0].vendor, luns[0].product, luns[0].size_n, luns[0].size_m)
-	print teste1
-	print teste2
-	print teste3
-	print teste4
-	print teste5
-	print teste6
-	print teste7
-	print string_val
+	for lun in luns:
+		print '%s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+
+#	lun0 = '| %s %s %s %s %s %s%s |' % (luns[0].get_name(), luns[0].get_wwid(), luns[0].get_devmap(), luns[0].get_vendor(), luns[0].get_product(), luns[0].get_size_n(), luns[0].get_size_m())
+#	lun1 = '| %s %s %s %s %s %s%s |' % (luns[1].get_name(), luns[1].get_wwid(), luns[1].get_devmap(), luns[1].get_vendor(), luns[1].get_product(), luns[1].get_size_n(), luns[1].get_size_m())
+#	lun2 = '| %s %s %s %s %s %s%s |' % (luns[2].get_name(), luns[2].get_wwid(), luns[2].get_devmap(), luns[2].get_vendor(), luns[2].get_product(), luns[2].get_size_n(), luns[2].get_size_m())
+#		
+#	list_length = []
+#	for i in luns:
+#		lun_length = (len(i.get_name() + i.get_wwid() + i.get_devmap() + i.get_vendor() + i.get_product() + i.get_size_n() + i.get_size_m()))
+#		list_length.append(lun_length)
+#
+#	header = '+' + (('-' * (max(list_length) + 7))) + '+'
+#	
+#	print header
+#	print lun0
+#	print lun1
+#	print lun2
+#	print header
 
 def create_multipath_conf():
 	
@@ -110,11 +123,47 @@ def create_multipath_conf():
 
 def create_pvs(pvs):
 
+	detect_luns()
+
+	print 'Type current LUN to be used for rootvg:',
+	rootvg_old_name = raw_input()
+
+	print 'Type new LUN name for rootvg:',
+	rootvg_new_name = raw_input()
+
+	for lun in luns:
+		lun_name_target = lun.get_name()
+		if lun_name_target == rootvg_old_name:
+			print 'LUN Choosed:  %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+			lun.change_name(rootvg_new_name)
+			print 'New LUN Name: %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+			print 'Creating Physical Volume %s...' % (rootvg_new_name)
+
+	print 'Type the amount of Physical Volumes for /usr/sap:',
+	pv_amount = int(raw_input())
+
+	print 'Type Physical Volume name prefix for /usr/sap:',
+	pv_prefix = raw_input()
+
+	print 'Type current LUNs to be used for /usr/sap:',
+	pv_names = raw_input()
+
+	pv_count = 1
+	while (pv_count <= pv_amount):
+		pv_suffix = str(pv_count)
+		pv_name = pv_prefix + pv_suffix
+		pvs.append(pv_name)
+		print 'Creating Physical Volume %s...' % (pv_name)
+		pv_count+=1
+
 	print 'Type the amount of Physical Volumes for Data:',
 	pv_amount = int(raw_input())
 
 	print 'Type Physical Volume name prefix for Data:',
 	pv_prefix = raw_input()
+
+	print 'Type current LUNs to be used for Data:',
+	pv_names = raw_input()
 
 	pv_count = 1
 	while (pv_count <= pv_amount):
@@ -130,6 +179,9 @@ def create_pvs(pvs):
 	print 'Type Physical Volume name prefix for Log:',
 	pv_prefix = raw_input()
 
+	print 'Type current LUNs to be used for Log:',
+	pv_names = raw_input()
+
 	pv_count = 1
 	while (pv_count <= pv_amount):
 		pv_suffix = str(pv_count)
@@ -143,6 +195,9 @@ def create_pvs(pvs):
 
 	print 'Type Physical Volume name prefix for Shared:',
 	pv_prefix = raw_input()
+
+	print 'Type current LUNs to be used for Shared:',
+	pv_names = raw_input()
 
 	pv_count = 1
 	while (pv_count <= pv_amount):
@@ -236,6 +291,7 @@ def menu():
 		print '(4) Create Volume Groups'
 		print '(5) Create Logical Volumes'
 		print '(6) Create File Systems'
+		print '(7) Create Storage LUN'
 		print '(Q,q,E,e) Quit/Exit'
 		print 'Choose your Option:',
 		option = raw_input()
@@ -252,11 +308,11 @@ def menu():
 			create_lvs(lvs)
 		elif (option == '6'):
 			create_fss(fss)
+		elif (option == '7'):
+			create_lun()
 		elif (option in [ 'q' , 'Q' , 'e' , 'E' ]):
 			break
 		else:
 			print 'Invalid Option!'
 
 menu()
-
-
