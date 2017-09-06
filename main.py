@@ -139,22 +139,19 @@ def create_pvs(pvs):
 			print 'New LUN Name: %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 			print 'Creating Physical Volume %s...' % (rootvg_new_name)
 
-	print 'Type the amount of Physical Volumes for /usr/sap:',
-	pv_amount = int(raw_input())
+	print 'Type current LUN(s) to be used for /usr/sap:',
+	usr_sap_old_names = raw_input()
 
-	print 'Type Physical Volume name prefix for /usr/sap:',
-	pv_prefix = raw_input()
+	print 'Type new LUN names for /usr/sap:'
+	usr_sap_new_names = raw_input()
 
-	print 'Type current LUNs to be used for /usr/sap:',
-	pv_names = raw_input()
-
-	pv_count = 1
-	while (pv_count <= pv_amount):
-		pv_suffix = str(pv_count)
-		pv_name = pv_prefix + pv_suffix
-		pvs.append(pv_name)
-		print 'Creating Physical Volume %s...' % (pv_name)
-		pv_count+=1
+	for lun in luns:
+		lun_name_target = lun.get_name()
+		if lun_name_target == usr_sap_old_names:
+			print 'LUN Choosed:  %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+			lun.change_name(usr_sap_new_names)
+			print 'New LUN Name: %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+			print 'Creating Physical Volume %s...' % (usr_sap_new_names)
 
 	print 'Type the amount of Physical Volumes for Data:',
 	pv_amount = int(raw_input())
