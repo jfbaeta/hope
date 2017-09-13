@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from models import *
+from string import Template
 import re
 
 def create_lun():
@@ -77,11 +78,6 @@ def detect_luns():
 def create_multipath_conf():
 	
 	detect_luns()
-	#for i in luns:
-	#	h_index = luns.index(i) + 1
-	#	print h_index, i.name , i.wwid
-
-	multipath_file = open('template_multipath.txt', 'r')
 
 	alias_pv_rootvg = 'rootvg'
 	alias_pv_usr_sap = 'usr_sap'
@@ -92,34 +88,42 @@ def create_multipath_conf():
 	alias_pv_hana_log_01 = 'hana_log_01'
 	alias_pv_hana_shared_01 = 'hana_shared_01'
 
-	wwid_pv_rootvg = luns[0].wwid
-	wwid_pv_usr_sap = luns[1].wwid
-	wwid_pv_hana_data_01 = luns[2].wwid
-	wwid_pv_hana_data_02 = luns[3].wwid
-	wwid_pv_hana_data_03 = luns[4].wwid
-	wwid_pv_hana_data_04 = luns[5].wwid
-	wwid_pv_hana_log_01 = luns[6].wwid
-	wwid_pv_hana_shared_01 = luns[7].wwid
+	wwid_pv_rootvg = luns[0].get_wwid()
+	wwid_pv_usr_sap = luns[1].get_wwid()
+	wwid_pv_hana_data_01 = luns[2].get_wwid()
+	wwid_pv_hana_data_02 = luns[3].get_wwid()
+	wwid_pv_hana_data_03 = luns[4].get_wwid()
+	wwid_pv_hana_data_04 = luns[5].get_wwid()
+	wwid_pv_hana_log_01 = luns[6].get_wwid()
+	wwid_pv_hana_shared_01 = luns[7].get_wwid()
 
-	print alias_pv_rootvg
-	print alias_pv_usr_sap
-	print alias_pv_hana_data_01
-	print alias_pv_hana_data_02
-	print alias_pv_hana_data_03
-	print alias_pv_hana_data_04
-	print alias_pv_hana_log_01
-	print alias_pv_hana_shared_01
+	tpl_multipath_file = open('template_multipath.txt', 'r')
+	tpl_multipath_read = tpl_multipath_file.read()
+	tpl_multipath_str = Template(tpl_multipath_read)
 
-	print wwid_pv_rootvg
-	print wwid_pv_usr_sap
-	print wwid_pv_hana_data_01
-	print wwid_pv_hana_data_02
-	print wwid_pv_hana_data_03
-	print wwid_pv_hana_data_04
-	print wwid_pv_hana_log_01
-	print wwid_pv_hana_shared_01
+	new_multipath_str = tpl_multipath_str.safe_substitute(
+		alias_pv_rootvg=alias_pv_rootvg,
+		alias_pv_usr_sap=alias_pv_usr_sap,
+		alias_pv_hana_data_01=alias_pv_hana_data_01,
+		alias_pv_hana_data_02=alias_pv_hana_data_02,
+		alias_pv_hana_data_03=alias_pv_hana_data_03,
+		alias_pv_hana_data_04=alias_pv_hana_data_04,
+		alias_pv_hana_log_01=alias_pv_hana_log_01,
+		alias_pv_hana_shared_01=alias_pv_hana_shared_01,
+		wwid_pv_rootvg=wwid_pv_rootvg,
+		wwid_pv_usr_sap=wwid_pv_usr_sap,
+		wwid_pv_hana_data_01=wwid_pv_hana_data_01,
+		wwid_pv_hana_data_02=wwid_pv_hana_data_02,
+		wwid_pv_hana_data_03=wwid_pv_hana_data_03,
+		wwid_pv_hana_data_04=wwid_pv_hana_data_04,
+		wwid_pv_hana_log_01=wwid_pv_hana_log_01,
+		wwid_pv_hana_shared_01=wwid_pv_hana_shared_01)
 
-	multipath_file.close()
+	tpl_multipath_file.close()
+
+	with open('multipath.conf', 'w') as new_multipath_file:
+		new_multipath_file.write(new_multipath_str)
+		new_multipath_file.close()
 
 def create_pvs(pvs):
 
@@ -142,7 +146,7 @@ def create_pvs(pvs):
 	print 'Type current LUN(s) to be used for /usr/sap:',
 	usr_sap_old_names = raw_input()
 
-	print 'Type new LUN names for /usr/sap:'
+	print 'Type new LUN names for /usr/sap:',
 	usr_sap_new_names = raw_input()
 
 	for lun in luns:

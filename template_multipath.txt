@@ -49,7 +49,7 @@ multipaths {
         	alias $alias_pv_hana_log_01
 	}
 	multipath {
-        	wwid $wwid_pv_shared_01
+        	wwid $wwid_pv_hana_shared_01
         	alias $alias_pv_hana_shared_01
 	}
 }
