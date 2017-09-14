@@ -20,36 +20,5 @@ devices {
 }
 
 multipaths {
-	multipath {
-		wwid $wwid_pv_rootvg
-		alias $alias_pv_rootvg
-	}
-	multipath {
-		wwid $wwid_pv_usr_sap
-		alias $alias_pv_usr_sap
-	}
-	multipath {
-        	wwid $wwid_pv_hana_data_01
-        	alias $alias_pv_hana_data_01
-	}
-	multipath {
-        	wwid $wwid_pv_hana_data_02
-        	alias $alias_pv_hana_data_02
-	}
-	multipath {
-        	wwid $wwid_pv_hana_data_03
-        	alias $alias_pv_hana_data_03
-	}
-	multipath {
-        	wwid $wwid_pv_hana_data_04
-        	alias $alias_pv_hana_data_04
-	}
-	multipath {
-        	wwid $wwid_pv_hana_log_01
-        	alias $alias_pv_hana_log_01
-	}
-	multipath {
-        	wwid $wwid_pv_hana_shared_01
-        	alias $alias_pv_hana_shared_01
-	}
+$new_multipaths
 }
