@@ -27,7 +27,7 @@ def detect_luns():
 
 	temp_lun_list = []
 
-	regex_list = [
+	reg_exps = [
 		re.compile(r'(\w+)(?:\s\()'),\
 		re.compile(r'\w{33}'),\
 		re.compile(r'dm-\d{1,3}'),\
@@ -37,10 +37,10 @@ def detect_luns():
 		re.compile(r'([MGT])(?:[\s])')
 		]
 	
-	for regex_index in regex_list:
+	for reg_exp in reg_exps:
 		file = open('multi-grep.txt', 'r')
-		regex_result = re.findall(regex_index, file.read())
-		temp_lun_list.append(regex_result)
+		reg_exp_result = re.findall(reg_exp, file.read())
+		temp_lun_list.append(reg_exp_result)
 		file.close()
 
 	lun_list = zip(*temp_lun_list)
@@ -79,39 +79,53 @@ def create_pvs():
 
 	detect_luns()
 
-	pvs_data = []
-	pvs_log = []
-	pvs_shared = []
+	pvs_rootvg  = {}
+	pvs_usr_sap = {}
+	pvs_data    = {}
+	pvs_log     = {}
+	pvs_shared  = {}
+	pvs         = {}
 
 	print 'Type current LUN(s) to be used for rootvg:',
-	rootvg_old_name = raw_input()
+	pv_names = re.findall('\w{1,}', raw_input())
 
-	print 'Type new LUN name(s) for rootvg:',
-	rootvg_new_name = raw_input()
+	print 'Type Physical Volume name prefix for rootvg:',
+	pv_prefix = raw_input()
 
-	for lun in luns:
-		lun_name_target = lun.get_name()
-		if lun_name_target == rootvg_old_name:
-			print 'LUN Choosed:  %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-			alias_pv_rootvg = rootvg_new_name
-			print 'New LUN Name: %s %s %s %s %s %s%s' % (alias_pv_rootvg, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+	pv_count = 1
+	for pv_name in pv_names:
+		pv_suffix = str(pv_count)
+		key_suffix = 'alias_pv_rootvg' + str(pv_count)
+		pv_new_name = pv_prefix + pv_suffix
+		pvs_rootvg[key_suffix] = pv_new_name
+		pv_count+=1
+		for lun in luns:
+			lun_name_target = lun.get_name()
+			if lun_name_target == pv_name:
+				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pvs_rootvg[key_suffix], lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 
 	print 'Type current LUN(s) to be used for /usr/sap:',
-	usr_sap_old_name = raw_input()
+	pv_names = re.findall('\w{1,}', raw_input())
 
-	print 'Type new LUN name(s) for /usr/sap:',
-	usr_sap_new_name = raw_input()
+	print 'Type Physical Volume name prefix for rootvg:',
+	pv_prefix = raw_input()
 
-	for lun in luns:
-		lun_name_target = lun.get_name()
-		if lun_name_target == usr_sap_old_name:
-			print 'LUN Choosed:  %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-			alias_pv_usr_sap = usr_sap_new_name
-			print 'New LUN Name: %s %s %s %s %s %s%s' % (alias_pv_usr_sap, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+	pv_count = 1
+	for pv_name in pv_names:
+		pv_suffix = str(pv_count)
+		key_suffix = 'alias_pv_usr_sap' + str(pv_count)
+		pv_new_name = pv_prefix + pv_suffix
+		pvs_usr_sap[key_suffix] = pv_new_name
+		pv_count+=1
+		for lun in luns:
+			lun_name_target = lun.get_name()
+			if lun_name_target == pv_name:
+				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pvs_usr_sap[key_suffix], lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 
 	print 'Type current LUN(s) to be used for /hana/data:',
 	pv_names = re.findall('\w{1,}', raw_input())
-	pv_amount = len(pv_names)
 
 	print 'Type Physical Volume name prefix for /hana/data:',
 	pv_prefix = raw_input()
@@ -119,57 +133,61 @@ def create_pvs():
 	pv_count = 1
 	for pv_name in pv_names:
 		pv_suffix = str(pv_count)
+		key_suffix = 'alias_pv_hana_data_0' + str(pv_count)
 		pv_new_name = pv_prefix + pv_suffix
-		pvs_data.append(pv_new_name)
+		pvs_data[key_suffix] = pv_new_name
 		pv_count+=1
 		for lun in luns:
 			lun_name_target = lun.get_name()
 			if lun_name_target == pv_name:
 				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-
-	alias_pv_hana_data_01 = pvs_data[0]
-	alias_pv_hana_data_02 = pvs_data[1]
-	alias_pv_hana_data_03 = pvs_data[2]
-	alias_pv_hana_data_04 = pvs_data[3]
+				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pvs_data[key_suffix], lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 	
 	print 'Type current LUN(s) to be used for /hana/log:',
-	pv_names = raw_input()
-	pv_names_list = re.findall('\w{1,}', pv_names)
-	print pv_names_list
-	pv_amount = len(pv_names_list)
+	pv_names = re.findall('\w{1,}', raw_input())
 
 	print 'Type Physical Volume name prefix for /hana/log:',
 	pv_prefix = raw_input()
 
 	pv_count = 1
-	while (pv_count <= pv_amount):
+	for pv_name in pv_names:
 		pv_suffix = str(pv_count)
-		pv_name = pv_prefix + pv_suffix
-		pvs_log.append(pv_name)
-		print 'Creating Physical Volume %s...' % (pv_name)
+		key_suffix = 'alias_pv_hana_data_0' + str(pv_count)
+		pv_new_name = pv_prefix + pv_suffix
+		pvs_log[key_suffix] = pv_new_name
 		pv_count+=1
-
-	alias_pv_hana_log_01 = pvs_log[0]
+		for lun in luns:
+			lun_name_target = lun.get_name()
+			if lun_name_target == pv_name:
+				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pvs_log[key_suffix], lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 
 	print 'Type current LUN(s) to be used for /hana/shared:',
-	pv_names = raw_input()
-	pv_names_list = re.findall('\w{1,}', pv_names)
-	print pv_names_list
-	pv_amount = len(pv_names_list)
+	pv_names = re.findall('\w{1,}', raw_input())
 
 	print 'Type Physical Volume name prefix for /hana/shared:',
 	pv_prefix = raw_input()
 
 	pv_count = 1
-	while (pv_count <= pv_amount):
+	for pv_name in pv_names:
 		pv_suffix = str(pv_count)
-		pv_name = pv_prefix + pv_suffix
-		pvs_shared.append(pv_name)
-		print 'Creating Physical Volume %s...' % (pv_name)
+		key_suffix = 'alias_pv_hana_shared_0' + str(pv_count)
+		pv_new_name = pv_prefix + pv_suffix
+		pvs_shared[key_suffix] = pv_new_name
 		pv_count+=1
+		for lun in luns:
+			lun_name_target = lun.get_name()
+			if lun_name_target == pv_name:
+				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pvs_shared[key_suffix], lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 
-	alias_pv_hana_shared_01 = pvs_shared[0]
+	pvs.update(pvs_rootvg)
+	pvs.update(pvs_usr_sap)
+	pvs.update(pvs_data)
+	pvs.update(pvs_log)
+	pvs.update(pvs_shared)
+
+	print pvs
 
 	wwid_pv_rootvg = luns[0].get_wwid()
 	wwid_pv_usr_sap = luns[1].get_wwid()
