@@ -58,8 +58,6 @@ def detect_luns():
 	for lun in luns:
 		print '%s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 
-	exit()
-
 #	lun0 = '| %s %s %s %s %s %s%s |' % (luns[0].get_name(), luns[0].get_wwid(), luns[0].get_devmap(), luns[0].get_vendor(), luns[0].get_product(), luns[0].get_size_n(), luns[0].get_size_m())
 #	lun1 = '| %s %s %s %s %s %s%s |' % (luns[1].get_name(), luns[1].get_wwid(), luns[1].get_devmap(), luns[1].get_vendor(), luns[1].get_product(), luns[1].get_size_n(), luns[1].get_size_m())
 #	lun2 = '| %s %s %s %s %s %s%s |' % (luns[2].get_name(), luns[2].get_wwid(), luns[2].get_devmap(), luns[2].get_vendor(), luns[2].get_product(), luns[2].get_size_n(), luns[2].get_size_m())
