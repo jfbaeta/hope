@@ -4,6 +4,9 @@ from models import *
 from string import Template
 import re
 
+import os.path
+import os
+
 def create_lun():
 	
 	disco = PhysicalVolume(name='mpathA', wwid='360050768028101875000000000000fff', devmap='dm-10', vendor='IBM', product='2145', size_n='512', size_m='G')
@@ -27,6 +30,11 @@ def detect_luns():
 
 	temp_lun_list = []
 
+	if os.path.exists('multipath.conf'):
+		file_to_be_used = 'new_multi_grep.txt'
+	else:
+		file_to_be_used = 'old_multi_grep.txt'
+
 	reg_exps = [
 		re.compile(r'(\w+)(?:\s\()'),\
 		re.compile(r'\w{33}'),\
@@ -38,7 +46,7 @@ def detect_luns():
 		]
 	
 	for reg_exp in reg_exps:
-		file = open('multi-grep.txt', 'r')
+		file = open(file_to_be_used, 'r')
 		reg_exp_result = re.findall(reg_exp, file.read())
 		temp_lun_list.append(reg_exp_result)
 		file.close()
@@ -75,7 +83,7 @@ def detect_luns():
 #	print lun2
 #	print header
 
-def create_pvs():
+def create_multipath_conf():
 
 	detect_luns()
 
@@ -109,9 +117,10 @@ def create_pvs():
 				if lun_name_target == pv_name:
 					lun.change_purpose(purpose)
 					print 'LUN Purpose:   %s' % (lun.get_purpose())
-					print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-					print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
+					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					lun.change_name(pv_new_name)
+					print 'New LUN Name:  %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), lun.get_name())
 
 	tpl_multipath_file = open('template_multipath.txt', 'r')
 	
@@ -127,7 +136,14 @@ def create_pvs():
 		new_multipath_file.write(new_multipath_str)
 		new_multipath_file.close()
 
-	exit()
+def change_lun_names():
+	pass
+
+def create_pvs():
+
+	for lun in luns:
+		if lun.get_purpose() != 'rootvg':
+			print 'pvcreate /dev/mapper/%s' % (lun.get_name())
 
 def create_vgs(vgs):
 	print 'Type Volume Group name for Data:',
@@ -195,6 +211,10 @@ def create_fss(fss):
 
 	exit()
 
+def reset_multipaths():
+	
+	os.remove('multipath.conf')
+
 def menu():
 
 	vgs = []
@@ -205,11 +225,14 @@ def menu():
 	
 	while option:
 		print '(1) Detect Multipath LUNs'
-		print '(2) Create Physical Volumes'
-		print '(3) Create Volume Groups'
-		print '(4) Create Logical Volumes'
-		print '(5) Create File Systems'
-		print '(6) Create Storage LUN'
+		print '(2) Create multipath.conf'
+		print '(3) Change LUN Names'
+		print '(4) Create Physical Volumes'
+		print '(5) Create Volume Groups'
+		print '(6) Create Logical Volumes'
+		print '(7) Create File Systems'
+		print '(8) Create Storage LUN'
+		print '(666) RESET MULTPATHS!'
 		print '(Q,q,E,e) Quit/Exit'
 		print 'Choose your Option:',
 		option = raw_input()
@@ -217,15 +240,21 @@ def menu():
 		if (option == '1'):
 			detect_luns()
 		elif (option == '2'):
-			create_pvs()
+			create_multipath_conf()
 		elif (option == '3'):
-			create_vgs(vgs)
+			change_lun_names()
 		elif (option == '4'):
-			create_lvs(lvs)
+			create_pvs()
 		elif (option == '5'):
-			create_fss(fss)
+			create_vgs(vgs)
 		elif (option == '6'):
+			create_lvs(lvs)
+		elif (option == '7'):
+			create_fss(fss)
+		elif (option == '8'):
 			create_lun()
+		elif (option == '666'):
+			reset_multipaths()
 		elif (option in [ 'q' , 'Q' , 'e' , 'E' ]):
 			break
 		else:
