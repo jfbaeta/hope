@@ -87,14 +87,18 @@ def create_pvs():
 		
 		print 'Type current LUN(s) to be used for %s:' % (purpose),
 		pv_names = re.findall('\w{1,}', raw_input())
+		pv_amount = len(pv_names)
 
 		print 'Type Physical Volume name prefix for %s:' % (purpose),
 		pv_prefix = raw_input()
 
 		pv_count = 1
 		for pv_name in pv_names:
-			pv_suffix = str(pv_count)
-			pv_new_name = pv_prefix + pv_suffix
+			if purpose in ('rootvg', '/usr/sap') and pv_amount == 1:
+				pv_new_name = pv_prefix
+			else:
+				pv_suffix = str(pv_count)
+				pv_new_name = pv_prefix + pv_suffix
 			pv_count+=1
 			for lun in luns:
 				lun_name_target = lun.get_name()
