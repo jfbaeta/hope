@@ -94,19 +94,24 @@ def create_pvs():
 
 		pv_count = 1
 		for pv_name in pv_names:
+			
 			if purpose in ('rootvg', '/usr/sap') and pv_amount == 1:
 				pv_new_name = pv_prefix
 			else:
 				pv_suffix = str(pv_count)
 				pv_new_name = pv_prefix + pv_suffix
 			pv_count+=1
+			
 			for lun in luns:
+				
 				lun_name_target = lun.get_name()
+				
 				if lun_name_target == pv_name:
+					lun.change_purpose(purpose)
+					print 'LUN Purpose:   %s' % (lun.get_purpose())
 					print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 					print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
-					print str_mulitpaths
 
 	tpl_multipath_file = open('template_multipath.txt', 'r')
 	

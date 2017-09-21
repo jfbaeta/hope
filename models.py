@@ -2,7 +2,7 @@
 
 class PhysicalVolume(object):
 	"""class PhysicalVolume"""
-	def __init__(self, name, devmap, wwid, vendor, product, size_n, size_m):
+	def __init__(self, name, devmap, wwid, vendor, product, size_n, size_m, purpose=''):
 		super(PhysicalVolume, self).__init__()
 		self.__name = name
 		self.__devmap = devmap
@@ -11,6 +11,7 @@ class PhysicalVolume(object):
 		self.__product = product
 		self.__size_n = size_n
 		self.__size_m = size_m
+		self.__purpose = purpose
 
 	def get_name(self):
 		return self.__name
@@ -33,11 +34,17 @@ class PhysicalVolume(object):
 	def get_size_m(self):
 		return self.__size_m
 
+	def get_purpose(self):
+		return self.__purpose
+
 	def get_all(self):
-		return self.__name, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m
+		return self.__name, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m, self.__purpose
 
 	def change_name(self, name):
 		self.__name = name
+
+	def change_purpose(self, purpose):
+		self.__purpose = purpose
 
 class VolumeGroup(object):
 	"""class VolumeGroup"""
