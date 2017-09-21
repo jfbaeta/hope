@@ -81,101 +81,28 @@ def create_pvs():
 
 	str_mulitpaths = ''
 
-	print 'Type current LUN(s) to be used for rootvg:',
-	pv_names = re.findall('\w{1,}', raw_input())
+	purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
 
-	print 'Type Physical Volume name prefix for rootvg:',
-	pv_prefix = raw_input()
+	for purpose in purposes:
+		
+		print 'Type current LUN(s) to be used for %s:' % (purpose),
+		pv_names = re.findall('\w{1,}', raw_input())
 
-	pv_count = 1
-	for pv_name in pv_names:
-		pv_suffix = str(pv_count)
-		pv_new_name = pv_prefix + pv_suffix
-		pv_count+=1
-		for lun in luns:
-			lun_name_target = lun.get_name()
-			if lun_name_target == pv_name:
-				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
-				print str_mulitpaths
+		print 'Type Physical Volume name prefix for %s:' % (purpose),
+		pv_prefix = raw_input()
 
-	print 'Type current LUN(s) to be used for /usr/sap:',
-	pv_names = re.findall('\w{1,}', raw_input())
-
-	print 'Type Physical Volume name prefix for /usr/sap:',
-	pv_prefix = raw_input()
-
-	pv_count = 1
-	for pv_name in pv_names:
-		pv_suffix = str(pv_count)
-		pv_new_name = pv_prefix + pv_suffix
-		pv_count+=1
-		for lun in luns:
-			lun_name_target = lun.get_name()
-			if lun_name_target == pv_name:
-				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
-				print str_mulitpaths
-
-	print 'Type current LUN(s) to be used for /hana/data:',
-	pv_names = re.findall('\w{1,}', raw_input())
-
-	print 'Type Physical Volume name prefix for /hana/data:',
-	pv_prefix = raw_input()
-
-	pv_count = 1
-	for pv_name in pv_names:
-		pv_suffix = str(pv_count)
-		pv_new_name = pv_prefix + pv_suffix
-		pv_count+=1
-		for lun in luns:
-			lun_name_target = lun.get_name()
-			if lun_name_target == pv_name:
-				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
-				print str_mulitpaths
-
-	print 'Type current LUN(s) to be used for /hana/log:',
-	pv_names = re.findall('\w{1,}', raw_input())
-
-	print 'Type Physical Volume name prefix for /hana/log:',
-	pv_prefix = raw_input()
-
-	pv_count = 1
-	for pv_name in pv_names:
-		pv_suffix = str(pv_count)
-		pv_new_name = pv_prefix + pv_suffix
-		pv_count+=1
-		for lun in luns:
-			lun_name_target = lun.get_name()
-			if lun_name_target == pv_name:
-				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
-				print str_mulitpaths
-
-	print 'Type current LUN(s) to be used for /hana/shared:',
-	pv_names = re.findall('\w{1,}', raw_input())
-
-	print 'Type Physical Volume name prefix for /hana/shared:',
-	pv_prefix = raw_input()
-
-	pv_count = 1
-	for pv_name in pv_names:
-		pv_suffix = str(pv_count)
-		pv_new_name = pv_prefix + pv_suffix
-		pv_count+=1
-		for lun in luns:
-			lun_name_target = lun.get_name()
-			if lun_name_target == pv_name:
-				print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
-				str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}' % (lun.get_wwid(), pv_new_name)
-				print str_mulitpaths
-
+		pv_count = 1
+		for pv_name in pv_names:
+			pv_suffix = str(pv_count)
+			pv_new_name = pv_prefix + pv_suffix
+			pv_count+=1
+			for lun in luns:
+				lun_name_target = lun.get_name()
+				if lun_name_target == pv_name:
+					print 'LUN Choosed:   %s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					print 'New LUN Name:  %s %s %s %s %s %s%s' % (pv_new_name, lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), pv_new_name)
+					print str_mulitpaths
 
 	tpl_multipath_file = open('template_multipath.txt', 'r')
 	
