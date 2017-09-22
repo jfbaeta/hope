@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-class PhysicalVolume(object):
-	"""class PhysicalVolume"""
+class StorageVolume(object):
+	"""class StorageVolume"""
 	def __init__(self, name, devmap, wwid, vendor, product, size_n, size_m, purpose=''):
-		super(PhysicalVolume, self).__init__()
+		super(StorageVolume, self).__init__()
 		self.__name = name
 		self.__devmap = devmap
 		self.__wwid = wwid
@@ -46,6 +46,12 @@ class PhysicalVolume(object):
 	def change_purpose(self, purpose):
 		self.__purpose = purpose
 
+class PhysicalVolume(object):
+	"""class PhysicalVolume"""
+	def __init__(self, name):
+		super(PhysicalVolume, self).__init__()
+		self.__name = name
+
 class VolumeGroup(object):
 	"""class VolumeGroup"""
 	def __init__(self, name, pvs):
@@ -66,3 +72,32 @@ class FileSystem(object):
 		super(FileSystem, self).__init__()
 		self.name = name
 		self.lv = lv
+
+class Root(object):
+	"""class Root"""
+	def __init__(self, name):
+		super(Root, self).__init__()
+
+class UsrSap(object):
+	"""class UsrSap"""
+	def __init__(self, name):
+		super(UsrSap, self).__init__()
+
+class Data(object):
+	"""class Data"""
+	def __init__(self, name):
+		super(Data, self).__init__()
+
+class Log(object):
+	"""class Log"""
+	def __init__(self, name):
+		super(Log, self).__init__()
+
+class Shared(object):
+	"""class Shared"""
+	def __init__(self, name):
+		super(Shared, self).__init__()
+
+
+
+

@@ -3,13 +3,11 @@
 from models import *
 from string import Template
 import re
-
-import os.path
 import os
 
 def create_lun():
 	
-	disco = PhysicalVolume(name='mpathA', wwid='360050768028101875000000000000fff', devmap='dm-10', vendor='IBM', product='2145', size_n='512', size_m='G')
+	disco = StorageVolume(name='mpathA', wwid='360050768028101875000000000000fff', devmap='dm-10', vendor='IBM', product='2145', size_n='512', size_m='G')
 
 	disco.get_name()
 
@@ -47,6 +45,8 @@ def detect_luns():
 	
 	for reg_exp in reg_exps:
 		file = open(file_to_be_used, 'r')
+		# cmd = 'multipath -ll | egrep \"dm-|size\"'
+		# file = os.system(cmd)
 		reg_exp_result = re.findall(reg_exp, file.read())
 		temp_lun_list.append(reg_exp_result)
 		file.close()
@@ -61,7 +61,7 @@ def detect_luns():
 		lun_product = lun_index[4]
 		lun_size_n = lun_index[5]
 		lun_size_m = lun_index[6]
-		luns.append(PhysicalVolume(name=lun_name, wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
+		luns.append(StorageVolume(name=lun_name, wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
 
 	for lun in luns:
 		print '%s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
@@ -137,12 +137,18 @@ def create_multipath_conf():
 		new_multipath_file.close()
 
 def change_lun_names():
-	pass
+	
+	# cmd = 'multipath -r'
+	# os.system(cmd)
+	cmd = 'ls -l'
+	os.system(cmd)
 
 def create_pvs():
 
 	for lun in luns:
 		if lun.get_purpose() != 'rootvg':
+			# cmd = 'pvcreate /dev/mapper/%s' % (lun.get_name())
+			# os.system(cmd)
 			print 'pvcreate /dev/mapper/%s' % (lun.get_name())
 
 def create_vgs(vgs):
