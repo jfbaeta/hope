@@ -85,6 +85,15 @@ def detect_luns():
 #	print lun2
 #	print header
 
+def detect_pvs():
+	pass
+
+def detect_vgs():
+	pass
+
+def detect_lvs():
+	pass
+
 def create_multipath_conf():
 
 	detect_luns()
@@ -145,42 +154,46 @@ def change_lun_names():
 
 def create_pvs():
 
-	#for lun in luns:
-	#	if lun.get_purpose() != 'rootvg':
-	#		# cmd = 'pvcreate /dev/mapper/%s' % (lun.get_name())
-	#		# os.system(cmd)
-	#		print 'pvcreate /dev/mapper/%s' % (lun.get_name())
-
 	detect_luns()
+
+	detect_pvs()
 
 	print 'Type LUN names that will be used as Physical Volumes:',
 	pv_names = re.findall('\w{1,}', raw_input())
 	for pv_name in pv_names:
+		# cmd = 'pvcreate /dev/mapper/%s' % (pv_name)
+		# os.system(cmd)
 		print 'pvcreate /dev/mapper/%s' % (pv_name)
 
 def create_vgs():
 
-	print 'Type Volume Group name for /usr/sap:',
-	vg_name = raw_input()
-	print 'Type Physical Volume names for %s:' % (vg_name),
-	pv_names = raw_input()
+	detect_pvs()
 
-	print 'Type Volume Group name for /hana/data:',
-	vg_name = raw_input()
-	print 'Type Physical Volume names for %s:' % (vg_name),
-	pv_names = raw_input()
+	detect_vgs()
 
-	print 'Type Volume Group name for /hana/log:',
-	vg_name = raw_input()
-	print 'Type Physical Volume names for %s:' % (vg_name),
-	pv_names = raw_input()
+	for purpose in purposes[1:]:
 
-	print 'Type Volume Group name for /hana/shared:',
-	vg_name = raw_input()
-	print 'Type Physical Volume names for %s:' % (vg_name),
-	pv_names = raw_input()
+		print 'Type Volume Group name for %s:' % (purpose),
+		vg_name = raw_input()
+		
+		print 'Type Physical Volume names for %s:' % (vg_name),
+		pv_names = re.findall('\w{1,}', raw_input())
+		pv_names_str = ' /dev/mapper/'.join(pv_names)
+		
+		if purpose == '/usr/sap':
+			# cmd = 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
+			# os.system(cmd)
+			print 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
+		else:
+			# cmd = 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
+			# os.system(cmd)
+			print 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
 
 def create_lvs():
+
+	detect_vgs()
+
+	detect_lvs()
 
 	print 'Type Logical Volume name for /usr/sap:',
 	lv_name = raw_input()
@@ -203,6 +216,10 @@ def create_lvs():
 	vg_name = raw_input()
 
 def create_fss():
+
+	detect_lvs()
+
+	detect_fss()
 
 	print 'Type the SID for this system:',
 	sid = raw_input()
