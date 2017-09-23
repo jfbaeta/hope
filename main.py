@@ -5,6 +5,8 @@ from string import Template
 import re
 import os
 
+purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+
 def create_lun():
 	
 	disco = StorageVolume(name='mpathA', wwid='360050768028101875000000000000fff', devmap='dm-10', vendor='IBM', product='2145', size_n='512', size_m='G')
@@ -89,8 +91,6 @@ def create_multipath_conf():
 
 	str_mulitpaths = ''
 
-	purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
-
 	for purpose in purposes:
 		
 		print 'Type current LUN(s) to be used for %s:' % (purpose),
@@ -145,77 +145,79 @@ def change_lun_names():
 
 def create_pvs():
 
-	for lun in luns:
-		if lun.get_purpose() != 'rootvg':
-			# cmd = 'pvcreate /dev/mapper/%s' % (lun.get_name())
-			# os.system(cmd)
-			print 'pvcreate /dev/mapper/%s' % (lun.get_name())
+	#for lun in luns:
+	#	if lun.get_purpose() != 'rootvg':
+	#		# cmd = 'pvcreate /dev/mapper/%s' % (lun.get_name())
+	#		# os.system(cmd)
+	#		print 'pvcreate /dev/mapper/%s' % (lun.get_name())
 
-def create_vgs(vgs):
-	print 'Type Volume Group name for Data:',
-	vg = raw_input()
-	vgs.append(vg)
-	print 'Volume Group for Data will be %s' % (vg)
+	detect_luns()
 
-	print 'Type Volume Group name for Log:',
-	vg = raw_input()
-	vgs.append(vg)
-	print 'Volume Group for Log will be %s' % (vg)
+	print 'Type LUN names that will be used as Physical Volumes:',
+	pv_names = re.findall('\w{1,}', raw_input())
+	for pv_name in pv_names:
+		print 'pvcreate /dev/mapper/%s' % (pv_name)
 
-	print 'Type Volume Group name for Shared:',
-	vg = raw_input()
-	vgs.append(vg)
-	print 'Volume Group for Shared will be %s' % (vg)
+def create_vgs():
 
-	print 'Creating Volume Group %s...' % (vgs[0])
-	print 'Creating Volume Group %s...' % (vgs[1])
-	print 'Creating Volume Group %s...' % (vgs[2])
+	print 'Type Volume Group name for /usr/sap:',
+	vg_name = raw_input()
+	print 'Type Physical Volume names for %s:' % (vg_name),
+	pv_names = raw_input()
 
-	exit()
+	print 'Type Volume Group name for /hana/data:',
+	vg_name = raw_input()
+	print 'Type Physical Volume names for %s:' % (vg_name),
+	pv_names = raw_input()
 
-def create_lvs(lvs):
-	print 'Type Logical Volume name for Data:',
-	lv = raw_input()
-	lvs.append(lv)
-	print 'Logical Volume for Data will be %s' % (lv)
+	print 'Type Volume Group name for /hana/log:',
+	vg_name = raw_input()
+	print 'Type Physical Volume names for %s:' % (vg_name),
+	pv_names = raw_input()
 
-	print 'Type Logical Volume name for Log:',
-	lv = raw_input()
-	lvs.append(lv)
-	print 'Logical Volume for Log will be %s' % (lv)
+	print 'Type Volume Group name for /hana/shared:',
+	vg_name = raw_input()
+	print 'Type Physical Volume names for %s:' % (vg_name),
+	pv_names = raw_input()
 
-	print 'Type Logical Volume name for Shared:',
-	lv = raw_input()
-	lvs.append(lv)
-	print 'Logical Volume for Shared will be %s' % (lv)
+def create_lvs():
 
-	print 'Creating Logical Volume %s...' % (lvs[0])
-	print 'Creating Logical Volume %s...' % (lvs[1])
-	print 'Creating Logical Volume %s...' % (lvs[2])
+	print 'Type Logical Volume name for /usr/sap:',
+	lv_name = raw_input()
+	print 'Type Volume Group name for %s:' % (lv_name),
+	vg_name = raw_input()
 
-	exit()
+	print 'Type Logical Volume name for /hana/data:',
+	lv_name = raw_input()
+	print 'Type PVolume Group name for %s:' % (lv_name),
+	vg_name = raw_input()
 
-def create_fss(fss):
-	print 'Type File System name for Data:',
-	fs = raw_input()
-	fss.append(fs)
-	print 'File System for Data will be %s.' % (fs)
-	
-	print 'Type File System name for Log:',
-	fs = raw_input()
-	fss.append(fs)
-	print 'File System for Log will be %s.' % (fs)
+	print 'Type Logical Volume name for /hana/log:',
+	lv_name = raw_input()
+	print 'Type Volume Group name for %s:' % (lv_name),
+	vg_name = raw_input()
 
-	print 'Type File System name for Shared:',
-	fs = raw_input()
-	fss.append(fs)
-	print 'File System for Shared will be %s.' % (fs)
+	print 'Type Logical Volume name for /hana/shared:',
+	lv_name = raw_input()
+	print 'Type Volume Group name for %s:' % (lv_name),
+	vg_name = raw_input()
 
-	print 'Creating File System %s...' % (fss[0])
-	print 'Creating File System %s...' % (fss[1])
-	print 'Creating File System %s...' % (fss[2])
+def create_fss():
 
-	exit()
+	print 'Type the SID for this system:',
+	sid = raw_input()
+
+	print 'Type Logical Volume name for /usr/sap:',
+	lv_name = raw_input()
+
+	print 'Type Logical Volume name for /hana/data:',
+	lv_name = raw_input()
+
+	print 'Type Logical Volume name for /hana/log:',
+	lv_name = raw_input()
+
+	print 'Type Logical Volume name for /hana/shared:',
+	lv_name = raw_input()
 
 def reset_multipaths():
 	
@@ -223,16 +225,12 @@ def reset_multipaths():
 
 def menu():
 
-	vgs = []
-	lvs = []
-	fss = []
-
 	option = True
 	
 	while option:
-		print '(1) Detect Multipath LUNs'
+		print '(1) Detect Storage Volumes'
 		print '(2) Create multipath.conf'
-		print '(3) Change LUN Names'
+		print '(3) Change Storage Volume Names'
 		print '(4) Create Physical Volumes'
 		print '(5) Create Volume Groups'
 		print '(6) Create Logical Volumes'
@@ -252,11 +250,11 @@ def menu():
 		elif (option == '4'):
 			create_pvs()
 		elif (option == '5'):
-			create_vgs(vgs)
+			create_vgs()
 		elif (option == '6'):
-			create_lvs(lvs)
+			create_lvs()
 		elif (option == '7'):
-			create_fss(fss)
+			create_fss()
 		elif (option == '8'):
 			create_lun()
 		elif (option == '666'):

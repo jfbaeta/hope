@@ -56,6 +56,9 @@ class PhysicalVolume(object):
 		super(PhysicalVolume, self).__init__()
 		self.__name = name
 
+	def mkpv():
+		pass
+
 class VolumeGroup(object):
 	
 	"""class VolumeGroup"""
@@ -64,6 +67,9 @@ class VolumeGroup(object):
 		super(VolumeGroup, self).__init__()
 		self.name = name
 		self.pvs = pvs
+
+	def mkvg():
+		pass
 
 class LogicalVolume(object):
 	
@@ -74,6 +80,9 @@ class LogicalVolume(object):
 		self.name = name
 		self.vg = vg
 
+	def mklv():
+		pass
+
 class FileSystem(object):
 	
 	"""class FileSystem"""
@@ -82,6 +91,21 @@ class FileSystem(object):
 		super(FileSystem, self).__init__()
 		self.name = name
 		self.lv = lv
+
+	def mkfs():
+		pass
+
+	def mkdir():
+		pass
+
+	def mount():
+		pass
+
+	def show():
+		pass
+
+	def fstab():
+		pass
 
 class Root(object):
 	
@@ -147,6 +171,7 @@ class Shared(object):
 	
 	def __init__(self, name):
 		super(Shared, self).__init__()
+
 
 
 
