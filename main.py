@@ -195,25 +195,22 @@ def create_lvs():
 
 	detect_lvs()
 
-	print 'Type Logical Volume name for /usr/sap:',
-	lv_name = raw_input()
-	print 'Type Volume Group name for %s:' % (lv_name),
-	vg_name = raw_input()
+	for purpose in purposes[1:]:
 
-	print 'Type Logical Volume name for /hana/data:',
-	lv_name = raw_input()
-	print 'Type PVolume Group name for %s:' % (lv_name),
-	vg_name = raw_input()
-
-	print 'Type Logical Volume name for /hana/log:',
-	lv_name = raw_input()
-	print 'Type Volume Group name for %s:' % (lv_name),
-	vg_name = raw_input()
-
-	print 'Type Logical Volume name for /hana/shared:',
-	lv_name = raw_input()
-	print 'Type Volume Group name for %s:' % (lv_name),
-	vg_name = raw_input()
+		print 'Type Logical Volume name for %s:' % (purpose),
+		lv_name = raw_input()
+		
+		print 'Type Volume Group name for %s:' % (lv_name),
+		vg_name = raw_input()
+		
+		if purpose == '/usr/sap':
+			# cmd = 'lvcreate -l 100%VG -n %s %s' % (lv_name, vg_name)
+			# os.system(cmd)
+			print 'lvcreate -l 100%%VG -n %s %s' % (lv_name, vg_name)
+		else:
+			# cmd = 'lvcreate -i 4 -I 256K -l 100%VG -n %s %s' % (lv_name, vg_name)
+			# os.system(cmd)
+			print 'lvcreate -i 4 -I 256K -l 100%%VG -n %s %s' % (lv_name, vg_name)
 
 def create_fss():
 
