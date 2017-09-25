@@ -94,6 +94,9 @@ def detect_vgs():
 def detect_lvs():
 	pass
 
+def detect_fss():
+	pass
+
 def create_multipath_conf():
 
 	detect_luns()
@@ -221,17 +224,41 @@ def create_fss():
 	print 'Type the SID for this system:',
 	sid = raw_input()
 
-	print 'Type Logical Volume name for /usr/sap:',
-	lv_name = raw_input()
+	for purpose in purposes[1:]:
 
-	print 'Type Logical Volume name for /hana/data:',
-	lv_name = raw_input()
+		print 'Type Logical Volume name for %s:' % (purpose),
+		lv_name = raw_input()
+		
+		if purpose == '/usr/sap':
+			fs_type = 'ext3'
+			fs_args = ''
+		else:
+			fs_type = 'xfs'
+			fs_args = '-b size=4096 -s size=4096'
 
-	print 'Type Logical Volume name for /hana/log:',
-	lv_name = raw_input()
+		# cmd = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, vg_name, lv_name)
+		# os.system(cmd)
+		print 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, 'vg', lv_name)
+		
+		# cmd = 'mkdir -p %s' % (purpose)
+		# os.system(cmd)
+		print 'mkdir -p %s' % (purpose)
 
-	print 'Type Logical Volume name for /hana/shared:',
-	lv_name = raw_input()
+		# cmd = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (vg_name, lv_name, purpose, fs_type)
+		# os.system(cmd)
+		print 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % ('vg', lv_name, purpose, fs_type)
+
+		# cmd = 'mount %s' % (purpose)
+		# os.system(cmd)
+		print 'mount %s' % (purpose)
+
+		# cmd = 'mkdir -p %s/%s' % (purpose, sid)
+		# os.system(cmd)
+		print 'mkdir -p %s/%s' % (purpose, sid)
+
+	# cmd = 'df -h'
+	# os.system(cmd)
+	print 'df -h'
 
 def reset_multipaths():
 	
