@@ -109,7 +109,7 @@ def create_multipath_conf():
 					print 'New LUN Name:  %s' % (lun.get_name())
 					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), lun.get_name())
 
-	tpl_multipath_file = open('../templates/template_multipath.txt', 'r')
+	tpl_multipath_file = open('templates/template_multipath.txt', 'r')
 	
 	tpl_multipath_str = Template(tpl_multipath_file.read())
 	
