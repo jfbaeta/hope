@@ -4,24 +4,9 @@ from models import *
 from string import Template
 import re
 import os
+import subprocess
 
 purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
-
-def create_lun():
-	
-	disco = StorageVolume(name='mpathA', wwid='360050768028101875000000000000fff', devmap='dm-10', vendor='IBM', product='2145', size_n='512', size_m='G')
-
-	disco.get_name()
-
-	disco.change_name('mpathB')
-
-	disco.get_name()
-
-	disco.change_name(name='mpathC')
-
-	disco.get_name()
-
-	exit()
 
 def detect_luns():
 
@@ -30,13 +15,7 @@ def detect_luns():
 
 	temp_lun_list = []
 
-	if os.path.exists('multipath.conf'):
-		file_to_be_used = 'new_multi_grep.txt'
-	else:
-		file_to_be_used = 'old_multi_grep.txt'
-
 	reg_exps = [
-		re.compile(r'(\w+)(?:\s\()'),\
 		re.compile(r'\w{33}'),\
 		re.compile(r'dm-\d{1,3}'),\
 		re.compile(r'(\w+)(?:,)'),\
@@ -46,27 +25,23 @@ def detect_luns():
 		]
 	
 	for reg_exp in reg_exps:
-		file = open(file_to_be_used, 'r')
-		# cmd = 'multipath -ll | egrep \"dm-|size\"'
-		# file = os.system(cmd)
-		reg_exp_result = re.findall(reg_exp, file.read())
+		multipath_cmd  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True)
+		reg_exp_result = re.findall(reg_exp, multipath_cmd.stdout.read())
 		temp_lun_list.append(reg_exp_result)
-		file.close()
 
 	lun_list = zip(*temp_lun_list)
 
 	for lun_index in lun_list:
-		lun_name = lun_index[0]
-		lun_wwid = lun_index[1]
-		lun_devmap = lun_index[2]
-		lun_vendor = lun_index[3]
-		lun_product = lun_index[4]
-		lun_size_n = lun_index[5]
-		lun_size_m = lun_index[6]
-		luns.append(StorageVolume(name=lun_name, wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
+		lun_wwid    = lun_index[0]
+		lun_devmap  = lun_index[1]
+		lun_vendor  = lun_index[2]
+		lun_product = lun_index[3]
+		lun_size_n  = lun_index[4]
+		lun_size_m  = lun_index[5]
+		luns.append(StorageVolume(wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
 
 	for lun in luns:
-		print '%s %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_devmap(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+		print '%s %s %s %s %s%s' % (lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 
 #	lun0 = '| %s %s %s %s %s %s%s |' % (luns[0].get_name(), luns[0].get_wwid(), luns[0].get_devmap(), luns[0].get_vendor(), luns[0].get_product(), luns[0].get_size_n(), luns[0].get_size_m())
 #	lun1 = '| %s %s %s %s %s %s%s |' % (luns[1].get_name(), luns[1].get_wwid(), luns[1].get_devmap(), luns[1].get_vendor(), luns[1].get_product(), luns[1].get_size_n(), luns[1].get_size_m())
@@ -106,14 +81,14 @@ def create_multipath_conf():
 	for purpose in purposes:
 		
 		print 'Type current LUN(s) to be used for %s:' % (purpose),
-		pv_names = re.findall('\w{1,}', raw_input())
-		pv_amount = len(pv_names)
+		pvs = re.findall('dm-\d*', raw_input())
+		pv_amount = len(pvs)
 
 		print 'Type Physical Volume name prefix for %s:' % (purpose),
 		pv_prefix = raw_input()
 
 		pv_count = 1
-		for pv_name in pv_names:
+		for pv in pvs:
 			
 			if purpose in ('rootvg', '/usr/sap') and pv_amount == 1:
 				pv_new_name = pv_prefix
@@ -124,27 +99,25 @@ def create_multipath_conf():
 			
 			for lun in luns:
 				
-				lun_name_target = lun.get_name()
+				lun_target_devmap = lun.get_devmap()
 				
-				if lun_name_target == pv_name:
+				if lun_target_devmap == pv:
 					lun.change_purpose(purpose)
 					print 'LUN Purpose:   %s' % (lun.get_purpose())
-					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 					lun.change_name(pv_new_name)
-					print 'New LUN Name:  %s %s %s %s %s%s' % (lun.get_name(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					print 'New LUN Name:  %s' % (lun.get_name())
 					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), lun.get_name())
 
-	tpl_multipath_file = open('template_multipath.txt', 'r')
+	tpl_multipath_file = open('../templates/template_multipath.txt', 'r')
 	
-	tpl_multipath_read = tpl_multipath_file.read()
-	
-	tpl_multipath_str = Template(tpl_multipath_read)
+	tpl_multipath_str = Template(tpl_multipath_file.read())
 	
 	new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
 	
 	tpl_multipath_file.close()
 
-	with open('multipath.conf', 'w') as new_multipath_file:
+	with open('/etc/multipath.conf', 'w') as new_multipath_file:
 		new_multipath_file.write(new_multipath_str)
 		new_multipath_file.close()
 
@@ -262,7 +235,7 @@ def create_fss():
 
 def reset_multipaths():
 	
-	os.remove('multipath.conf')
+	os.remove('/etc/multipath.conf')
 
 def menu():
 

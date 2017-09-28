@@ -4,7 +4,7 @@ class StorageVolume(object):
 	
 	"""class StorageVolume"""
 	
-	def __init__(self, name, devmap, wwid, vendor, product, size_n, size_m, purpose=''):
+	def __init__(self, name='', devmap='', wwid='', vendor='', product='', size_n='', size_m='', purpose=''):
 		super(StorageVolume, self).__init__()
 		self.__name = name
 		self.__devmap = devmap
