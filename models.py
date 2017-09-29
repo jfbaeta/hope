@@ -4,19 +4,19 @@ class StorageVolume(object):
 	
 	"""class StorageVolume"""
 	
-	def __init__(self, name='', devmap='', wwid='', vendor='', product='', size_n='', size_m='', purpose=''):
+	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size_n='', size_m='', name=''):
 		super(StorageVolume, self).__init__()
-		self.__name = name
-		self.__devmap = devmap
-		self.__wwid = wwid
-		self.__vendor = vendor
+		self.__index = index
+		self.__devmap  = devmap
+		self.__wwid    = wwid
+		self.__vendor  = vendor
 		self.__product = product
-		self.__size_n = size_n
-		self.__size_m = size_m
-		self.__purpose = purpose
+		self.__size_n  = size_n
+		self.__size_m  = size_m
+		self.__name    = name
 
-	def get_name(self):
-		return self.__name
+	def get_index(self):
+		return self.__index
 
 	def get_devmap(self):
 		return self.__devmap
@@ -36,17 +36,14 @@ class StorageVolume(object):
 	def get_size_m(self):
 		return self.__size_m
 
-	def get_purpose(self):
-		return self.__purpose
+	def get_name(self):
+		return self.__name
 
 	def get_all(self):
-		return self.__name, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m, self.__purpose
+		return self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m, self.__name
 
 	def change_name(self, name):
 		self.__name = name
-
-	def change_purpose(self, purpose):
-		self.__purpose = purpose
 
 class PhysicalVolume(object):
 	

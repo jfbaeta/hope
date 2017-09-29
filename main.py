@@ -13,35 +13,44 @@ def detect_luns():
 	global luns
 	luns = []
 
-	temp_lun_list = []
+	temp_luns_list = []
 
 	reg_exps = [
+		re.compile(r'(?:dm-)(\d*)'),\
+		re.compile(r'dm-\d*'),\
 		re.compile(r'\w{33}'),\
-		re.compile(r'dm-\d{1,3}'),\
 		re.compile(r'(\w+)(?:,)'),\
 		re.compile(r'(?:,)(\w+)'),\
 		re.compile(r'(?:size=)(\d+\.?\d*)'),\
-		re.compile(r'([MGT])(?:[\s])')
+		re.compile(r'([MGT])(?:[\s])'),\
+		re.compile(r'(\w*)(?:\s\()'),\
 		]
 	
+	lun_amount = len(re.findall(reg_exps[0], subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).stdout.read()))
+	
 	for reg_exp in reg_exps:
-		multipath_cmd  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True)
-		reg_exp_result = re.findall(reg_exp, multipath_cmd.stdout.read())
-		temp_lun_list.append(reg_exp_result)
+		cmd_multipath_list  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True)
+		reg_exp_result = re.findall(reg_exp, cmd_multipath_list.stdout.read())
+		if not reg_exp_result:
+			for item in range(lun_amount):
+				reg_exp_result.append('no alias assigned')
+		temp_luns_list.append(reg_exp_result)
 
-	lun_list = zip(*temp_lun_list)
+	luns_list = zip(*temp_luns_list)
 
-	for lun_index in lun_list:
-		lun_wwid    = lun_index[0]
-		lun_devmap  = lun_index[1]
-		lun_vendor  = lun_index[2]
-		lun_product = lun_index[3]
-		lun_size_n  = lun_index[4]
-		lun_size_m  = lun_index[5]
-		luns.append(StorageVolume(wwid=lun_wwid, devmap=lun_devmap, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m))
+	for lun_list in luns_list:
+		lun_index   = lun_list[0]
+		lun_devmap  = lun_list[1]
+		lun_wwid    = lun_list[2]
+		lun_vendor  = lun_list[3]
+		lun_product = lun_list[4]
+		lun_size_n  = lun_list[5]
+		lun_size_m  = lun_list[6]
+		lun_name    = lun_list[7]
+		luns.append(StorageVolume(index=lun_index, devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m, name=lun_name))
 
 	for lun in luns:
-		print '%s %s %s %s %s%s' % (lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+		print '%s %s %s %s %s %s%s %s' % (lun.get_index(), lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m(), lun.get_name())
 
 #	lun0 = '| %s %s %s %s %s %s%s |' % (luns[0].get_name(), luns[0].get_wwid(), luns[0].get_devmap(), luns[0].get_vendor(), luns[0].get_product(), luns[0].get_size_n(), luns[0].get_size_m())
 #	lun1 = '| %s %s %s %s %s %s%s |' % (luns[1].get_name(), luns[1].get_wwid(), luns[1].get_devmap(), luns[1].get_vendor(), luns[1].get_product(), luns[1].get_size_n(), luns[1].get_size_m())
@@ -123,10 +132,8 @@ def create_multipath_conf():
 
 def change_lun_names():
 	
-	# cmd = 'multipath -r'
-	# os.system(cmd)
-	cmd = 'ls -l'
-	os.system(cmd)
+	multipath_reload = 'multipath -r'
+	os.system(multipath_reload)
 
 def create_pvs():
 
@@ -136,10 +143,10 @@ def create_pvs():
 
 	print 'Type LUN names that will be used as Physical Volumes:',
 	pv_names = re.findall('\w{1,}', raw_input())
+	
 	for pv_name in pv_names:
-		# cmd = 'pvcreate /dev/mapper/%s' % (pv_name)
-		# os.system(cmd)
-		print 'pvcreate /dev/mapper/%s' % (pv_name)
+		cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (pv_name)
+		os.system(cmd_pvcreate)
 
 def create_vgs():
 
@@ -157,13 +164,11 @@ def create_vgs():
 		pv_names_str = ' /dev/mapper/'.join(pv_names)
 		
 		if purpose == '/usr/sap':
-			# cmd = 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
-			# os.system(cmd)
-			print 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
+			cmd_vgcreate = 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
 		else:
-			# cmd = 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
-			# os.system(cmd)
-			print 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
+			cmd_vgcreate = 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
+		
+		os.system(cmd_vgcreate)
 
 def create_lvs():
 
@@ -180,13 +185,11 @@ def create_lvs():
 		vg_name = raw_input()
 		
 		if purpose == '/usr/sap':
-			# cmd = 'lvcreate -l 100%VG -n %s %s' % (lv_name, vg_name)
-			# os.system(cmd)
-			print 'lvcreate -l 100%%VG -n %s %s' % (lv_name, vg_name)
+			cmd_lvcreate = 'lvcreate -l 100%VG -n %s %s' % (lv_name, vg_name)
 		else:
-			# cmd = 'lvcreate -i 4 -I 256K -l 100%VG -n %s %s' % (lv_name, vg_name)
-			# os.system(cmd)
-			print 'lvcreate -i 4 -I 256K -l 100%%VG -n %s %s' % (lv_name, vg_name)
+			cmd_lvcreate = 'lvcreate -i 4 -I 256K -l 100%VG -n %s %s' % (lv_name, vg_name)
+		
+		os.system(cmd_lvcreate)
 
 def create_fss():
 
@@ -209,29 +212,23 @@ def create_fss():
 			fs_type = 'xfs'
 			fs_args = '-b size=4096 -s size=4096'
 
-		# cmd = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, vg_name, lv_name)
-		# os.system(cmd)
-		print 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, 'vg', lv_name)
-		
-		# cmd = 'mkdir -p %s' % (purpose)
-		# os.system(cmd)
-		print 'mkdir -p %s' % (purpose)
+		cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, vg_name, lv_name)
+		os.system(cmd_mkfs)
 
-		# cmd = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (vg_name, lv_name, purpose, fs_type)
-		# os.system(cmd)
-		print 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % ('vg', lv_name, purpose, fs_type)
+		cmd_mkdir = 'mkdir -p %s' % (purpose)
+		os.system(cmd_mkdir)
 
-		# cmd = 'mount %s' % (purpose)
-		# os.system(cmd)
-		print 'mount %s' % (purpose)
+		cmd_add_fstab = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (vg_name, lv_name, purpose, fs_type)
+		os.system(cmd_add_fstab)
 
-		# cmd = 'mkdir -p %s/%s' % (purpose, sid)
-		# os.system(cmd)
-		print 'mkdir -p %s/%s' % (purpose, sid)
+		cmd_mount = 'mount %s' % (purpose)
+		os.system(cmd_mount)
 
-	# cmd = 'df -h'
-	# os.system(cmd)
-	print 'df -h'
+		cmd_mkdir_sid = 'mkdir -p %s/%s' % (purpose, sid)
+		os.system(cmd_mkdir_sid)
+
+	cmd_df = 'df -h'
+	os.system(cmd_df)
 
 def reset_multipaths():
 	
@@ -243,8 +240,8 @@ def menu():
 	
 	while option:
 		print '(1) Detect Storage Volumes'
-		print '(2) Create multipath.conf'
-		print '(3) Change Storage Volume Names'
+		print '(2) Create /etc/multipath.conf File'
+		print '(3) Reload Multipath to Change Volume Names'
 		print '(4) Create Physical Volumes'
 		print '(5) Create Volume Groups'
 		print '(6) Create Logical Volumes'
