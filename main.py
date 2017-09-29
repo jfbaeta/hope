@@ -90,7 +90,7 @@ def create_multipath_conf():
 	for purpose in purposes:
 		
 		print 'Type current LUN(s) to be used for %s:' % (purpose),
-		pvs = re.findall('dm-\d*', raw_input())
+		pvs = re.findall('\d+', raw_input())
 		pv_amount = len(pvs)
 
 		print 'Type Physical Volume name prefix for %s:' % (purpose),
@@ -108,12 +108,12 @@ def create_multipath_conf():
 			
 			for lun in luns:
 				
-				lun_target_devmap = lun.get_devmap()
+				lun_target_devmap = lun.get_index()
 				
 				if lun_target_devmap == pv:
 					lun.change_purpose(purpose)
 					print 'LUN Purpose:   %s' % (lun.get_purpose())
-					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_index(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 					lun.change_name(pv_new_name)
 					print 'New LUN Name:  %s' % (lun.get_name())
 					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), lun.get_name())

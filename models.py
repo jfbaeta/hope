@@ -4,9 +4,9 @@ class StorageVolume(object):
 	
 	"""class StorageVolume"""
 	
-	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size_n='', size_m='', name=''):
+	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size_n='', size_m='', name='', purpose=''):
 		super(StorageVolume, self).__init__()
-		self.__index = index
+		self.__index   = index
 		self.__devmap  = devmap
 		self.__wwid    = wwid
 		self.__vendor  = vendor
@@ -14,6 +14,7 @@ class StorageVolume(object):
 		self.__size_n  = size_n
 		self.__size_m  = size_m
 		self.__name    = name
+		self.__purpose = purpose
 
 	def get_index(self):
 		return self.__index
@@ -39,11 +40,17 @@ class StorageVolume(object):
 	def get_name(self):
 		return self.__name
 
+	def get_purpose(self):
+		return self.__purpose
+
 	def get_all(self):
-		return self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m, self.__name
+		return self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m, self.__name, self.__purpose
 
 	def change_name(self, name):
 		self.__name = name
+
+	def change_purpose(self, purpose):
+		self.__purpose = purpose
 
 class PhysicalVolume(object):
 	
