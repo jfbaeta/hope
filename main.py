@@ -142,11 +142,17 @@ def create_pvs():
 	detect_pvs()
 
 	print 'Type LUN names that will be used as Physical Volumes:',
-	pv_names = re.findall('\w{1,}', raw_input())
+	pvs = re.findall('\d+', raw_input())
 	
-	for pv_name in pv_names:
-		cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (pv_name)
-		os.system(cmd_pvcreate)
+	for pv in pvs:
+	
+		for lun in luns:
+
+			lun_target_devmap = lun.get_index()
+
+			if lun_target_devmap == pv:
+				cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.get_name())
+				os.system(cmd_pvcreate)
 
 def create_vgs():
 
@@ -184,10 +190,10 @@ def create_lvs():
 		print 'Type Volume Group name for %s:' % (lv_name),
 		vg_name = raw_input()
 		
-		if purpose == '/usr/sap':
-			cmd_lvcreate = 'lvcreate -l 100%VG -n %s %s' % (lv_name, vg_name)
+		if purpose == '/hana/data':
+			cmd_lvcreate = 'lvcreate -i 4 -I 256K -l 100%%VG -n %s %s' % (lv_name, vg_name)
 		else:
-			cmd_lvcreate = 'lvcreate -i 4 -I 256K -l 100%VG -n %s %s' % (lv_name, vg_name)
+			cmd_lvcreate = 'lvcreate -l 100%%VG -n %s %s' % (lv_name, vg_name)
 		
 		os.system(cmd_lvcreate)
 
