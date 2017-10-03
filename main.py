@@ -16,13 +16,11 @@ def detect_luns():
 	temp_luns_list = []
 
 	reg_exps = [
-		re.compile(r'(?:dm-)(\d*)'),\
 		re.compile(r'dm-\d*'),\
 		re.compile(r'\w{33}'),\
 		re.compile(r'(\w+)(?:,)'),\
 		re.compile(r'(?:,)(\w+)'),\
-		re.compile(r'(?:size=)(\d+\.?\d*)'),\
-		re.compile(r'([MGT])(?:[\s])'),\
+		re.compile(r'(?:size=)(\d+\.?\d*[MGT])(?:[\s])'),\
 		re.compile(r'(\w*)(?:\s\()'),\
 	]
 	
@@ -38,19 +36,21 @@ def detect_luns():
 
 	luns_list = zip(*temp_luns_list)
 
+	lun_index = 0
 	for lun_list in luns_list:
-		lun_index   = lun_list[0]
-		lun_devmap  = lun_list[1]
-		lun_wwid    = lun_list[2]
-		lun_vendor  = lun_list[3]
-		lun_product = lun_list[4]
-		lun_size_n  = lun_list[5]
-		lun_size_m  = lun_list[6]
-		lun_name    = lun_list[7]
-		luns.append(StorageVolume(index=lun_index, devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size_n=lun_size_n, size_m=lun_size_m, name=lun_name))
+		lun_devmap  = lun_list[0]
+		lun_wwid    = lun_list[1]
+		lun_vendor  = lun_list[2]
+		lun_product = lun_list[3]
+		lun_size    = lun_list[4]
+		lun_name    = lun_list[5]
+		luns.append(StorageVolume(index=lun_index, devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
+		lun_index+=1
+
+	print len(luns[0].get_all())
 
 	for lun in luns:
-		print '%s %s %s %s %s %s%s %s' % (lun.get_index(), lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m(), lun.get_name())
+		print '%s %s %s %s %s %s %s' % (lun.get_index(), lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size(), lun.get_name())
 
 #	lun0 = '| %s %s %s %s %s %s%s |' % (luns[0].get_name(), luns[0].get_wwid(), luns[0].get_devmap(), luns[0].get_vendor(), luns[0].get_product(), luns[0].get_size_n(), luns[0].get_size_m())
 #	lun1 = '| %s %s %s %s %s %s%s |' % (luns[1].get_name(), luns[1].get_wwid(), luns[1].get_devmap(), luns[1].get_vendor(), luns[1].get_product(), luns[1].get_size_n(), luns[1].get_size_m())
@@ -95,14 +95,16 @@ def detect_lvs():
 
 	lvs_list = zip(*temp_lvs_list)
 
+	lv_index = 0
 	for lv_list in lvs_list:
 		lv_path = lv_list[0]
 		vg_name = lv_list[1]
 		lv_name = lv_list[2]
-		lvs.append(LogicalVolume(lvpath=lv_path, vgname=vg_name, lvname=lv_name))
+		lvs.append(LogicalVolume(index=lv_index, lvpath=lv_path, vgname=vg_name, lvname=lv_name))
+		lv_index+=1
 	
 	for lv in lvs:
-		print '%s %s %s' % (lv.get_lvpath(), lv.get_vgname(), lv.get_lvname())
+		print '%s %s %s %s' % (lv.get_index(), lv.get_lvpath(), lv.get_vgname(), lv.get_lvname())
 
 def detect_fss():
 	pass
@@ -134,11 +136,8 @@ def create_multipath_conf():
 			
 			for lun in luns:
 				
-				lun_target_devmap = lun.get_index()
-				
-				if lun_target_devmap == pv:
-					lun.change_purpose(purpose)
-					print 'LUN Purpose:   %s' % (lun.get_purpose())
+				if str(lun.get_index()) == pv:
+					print 'LUN Purpose:   %s' % (purpose)
 					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_index(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 					lun.change_name(pv_new_name)
 					print 'New LUN Name:  %s' % (lun.get_name())
@@ -174,9 +173,7 @@ def create_pvs():
 	
 		for lun in luns:
 
-			lun_target_devmap = lun.get_index()
-
-			if lun_target_devmap == pv:
+			if str(lun.get_index()) == pv:
 				cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.get_name())
 				os.system(cmd_pvcreate)
 
@@ -234,8 +231,9 @@ def create_fss():
 
 	for purpose in purposes[1:]:
 
-		print 'Type Logical Volume name for %s:' % (purpose),
+		print 'Type Logical Volume number for %s:' % (purpose),
 		lv_name = raw_input()
+
 		
 		if purpose == '/usr/sap':
 			fs_type = 'ext3'
@@ -246,10 +244,8 @@ def create_fss():
 
 		for lv in lvs:
 				
-			lv_target = lv.get_lvname()
-			
-			if lv_target == lv_name:
-	
+			if str(lv.get_index()) == lv_name:
+				
 				cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, lv.get_vgname(), lv.get_lvname())
 				os.system(cmd_mkfs)
 	

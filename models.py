@@ -4,17 +4,15 @@ class StorageVolume(object):
 	
 	"""class StorageVolume"""
 	
-	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size_n='', size_m='', name='', purpose=''):
+	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size='', name=''):
 		super(StorageVolume, self).__init__()
 		self.__index   = index
 		self.__devmap  = devmap
 		self.__wwid    = wwid
 		self.__vendor  = vendor
 		self.__product = product
-		self.__size_n  = size_n
-		self.__size_m  = size_m
+		self.__size    = size
 		self.__name    = name
-		self.__purpose = purpose
 
 	def get_index(self):
 		return self.__index
@@ -31,26 +29,17 @@ class StorageVolume(object):
 	def get_product(self):
 		return self.__product
 
-	def get_size_n(self):
-		return self.__size_n
-
-	def get_size_m(self):
-		return self.__size_m
+	def get_size(self):
+		return self.__size
 
 	def get_name(self):
 		return self.__name
 
-	def get_purpose(self):
-		return self.__purpose
-
 	def get_all(self):
-		return self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__vendor, self.__size_n, self.__size_m, self.__name, self.__purpose
+		return self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__size, self.__name
 
 	def change_name(self, name):
 		self.__name = name
-
-	def change_purpose(self, purpose):
-		self.__purpose = purpose
 
 class PhysicalVolume(object):
 	
@@ -79,11 +68,15 @@ class LogicalVolume(object):
 	
 	"""class LogicalVolume"""
 	
-	def __init__(self, lvpath='', vgname='', lvname=''):
+	def __init__(self, index='', lvpath='', vgname='', lvname=''):
 		super(LogicalVolume, self).__init__()
+		self.__index  = index
 		self.__lvpath = lvpath
 		self.__vgname = vgname
 		self.__lvname = lvname
+
+	def get_index(self):
+		return self.__index
 
 	def get_lvpath(self):
 		return self.__lvpath
