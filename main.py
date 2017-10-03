@@ -89,7 +89,6 @@ def detect_lvs():
 	]
 	
 	for reg_exp in reg_exps:
-		# lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config 'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }'
 		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
 		reg_exp_result = re.findall(reg_exp, cmd_lvs_list)
 		temp_lvs_list.append(reg_exp_result)
