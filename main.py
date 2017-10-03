@@ -24,13 +24,13 @@ def detect_luns():
 		re.compile(r'(?:size=)(\d+\.?\d*)'),\
 		re.compile(r'([MGT])(?:[\s])'),\
 		re.compile(r'(\w*)(?:\s\()'),\
-		]
+	]
 	
 	lun_amount = len(re.findall(reg_exps[0], subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).stdout.read()))
 	
 	for reg_exp in reg_exps:
-		cmd_multipath_list  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True)
-		reg_exp_result = re.findall(reg_exp, cmd_multipath_list.stdout.read())
+		cmd_multipath_list  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		reg_exp_result = re.findall(reg_exp, cmd_multipath_list)
 		if not reg_exp_result:
 			for item in range(lun_amount):
 				reg_exp_result.append('no alias assigned')
@@ -76,7 +76,34 @@ def detect_vgs():
 	pass
 
 def detect_lvs():
-	pass
+	
+	global lvs
+	lvs = []
+
+	temp_lvs_list = []
+
+	reg_exps = [
+		re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
+		re.compile(r'(?::)(.*)(?::)'),\
+		re.compile(r'(?:.*:)(.*)'),\
+	]
+	
+	for reg_exp in reg_exps:
+		# lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config 'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }'
+		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		reg_exp_result = re.findall(reg_exp, cmd_lvs_list)
+		temp_lvs_list.append(reg_exp_result)
+
+	lvs_list = zip(*temp_lvs_list)
+
+	for lv_list in lvs_list:
+		lv_path = lv_list[0]
+		vg_name = lv_list[1]
+		lv_name = lv_list[2]
+		lvs.append(LogicalVolume(lvpath=lv_path, vgname=vg_name, lvname=lv_name))
+	
+	for lv in lvs:
+		print '%s %s %s' % (lv.get_lvpath(), lv.get_vgname(), lv.get_lvname())
 
 def detect_fss():
 	pass
@@ -218,20 +245,26 @@ def create_fss():
 			fs_type = 'xfs'
 			fs_args = '-b size=4096 -s size=4096'
 
-		cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, vg_name, lv_name)
-		os.system(cmd_mkfs)
-
-		cmd_mkdir = 'mkdir -p %s' % (purpose)
-		os.system(cmd_mkdir)
-
-		cmd_add_fstab = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (vg_name, lv_name, purpose, fs_type)
-		os.system(cmd_add_fstab)
-
-		cmd_mount = 'mount %s' % (purpose)
-		os.system(cmd_mount)
-
-		cmd_mkdir_sid = 'mkdir -p %s/%s' % (purpose, sid)
-		os.system(cmd_mkdir_sid)
+		for lv in lvs:
+				
+			lv_target = lv.get_lvname()
+			
+			if lv_target == lv_name:
+	
+				cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, lv.get_vgname(), lv.get_lvname())
+				os.system(cmd_mkfs)
+	
+				cmd_mkdir = 'mkdir -p %s' % (purpose)
+				os.system(cmd_mkdir)
+	
+				cmd_add_fstab = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (lv.get_vgname(), lv.get_lvname(), purpose, fs_type)
+				os.system(cmd_add_fstab)
+	
+				cmd_mount = 'mount %s' % (purpose)
+				os.system(cmd_mount)
+	
+				cmd_mkdir_sid = 'mkdir -p %s/%s' % (purpose, sid)
+				os.system(cmd_mkdir_sid)
 
 	cmd_df = 'df -h'
 	os.system(cmd_df)

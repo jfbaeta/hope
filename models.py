@@ -79,10 +79,20 @@ class LogicalVolume(object):
 	
 	"""class LogicalVolume"""
 	
-	def __init__(self, name, vg):
+	def __init__(self, lvpath='', vgname='', lvname=''):
 		super(LogicalVolume, self).__init__()
-		self.name = name
-		self.vg = vg
+		self.__lvpath = lvpath
+		self.__vgname = vgname
+		self.__lvname = lvname
+
+	def get_lvpath(self):
+		return self.__lvpath
+
+	def get_vgname(self):
+		return self.__vgname
+
+	def get_lvname(self):
+		return self.__lvname
 
 	def mklv():
 		pass
