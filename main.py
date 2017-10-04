@@ -44,30 +44,76 @@ def detect_luns():
 		lun_product = lun_list[3]
 		lun_size    = lun_list[4]
 		lun_name    = lun_list[5]
-		luns.append(StorageVolume(index=lun_index, devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
+		luns.append(StorageVolume(index=str(lun_index), devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
 		lun_index+=1
+	
+	index_header   = 'Index:'
+	devmap_header  = 'Devmap:'
+	wwid_header    = 'WWID:'
+	vendor_header  = 'Vendor:'
+	product_header = 'Product:'
+	size_header    = 'Size:'
+	name_header    = 'Name:'
 
-	print len(luns[0].get_all())
-
+	max_len_index   = len(index_header)
+	max_len_devmap  = len(devmap_header)
+	max_len_wwid    = len(wwid_header)
+	max_len_vendor  = len(vendor_header)
+	max_len_product = len(product_header)
+	max_len_size    = len(size_header)
+	max_len_name    = len(name_header)
+	
 	for lun in luns:
-		print '%s %s %s %s %s %s %s' % (lun.get_index(), lun.get_devmap(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size(), lun.get_name())
+		len_index = len(lun.get_index())
+		if len_index > max_len_index:
+			max_len_index = len_index
+		len_devmap = len(lun.get_devmap())
+		if len_devmap > max_len_devmap:
+			max_len_devmap = len_devmap
+		len_wwid = len(lun.get_wwid())
+		if len_wwid > max_len_wwid:
+			max_len_wwid = len_wwid
+		len_vendor = len(lun.get_vendor())
+		if len_vendor > max_len_vendor:
+			max_len_vendor = len_vendor
+		len_product = len(lun.get_product())
+		if len_product > max_len_product:
+			max_len_product = len_product
+		len_size = len(lun.get_size())
+		if len_size > max_len_size:
+			max_len_size = len_size
+		len_name = len(lun.get_name())
+		if len_name > max_len_name:
+			max_len_name = len_name
 
-#	lun0 = '| %s %s %s %s %s %s%s |' % (luns[0].get_name(), luns[0].get_wwid(), luns[0].get_devmap(), luns[0].get_vendor(), luns[0].get_product(), luns[0].get_size_n(), luns[0].get_size_m())
-#	lun1 = '| %s %s %s %s %s %s%s |' % (luns[1].get_name(), luns[1].get_wwid(), luns[1].get_devmap(), luns[1].get_vendor(), luns[1].get_product(), luns[1].get_size_n(), luns[1].get_size_m())
-#	lun2 = '| %s %s %s %s %s %s%s |' % (luns[2].get_name(), luns[2].get_wwid(), luns[2].get_devmap(), luns[2].get_vendor(), luns[2].get_product(), luns[2].get_size_n(), luns[2].get_size_m())
-#		
-#	list_length = []
-#	for i in luns:
-#		lun_length = (len(i.get_name() + i.get_wwid() + i.get_devmap() + i.get_vendor() + i.get_product() + i.get_size_n() + i.get_size_m()))
-#		list_length.append(lun_length)
-#
-#	header = '+' + (('-' * (max(list_length) + 7))) + '+'
-#	
-#	print header
-#	print lun0
-#	print lun1
-#	print lun2
-#	print header
+	total_len = max_len_index + \
+				max_len_devmap + \
+				max_len_wwid + \
+				max_len_vendor + \
+				max_len_product + \
+				max_len_size + \
+				max_len_name
+
+	print '+-' + '-' * (total_len + 18) + '-+'
+	print '| \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m |' % \
+		(index_header.ljust(max_len_index),\
+		devmap_header.ljust(max_len_devmap),\
+		wwid_header.ljust(max_len_wwid),\
+		vendor_header.ljust(max_len_vendor),\
+		product_header.ljust(max_len_product),\
+		size_header.ljust(max_len_size),\
+		name_header.ljust(max_len_name))
+	print '+-' + '-' * (total_len + 18) + '-+'
+	for lun in luns:
+		print '| %s | %s | %s | %s | %s | %s | %s |' % \
+			(lun.get_index().ljust(max_len_index),\
+			 lun.get_devmap().ljust(max_len_devmap),\
+			 lun.get_wwid().ljust(max_len_wwid),\
+			 lun.get_vendor().ljust(max_len_vendor),\
+			 lun.get_product().ljust(max_len_product),\
+			 lun.get_size().ljust(max_len_size),\
+			 lun.get_name().ljust(max_len_name))
+	print '+-' + '-' * (total_len + 18) + '-+'
 
 def detect_pvs():
 	pass
@@ -136,7 +182,7 @@ def create_multipath_conf():
 			
 			for lun in luns:
 				
-				if str(lun.get_index()) == pv:
+				if lun.get_index() == pv:
 					print 'LUN Purpose:   %s' % (purpose)
 					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_index(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
 					lun.change_name(pv_new_name)
@@ -173,7 +219,7 @@ def create_pvs():
 	
 		for lun in luns:
 
-			if str(lun.get_index()) == pv:
+			if lun.get_index() == pv:
 				cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.get_name())
 				os.system(cmd_pvcreate)
 
@@ -234,7 +280,6 @@ def create_fss():
 		print 'Type Logical Volume number for %s:' % (purpose),
 		lv_name = raw_input()
 
-		
 		if purpose == '/usr/sap':
 			fs_type = 'ext3'
 			fs_args = ''
