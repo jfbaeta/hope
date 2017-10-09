@@ -178,8 +178,3 @@ class Shared(object):
 	
 	def __init__(self, name):
 		super(Shared, self).__init__()
-
-
-
-
-

@@ -184,7 +184,7 @@ def create_multipath_conf():
 				
 				if lun.get_index() == pv:
 					print 'LUN Purpose:   %s' % (purpose)
-					print 'LUN Choosed:   %s %s %s %s %s%s' % (lun.get_index(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size_n(), lun.get_size_m())
+					print 'LUN Choosed:   %s %s %s %s %s' % (lun.get_index(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size())
 					lun.change_name(pv_new_name)
 					print 'New LUN Name:  %s' % (lun.get_name())
 					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), lun.get_name())
