@@ -11,7 +11,7 @@ purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
 def detect_luns():
 
 	global luns
-	luns = []
+	luns = Storage()
 
 	temp_luns_list = []
 
@@ -44,7 +44,7 @@ def detect_luns():
 		lun_product = lun_list[3]
 		lun_size    = lun_list[4]
 		lun_name    = lun_list[5]
-		luns.append(StorageVolume(index=str(lun_index), devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
+		luns.add(Lun(index=str(lun_index), devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
 		lun_index+=1
 	
 	index_header   = 'Index:'
@@ -55,6 +55,8 @@ def detect_luns():
 	size_header    = 'Size:'
 	name_header    = 'Name:'
 
+	Formatter().show(luns)
+
 	max_len_index   = len(index_header)
 	max_len_devmap  = len(devmap_header)
 	max_len_wwid    = len(wwid_header)
@@ -63,7 +65,7 @@ def detect_luns():
 	max_len_size    = len(size_header)
 	max_len_name    = len(name_header)
 	
-	for lun in luns:
+	for lun in luns.get():
 		len_index = len(lun.index)
 		if len_index > max_len_index:
 			max_len_index = len_index
@@ -104,7 +106,7 @@ def detect_luns():
 		size_header.ljust(max_len_size),\
 		name_header.ljust(max_len_name))
 	print '+-' + '-' * (total_len + 18) + '-+'
-	for lun in luns:
+	for lun in luns.get():
 		print '| %s | %s | %s | %s | %s | %s | %s |' % \
 			(lun.index.ljust(max_len_index),\
 			 lun.devmap.ljust(max_len_devmap),\
@@ -180,7 +182,7 @@ def create_multipath_conf():
 				pv_new_name = pv_prefix + pv_suffix
 			pv_count+=1
 			
-			for lun in luns:
+			for lun in luns.get():
 				
 				if lun.index == pv:
 					print 'LUN Purpose:   %s' % (purpose)
@@ -217,7 +219,7 @@ def create_pvs():
 	
 	for pv in pvs:
 	
-		for lun in luns:
+		for lun in luns.get():
 
 			if lun.index == pv:
 				cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)

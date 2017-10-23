@@ -1,11 +1,32 @@
 # -*- coding: UTF-8 -*-
 
-class StorageVolume(object):
+class Storage(object):
+
+	"""class Storage"""
+	def __init__(self):
+		super(Storage, self).__init__()
+		self.__luns = []
 	
-	"""class StorageVolume"""
+	def add(self, lun):
+		self.__luns.append(lun)
+
+	def get(self):
+		return self.__luns
+
+class Lun(object):
 	
+	"""class Lun"""
+	
+	index_header   = 'Index:'
+	devmap_header  = 'Devmap:'
+	wwid_header    = 'WWID:'
+	vendor_header  = 'Vendor:'
+	product_header = 'Product:'
+	size_header    = 'Size:'
+	name_header    = 'Name:'
+
 	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size='', name=''):
-		super(StorageVolume, self).__init__()
+		super(Lun, self).__init__()
 		self.__index   = index
 		self.__devmap  = devmap
 		self.__wwid    = wwid
@@ -183,3 +204,14 @@ class Shared(object):
 	
 	def __init__(self, name):
 		super(Shared, self).__init__()
+
+class Formatter(object):
+	
+	"""class Formatter"""
+	
+	def __init__(self):
+		super(Formatter, self).__init__()
+
+	def show(self, arg):
+		for i in arg.get():
+			print i.wwid
