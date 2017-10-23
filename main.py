@@ -64,25 +64,25 @@ def detect_luns():
 	max_len_name    = len(name_header)
 	
 	for lun in luns:
-		len_index = len(lun.get_index())
+		len_index = len(lun.index)
 		if len_index > max_len_index:
 			max_len_index = len_index
-		len_devmap = len(lun.get_devmap())
+		len_devmap = len(lun.devmap)
 		if len_devmap > max_len_devmap:
 			max_len_devmap = len_devmap
-		len_wwid = len(lun.get_wwid())
+		len_wwid = len(lun.wwid)
 		if len_wwid > max_len_wwid:
 			max_len_wwid = len_wwid
-		len_vendor = len(lun.get_vendor())
+		len_vendor = len(lun.vendor)
 		if len_vendor > max_len_vendor:
 			max_len_vendor = len_vendor
-		len_product = len(lun.get_product())
+		len_product = len(lun.product)
 		if len_product > max_len_product:
 			max_len_product = len_product
-		len_size = len(lun.get_size())
+		len_size = len(lun.size)
 		if len_size > max_len_size:
 			max_len_size = len_size
-		len_name = len(lun.get_name())
+		len_name = len(lun.name)
 		if len_name > max_len_name:
 			max_len_name = len_name
 
@@ -106,13 +106,13 @@ def detect_luns():
 	print '+-' + '-' * (total_len + 18) + '-+'
 	for lun in luns:
 		print '| %s | %s | %s | %s | %s | %s | %s |' % \
-			(lun.get_index().ljust(max_len_index),\
-			 lun.get_devmap().ljust(max_len_devmap),\
-			 lun.get_wwid().ljust(max_len_wwid),\
-			 lun.get_vendor().ljust(max_len_vendor),\
-			 lun.get_product().ljust(max_len_product),\
-			 lun.get_size().ljust(max_len_size),\
-			 lun.get_name().ljust(max_len_name))
+			(lun.index.ljust(max_len_index),\
+			 lun.devmap.ljust(max_len_devmap),\
+			 lun.wwid.ljust(max_len_wwid),\
+			 lun.vendor.ljust(max_len_vendor),\
+			 lun.product.ljust(max_len_product),\
+			 lun.size.ljust(max_len_size),\
+			 lun.name.ljust(max_len_name))
 	print '+-' + '-' * (total_len + 18) + '-+'
 
 def detect_pvs():
@@ -182,12 +182,12 @@ def create_multipath_conf():
 			
 			for lun in luns:
 				
-				if lun.get_index() == pv:
+				if lun.index == pv:
 					print 'LUN Purpose:   %s' % (purpose)
-					print 'LUN Choosed:   %s %s %s %s %s' % (lun.get_index(), lun.get_wwid(), lun.get_vendor(), lun.get_product(), lun.get_size())
-					lun.change_name(pv_new_name)
-					print 'New LUN Name:  %s' % (lun.get_name())
-					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.get_wwid(), lun.get_name())
+					print 'LUN Choosed:   %s %s %s %s %s' % (lun.index, lun.wwid, lun.vendor, lun.product, lun.size)
+					lun.name = pv_new_name
+					print 'New LUN Name:  %s' % (lun.name)
+					str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
 
 	tpl_multipath_file = open('templates/template_multipath.txt', 'r')
 	
@@ -219,8 +219,8 @@ def create_pvs():
 	
 		for lun in luns:
 
-			if lun.get_index() == pv:
-				cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.get_name())
+			if lun.index == pv:
+				cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)
 				os.system(cmd_pvcreate)
 
 def create_vgs():

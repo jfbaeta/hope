@@ -14,31 +14,36 @@ class StorageVolume(object):
 		self.__size    = size
 		self.__name    = name
 
-	def get_index(self):
+	@property
+	def index(self):
 		return self.__index
 
-	def get_devmap(self):
+	@property
+	def devmap(self):
 		return self.__devmap
 
-	def get_wwid(self):
+	@property
+	def wwid(self):
 		return self.__wwid
 
-	def get_vendor(self):
+	@property
+	def vendor(self):
 		return self.__vendor
 
-	def get_product(self):
+	@property
+	def product(self):
 		return self.__product
 
-	def get_size(self):
+	@property
+	def size(self):
 		return self.__size
 
-	def get_name(self):
+	@property
+	def name(self):
 		return self.__name
 
-	def get_all(self):
-		return self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__size, self.__name
-
-	def change_name(self, name):
+	@name.setter
+	def name(self, name):
 		self.__name = name
 
 class PhysicalVolume(object):
