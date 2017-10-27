@@ -13,60 +13,6 @@ class Storage(object):
 	def get(self):
 		return self.__luns
 
-class Lun(object):
-	
-	"""class Lun"""
-	
-	index_header   = 'Index:'
-	devmap_header  = 'Devmap:'
-	wwid_header    = 'WWID:'
-	vendor_header  = 'Vendor:'
-	product_header = 'Product:'
-	size_header    = 'Size:'
-	name_header    = 'Name:'
-
-	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size='', name=''):
-		super(Lun, self).__init__()
-		self.__index   = index
-		self.__devmap  = devmap
-		self.__wwid    = wwid
-		self.__vendor  = vendor
-		self.__product = product
-		self.__size    = size
-		self.__name    = name
-
-	@property
-	def index(self):
-		return self.__index
-
-	@property
-	def devmap(self):
-		return self.__devmap
-
-	@property
-	def wwid(self):
-		return self.__wwid
-
-	@property
-	def vendor(self):
-		return self.__vendor
-
-	@property
-	def product(self):
-		return self.__product
-
-	@property
-	def size(self):
-		return self.__size
-
-	@property
-	def name(self):
-		return self.__name
-
-	@name.setter
-	def name(self, name):
-		self.__name = name
-
 class PhysicalVolume(object):
 	
 	"""class PhysicalVolume"""
@@ -212,6 +158,45 @@ class Formatter(object):
 	def __init__(self):
 		super(Formatter, self).__init__()
 
-	def show(self, arg):
-		for i in arg.get():
-			print i.wwid
+	def show(self, resource):
+
+		first_resource         = resource.get()[0]
+		resources              = resource.get()
+		first_resource_headers = first_resource.list_headers
+		number_of_fields       = len(first_resource_headers)
+
+		list_of_lists = []
+		for j in resources:
+			list_of_lists.append(j.lengths)
+
+		list_of_lists_2 = zip(*list_of_lists)
+
+		max_lengths = []
+
+		for i in list_of_lists_2:
+			max_lengths.append(max(i))
+
+		total_len = sum(max_lengths)
+
+		left_corner     = '+-'
+		right_corner    = '-+'
+		left_column     = "| "
+		right_column    = "|"
+		horizontal_line = left_corner + '-' * (total_len + ((number_of_fields * 2) + 4)) + right_corner
+		normal_string   = '%s'
+		bold_string     = '\033[1m%s\033[0m'
+
+		print horizontal_line
+		loop_item_count = 0
+		for i in first_resource_headers:
+			print left_column + (bold_string) % (i.ljust(max_lengths[loop_item_count])),
+			loop_item_count+=1
+		print right_column
+		print horizontal_line
+		for i in resources:
+			loop_item_count = 0
+			for j in i.all:
+				print left_column + (normal_string) % (j.ljust(max_lengths[loop_item_count])),
+				loop_item_count+=1
+			print right_column
+		print horizontal_line

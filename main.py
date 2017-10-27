@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from models import *
+from Lun import Lun
 from string import Template
 import re
 import os
@@ -47,75 +48,7 @@ def detect_luns():
 		luns.add(Lun(index=str(lun_index), devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
 		lun_index+=1
 	
-	index_header   = 'Index:'
-	devmap_header  = 'Devmap:'
-	wwid_header    = 'WWID:'
-	vendor_header  = 'Vendor:'
-	product_header = 'Product:'
-	size_header    = 'Size:'
-	name_header    = 'Name:'
-
 	Formatter().show(luns)
-
-	max_len_index   = len(index_header)
-	max_len_devmap  = len(devmap_header)
-	max_len_wwid    = len(wwid_header)
-	max_len_vendor  = len(vendor_header)
-	max_len_product = len(product_header)
-	max_len_size    = len(size_header)
-	max_len_name    = len(name_header)
-	
-	for lun in luns.get():
-		len_index = len(lun.index)
-		if len_index > max_len_index:
-			max_len_index = len_index
-		len_devmap = len(lun.devmap)
-		if len_devmap > max_len_devmap:
-			max_len_devmap = len_devmap
-		len_wwid = len(lun.wwid)
-		if len_wwid > max_len_wwid:
-			max_len_wwid = len_wwid
-		len_vendor = len(lun.vendor)
-		if len_vendor > max_len_vendor:
-			max_len_vendor = len_vendor
-		len_product = len(lun.product)
-		if len_product > max_len_product:
-			max_len_product = len_product
-		len_size = len(lun.size)
-		if len_size > max_len_size:
-			max_len_size = len_size
-		len_name = len(lun.name)
-		if len_name > max_len_name:
-			max_len_name = len_name
-
-	total_len = max_len_index + \
-				max_len_devmap + \
-				max_len_wwid + \
-				max_len_vendor + \
-				max_len_product + \
-				max_len_size + \
-				max_len_name
-
-	print '+-' + '-' * (total_len + 18) + '-+'
-	print '| \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m | \033[1m%s\033[0m |' % \
-		(index_header.ljust(max_len_index),\
-		devmap_header.ljust(max_len_devmap),\
-		wwid_header.ljust(max_len_wwid),\
-		vendor_header.ljust(max_len_vendor),\
-		product_header.ljust(max_len_product),\
-		size_header.ljust(max_len_size),\
-		name_header.ljust(max_len_name))
-	print '+-' + '-' * (total_len + 18) + '-+'
-	for lun in luns.get():
-		print '| %s | %s | %s | %s | %s | %s | %s |' % \
-			(lun.index.ljust(max_len_index),\
-			 lun.devmap.ljust(max_len_devmap),\
-			 lun.wwid.ljust(max_len_wwid),\
-			 lun.vendor.ljust(max_len_vendor),\
-			 lun.product.ljust(max_len_product),\
-			 lun.size.ljust(max_len_size),\
-			 lun.name.ljust(max_len_name))
-	print '+-' + '-' * (total_len + 18) + '-+'
 
 def detect_pvs():
 	pass
