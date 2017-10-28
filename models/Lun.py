@@ -74,7 +74,15 @@ class Lun(object):
 	def all(self):
 		
 		list_all = []
-		list_all = [ self.__index, self.__devmap, self.__wwid, self.__vendor, self.__product, self.__size, self.__name ]
+
+		list_all.append(self.__index)
+		list_all.append(self.__devmap)
+		list_all.append(self.__wwid)
+		list_all.append(self.__vendor)
+		list_all.append(self.__product)
+		list_all.append(self.__size)
+		list_all.append(self.__name)
+
 		return list_all
 
 	@property
