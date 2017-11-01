@@ -2,7 +2,10 @@
 
 from models.models import *
 from models.Formatter import Formatter
+from models.LogicalVolume import LogicalVolume
 from models.Lun import Lun
+from models.PhysicalVolume import PhysicalVolume
+from models.VolumeGroup import VolumeGroup
 from string import Template
 import re
 import os
@@ -13,7 +16,7 @@ purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
 def detect_luns():
 
 	global luns
-	luns = Storage()
+	luns = Resource()
 
 	temp_luns_list = []
 
@@ -52,15 +55,69 @@ def detect_luns():
 	Formatter().show(luns)
 
 def detect_pvs():
-	pass
+
+	global pvs
+	pvs = Resource()
+
+	temp_pvs_list = []
+
+	reg_exps = [
+		re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
+		re.compile(r'(?::)(.*)(?::)'),\
+		re.compile(r'(?:.*:)(.*)'),\
+	]
+	
+	for reg_exp in reg_exps:
+		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
+		temp_pvs_list.append(reg_exp_result)
+
+	pvs_list = zip(*temp_pvs_list)
+
+	pv_index = 0
+	for pv_list in pvs_list:
+		pv_name = pv_list[0]
+		pv_size = pv_list[1]
+		pv_free = pv_list[2]
+		pvs.add(PhysicalVolume(index=str(pv_index), name=pv_name, size=pv_size, free=pv_free))
+		pv_index+=1
+
+	Formatter().show(pvs)
 
 def detect_vgs():
-	pass
+
+	global vgs
+	vgs = Resource()
+
+	temp_vgs_list = []
+
+	reg_exps = [
+		re.compile(r'(\w+)(?:.*)'),\
+		re.compile(r'(?::)(.*)(?::)'),\
+		re.compile(r'(?:.*:)(.*)'),\
+	]
+	
+	for reg_exp in reg_exps:
+		cmd_vgs_list = subprocess.Popen(['vgs -o vg_name,vg_size,vg_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		reg_exp_result = re.findall(reg_exp, cmd_vgs_list)
+		temp_vgs_list.append(reg_exp_result)
+
+	vgs_list = zip(*temp_vgs_list)
+
+	vg_index = 0
+	for vg_list in vgs_list:
+		vg_name = vg_list[0]
+		vg_size = vg_list[1]
+		vg_free = vg_list[2]
+		vgs.add(VolumeGroup(index=str(vg_index), name=vg_name, size=vg_size, free=vg_free))
+		vg_index+=1
+
+	Formatter().show(vgs)
 
 def detect_lvs():
 	
 	global lvs
-	lvs = []
+	lvs = Resource()
 
 	temp_lvs_list = []
 
@@ -82,11 +139,10 @@ def detect_lvs():
 		lv_path = lv_list[0]
 		vg_name = lv_list[1]
 		lv_name = lv_list[2]
-		lvs.append(LogicalVolume(index=lv_index, lvpath=lv_path, vgname=vg_name, lvname=lv_name))
+		lvs.add(LogicalVolume(index=str(lv_index), path=lv_path, vgname=vg_name, name=lv_name))
 		lv_index+=1
 	
-	for lv in lvs:
-		print '%s %s %s %s' % (lv.get_index(), lv.get_lvpath(), lv.get_vgname(), lv.get_lvname())
+	Formatter().show(lvs)
 
 def detect_fss():
 	pass

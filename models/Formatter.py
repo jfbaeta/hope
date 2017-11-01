@@ -11,6 +11,8 @@ class Formatter(object):
 		resources              = resource.get()
 		first_resource_headers = first_resource.list_headers
 		number_of_fields       = len(first_resource_headers)
+		number_of_columns      = number_of_fields - 1
+		line_adjustment        = number_of_columns - 2
 
 		temp_resource_list = []
 		for resource in resources:
@@ -29,7 +31,7 @@ class Formatter(object):
 		right_corner    = '-+'
 		left_column     = "| "
 		right_column    = "|"
-		horizontal_line = left_corner + '-' * (total_len + ((number_of_fields * 2) + 4)) + right_corner
+		horizontal_line = left_corner + '-' * (total_len + ((number_of_fields * 2) + line_adjustment)) + right_corner
 		normal_string   = '%s'
 		bold_string     = '\033[1m%s\033[0m'
 

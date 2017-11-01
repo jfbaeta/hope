@@ -1,66 +1,17 @@
 # -*- coding: UTF-8 -*-
 
-class Storage(object):
+class Resource(object):
 
-	"""class Storage"""
+	"""class Resource"""
 	def __init__(self):
-		super(Storage, self).__init__()
-		self.__luns = []
+		super(Resource, self).__init__()
+		self.__resources = []
 	
-	def add(self, lun):
-		self.__luns.append(lun)
+	def add(self, resource):
+		self.__resources.append(resource)
 
 	def get(self):
-		return self.__luns
-
-class PhysicalVolume(object):
-	
-	"""class PhysicalVolume"""
-	
-	def __init__(self, name):
-		super(PhysicalVolume, self).__init__()
-		self.__name = name
-
-	def mkpv():
-		pass
-
-class VolumeGroup(object):
-	
-	"""class VolumeGroup"""
-	
-	def __init__(self, name, pvs):
-		super(VolumeGroup, self).__init__()
-		self.name = name
-		self.pvs = pvs
-
-	def mkvg():
-		pass
-
-class LogicalVolume(object):
-	
-	"""class LogicalVolume"""
-	
-	def __init__(self, index='', lvpath='', vgname='', lvname=''):
-		super(LogicalVolume, self).__init__()
-		self.__index  = index
-		self.__lvpath = lvpath
-		self.__vgname = vgname
-		self.__lvname = lvname
-
-	def get_index(self):
-		return self.__index
-
-	def get_lvpath(self):
-		return self.__lvpath
-
-	def get_vgname(self):
-		return self.__vgname
-
-	def get_lvname(self):
-		return self.__lvname
-
-	def mklv():
-		pass
+		return self.__resources
 
 class FileSystem(object):
 	
