@@ -1,3 +1,10 @@
+# -*- coding: UTF-8 -*-
+
+from Formatter import Formatter
+import re
+import os
+import subprocess
+
 class PhysicalVolume(object):
 	
 	"""class PhysicalVolume"""
@@ -21,6 +28,7 @@ class PhysicalVolume(object):
 
 	def __init__(self, index='', name='', size='', free=''):
 		super(PhysicalVolume, self).__init__()
+		self.__list  = []
 		self.__index = index
 		self.__name  = name
 		self.__size  = size
@@ -74,6 +82,41 @@ class PhysicalVolume(object):
 		self.list_max_lenghts.append(self.max_free_header)
 
 		return self.list_max_lenghts
+
+	def add(self, resource):
+		self.__list.append(resource)
+
+	def get(self):
+		return self.__list
+
+	def detect(self):
+
+		temp_pvs_list = []
+
+		reg_exps = [
+			re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
+			re.compile(r'(?::)(.*)(?::)'),\
+			re.compile(r'(?:.*:)(.*)'),\
+		]
+		
+		for reg_exp in reg_exps:
+			cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+			reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
+			temp_pvs_list.append(reg_exp_result)
+
+		pvs_list = zip(*temp_pvs_list)
+
+		pv_index = 0
+		for pv_list in pvs_list:
+			pv_name = pv_list[0]
+			pv_size = pv_list[1]
+			pv_free = pv_list[2]
+			self.add(PhysicalVolume(index=str(pv_index), name=pv_name, size=pv_size, free=pv_free))
+			pv_index+=1
+
+	def show(self):
+		self.detect()
+		return Formatter().show(self)
 
 	def mkpv():
 		pass

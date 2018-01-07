@@ -1,18 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-class Resource(object):
-
-	"""class Resource"""
-	def __init__(self):
-		super(Resource, self).__init__()
-		self.__resources = []
-	
-	def add(self, resource):
-		self.__resources.append(resource)
-
-	def get(self):
-		return self.__resources
-
 class FileSystem(object):
 	
 	"""class FileSystem"""

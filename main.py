@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
 from models.models import *
@@ -12,137 +13,6 @@ import os
 import subprocess
 
 purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
-
-def detect_luns():
-
-	global luns
-	luns = Resource()
-
-	temp_luns_list = []
-
-	reg_exps = [
-		re.compile(r'dm-\d*'),\
-		re.compile(r'\w{33}'),\
-		re.compile(r'(\w+)(?:,)'),\
-		re.compile(r'(?:,)(\w+)'),\
-		re.compile(r'(?:size=)(\d+\.?\d*[MGT])(?:[\s])'),\
-		re.compile(r'(\w*)(?:\s\()'),\
-	]
-	
-	lun_amount = len(re.findall(reg_exps[0], subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).stdout.read()))
-	
-	for reg_exp in reg_exps:
-		cmd_multipath_list  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).communicate()[0]
-		reg_exp_result = re.findall(reg_exp, cmd_multipath_list)
-		if not reg_exp_result:
-			for item in range(lun_amount):
-				reg_exp_result.append('no alias assigned')
-		temp_luns_list.append(reg_exp_result)
-
-	luns_list = zip(*temp_luns_list)
-
-	lun_index = 0
-	for lun_list in luns_list:
-		lun_devmap  = lun_list[0]
-		lun_wwid    = lun_list[1]
-		lun_vendor  = lun_list[2]
-		lun_product = lun_list[3]
-		lun_size    = lun_list[4]
-		lun_name    = lun_list[5]
-		luns.add(Lun(index=str(lun_index), devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
-		lun_index+=1
-	
-	Formatter().show(luns)
-
-def detect_pvs():
-
-	global pvs
-	pvs = Resource()
-
-	temp_pvs_list = []
-
-	reg_exps = [
-		re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
-		re.compile(r'(?::)(.*)(?::)'),\
-		re.compile(r'(?:.*:)(.*)'),\
-	]
-	
-	for reg_exp in reg_exps:
-		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
-		reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
-		temp_pvs_list.append(reg_exp_result)
-
-	pvs_list = zip(*temp_pvs_list)
-
-	pv_index = 0
-	for pv_list in pvs_list:
-		pv_name = pv_list[0]
-		pv_size = pv_list[1]
-		pv_free = pv_list[2]
-		pvs.add(PhysicalVolume(index=str(pv_index), name=pv_name, size=pv_size, free=pv_free))
-		pv_index+=1
-
-	Formatter().show(pvs)
-
-def detect_vgs():
-
-	global vgs
-	vgs = Resource()
-
-	temp_vgs_list = []
-
-	reg_exps = [
-		re.compile(r'(\w+)(?:.*)'),\
-		re.compile(r'(?::)(.*)(?::)'),\
-		re.compile(r'(?:.*:)(.*)'),\
-	]
-	
-	for reg_exp in reg_exps:
-		cmd_vgs_list = subprocess.Popen(['vgs -o vg_name,vg_size,vg_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
-		reg_exp_result = re.findall(reg_exp, cmd_vgs_list)
-		temp_vgs_list.append(reg_exp_result)
-
-	vgs_list = zip(*temp_vgs_list)
-
-	vg_index = 0
-	for vg_list in vgs_list:
-		vg_name = vg_list[0]
-		vg_size = vg_list[1]
-		vg_free = vg_list[2]
-		vgs.add(VolumeGroup(index=str(vg_index), name=vg_name, size=vg_size, free=vg_free))
-		vg_index+=1
-
-	Formatter().show(vgs)
-
-def detect_lvs():
-	
-	global lvs
-	lvs = Resource()
-
-	temp_lvs_list = []
-
-	reg_exps = [
-		re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
-		re.compile(r'(?::)(.*)(?::)'),\
-		re.compile(r'(?:.*:)(.*)'),\
-	]
-	
-	for reg_exp in reg_exps:
-		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
-		reg_exp_result = re.findall(reg_exp, cmd_lvs_list)
-		temp_lvs_list.append(reg_exp_result)
-
-	lvs_list = zip(*temp_lvs_list)
-
-	lv_index = 0
-	for lv_list in lvs_list:
-		lv_path = lv_list[0]
-		vg_name = lv_list[1]
-		lv_name = lv_list[2]
-		lvs.add(LogicalVolume(index=str(lv_index), path=lv_path, vgname=vg_name, name=lv_name))
-		lv_index+=1
-	
-	Formatter().show(lvs)
 
 def detect_fss():
 	pass
@@ -311,33 +181,42 @@ def menu():
 	
 	while option:
 		print '(1) Detect Storage Volumes'
-		print '(2) Create /etc/multipath.conf File'
-		print '(3) Reload Multipath to Change Volume Names'
-		print '(4) Create Physical Volumes'
-		print '(5) Create Volume Groups'
-		print '(6) Create Logical Volumes'
-		print '(7) Create File Systems'
-		print '(8) Create Storage LUN'
+		print '(2) Detect Physical Volumes'
+		print '(3) Detect Volume Groups'
+		print '(4) Detect Logical Volumes'
+		print '(5) Create /etc/multipath.conf File'
+		print '(6) Reload Multipath to Change Volume Names'
+		print '(7) Create Physical Volumes'
+		print '(8) Create Volume Groups'
+		print '(9) Create Logical Volumes'
+		print '(10) Create File Systems'
+		print '(11) Create Storage LUN'
 		print '(666) RESET MULTPATHS!'
 		print '(Q,q,E,e) Quit/Exit'
 		print 'Choose your Option:',
 		option = raw_input()
 
 		if (option == '1'):
-			detect_luns()
+			Lun().show()
 		elif (option == '2'):
-			create_multipath_conf()
+			PhysicalVolume().show()
 		elif (option == '3'):
-			change_lun_names()
+			VolumeGroup().show()
 		elif (option == '4'):
-			create_pvs()
+			LogicalVolume().show()
 		elif (option == '5'):
-			create_vgs()
+			create_multipath_conf()
 		elif (option == '6'):
-			create_lvs()
+			change_lun_names()
 		elif (option == '7'):
-			create_fss()
+			create_pvs()
 		elif (option == '8'):
+			create_vgs()
+		elif (option == '9'):
+			create_lvs()
+		elif (option == '10'):
+			create_fss()
+		elif (option == '11'):
 			create_lun()
 		elif (option == '666'):
 			reset_multipaths()

@@ -22,8 +22,8 @@ class Formatter(object):
 
 		max_lengths = []
 
-		for i in resource_list:
-			max_lengths.append(max(i))
+		for item in resource_list:
+			max_lengths.append(max(item))
 
 		total_len = sum(max_lengths)
 

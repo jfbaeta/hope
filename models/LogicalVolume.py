@@ -1,3 +1,10 @@
+# -*- coding: UTF-8 -*-
+
+from Formatter import Formatter
+import re
+import os
+import subprocess
+
 class LogicalVolume(object):
 	
 	"""class LogicalVolume"""
@@ -21,6 +28,7 @@ class LogicalVolume(object):
 
 	def __init__(self, index='', path='', vgname='', name=''):
 		super(LogicalVolume, self).__init__()
+		self.__list  = []
 		self.__index  = index
 		self.__path   = path
 		self.__vgname = vgname
@@ -74,6 +82,41 @@ class LogicalVolume(object):
 		self.list_max_lenghts.append(self.max_name_header)
 
 		return self.list_max_lenghts
+
+	def add(self, resource):
+		self.__list.append(resource)
+
+	def get(self):
+		return self.__list
+
+	def detect(self):
+		
+		temp_lvs_list = []
+
+		reg_exps = [
+			re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
+			re.compile(r'(?::)(.*)(?::)'),\
+			re.compile(r'(?:.*:)(.*)'),\
+		]
+		
+		for reg_exp in reg_exps:
+			cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+			reg_exp_result = re.findall(reg_exp, cmd_lvs_list)
+			temp_lvs_list.append(reg_exp_result)
+
+		lvs_list = zip(*temp_lvs_list)
+
+		lv_index = 0
+		for lv_list in lvs_list:
+			lv_path = lv_list[0]
+			vg_name = lv_list[1]
+			lv_name = lv_list[2]
+			self.add(LogicalVolume(index=str(lv_index), path=lv_path, vgname=vg_name, name=lv_name))
+			lv_index+=1
+		
+	def show(self):
+		self.detect()
+		return Formatter().show(self)
 
 	def mklv():
 		pass
