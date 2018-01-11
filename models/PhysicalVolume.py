@@ -118,5 +118,17 @@ class PhysicalVolume(object):
 		self.detect()
 		return Formatter().show(self)
 
-	def mkpv():
-		pass
+	def create(self):
+
+		self.detect()
+
+		print 'Type LUN names that will be used as Physical Volumes:',
+		pvs = re.findall('\d+', raw_input())
+		
+		for pv in pvs:
+		
+			for lun in luns.get():
+
+				if lun.index == pv:
+					cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)
+					os.system(cmd_pvcreate)

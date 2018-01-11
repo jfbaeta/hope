@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from Formatter import Formatter
+from string import Template
 import re
 import os
 import subprocess
@@ -169,3 +170,59 @@ class Lun(object):
 		self.detect()
 		return Formatter().show(self)
 
+	def create(self):
+
+		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+
+		self.detect()
+
+		str_mulitpaths = ''
+
+		for purpose in purposes:
+			
+			print 'Type current LUN(s) to be used for %s:' % (purpose),
+			pvs = re.findall('\d+', raw_input())
+			pv_amount = len(pvs)
+
+			print 'Type Physical Volume name prefix for %s:' % (purpose),
+			pv_prefix = raw_input()
+
+			pv_count = 1
+			for pv in pvs:
+				
+				if purpose in ('rootvg', '/usr/sap') and pv_amount == 1:
+					pv_new_name = pv_prefix
+				else:
+					pv_suffix = str(pv_count)
+					pv_new_name = pv_prefix + pv_suffix
+				pv_count+=1
+				
+				for lun in self.get():
+					
+					if lun.index == pv:
+						print 'LUN Purpose:   %s' % (purpose)
+						print 'LUN Choosed:   %s %s %s %s %s' % (lun.index, lun.wwid, lun.vendor, lun.product, lun.size)
+						lun.name = pv_new_name
+						print 'New LUN Name:  %s' % (lun.name)
+						str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
+
+		tpl_multipath_file = open('templates/template_multipath.txt', 'r')
+		
+		tpl_multipath_str = Template(tpl_multipath_file.read())
+		
+		new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
+		
+		tpl_multipath_file.close()
+
+		with open('/etc/multipath.conf', 'w') as new_multipath_file:
+			new_multipath_file.write(new_multipath_str)
+			new_multipath_file.close()
+
+	def rename(self):
+	
+		os.system('multipath -r')
+
+	def remove(self):
+
+		os.remove('/etc/multipath.conf')
+		os.system('multipath -r')

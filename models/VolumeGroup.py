@@ -118,5 +118,22 @@ class VolumeGroup(object):
 		self.detect()
 		return Formatter().show(self)
 
-	def mkvg():
-		pass
+	def create(self):
+
+		self.detect()
+
+		for purpose in purposes[1:]:
+
+			print 'Type Volume Group name for %s:' % (purpose),
+			vg_name = raw_input()
+			
+			print 'Type Physical Volume names for %s:' % (vg_name),
+			pv_names = re.findall('\w{1,}', raw_input())
+			pv_names_str = ' /dev/mapper/'.join(pv_names)
+			
+			if purpose == '/usr/sap':
+				cmd_vgcreate = 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
+			else:
+				cmd_vgcreate = 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
+			
+			os.system(cmd_vgcreate)
