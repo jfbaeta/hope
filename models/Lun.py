@@ -130,10 +130,11 @@ class Lun(object):
 			re.compile(r'(\w*)(?:\s\()'),\
 		]
 		
-		lun_amount = len(re.findall(reg_exps[0], subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).stdout.read()))
+		cmd_multipath_list = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		
+		lun_amount = len(re.findall(reg_exps[0], cmd_multipath_list))
 		
 		for reg_exp in reg_exps:
-			cmd_multipath_list  = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 			reg_exp_result = re.findall(reg_exp, cmd_multipath_list)
 			if not reg_exp_result:
 				for item in range(lun_amount):

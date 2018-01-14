@@ -100,8 +100,9 @@ class PhysicalVolume(object):
 			re.compile(r'(?:.*:)(.*)'),\
 		]
 		
+		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+
 		for reg_exp in reg_exps:
-			cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
 			reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
 			temp_pvs_list.append(reg_exp_result)
 
