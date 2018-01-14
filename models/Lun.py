@@ -11,7 +11,6 @@ class Lun(object):
 	"""class Lun"""
 	
 	index_header   = 'Index:'
-	devmap_header  = 'Devmap:'
 	wwid_header    = 'WWID:'
 	vendor_header  = 'Vendor:'
 	product_header = 'Product:'
@@ -19,7 +18,6 @@ class Lun(object):
 	name_header    = 'Name:'
 
 	max_index_header   = len(index_header)
-	max_devmap_header  = len(devmap_header)
 	max_wwid_header    = len(wwid_header)
 	max_vendor_header  = len(vendor_header)
 	max_product_header = len(product_header)
@@ -29,18 +27,16 @@ class Lun(object):
 	list_headers = []
 	
 	list_headers.append(index_header)
-	list_headers.append(devmap_header)
 	list_headers.append(wwid_header)
 	list_headers.append(vendor_header)
 	list_headers.append(product_header)
 	list_headers.append(size_header)
 	list_headers.append(name_header)
 
-	def __init__(self, index='', devmap='', wwid='', vendor='', product='', size='', name=''):
+	def __init__(self, index='', wwid='', vendor='', product='', size='', name=''):
 		super(Lun, self).__init__()
 		self.__list    = []
 		self.__index   = index
-		self.__devmap  = devmap
 		self.__wwid    = wwid
 		self.__vendor  = vendor
 		self.__product = product
@@ -50,10 +46,6 @@ class Lun(object):
 	@property
 	def index(self):
 		return self.__index
-
-	@property
-	def devmap(self):
-		return self.__devmap
 
 	@property
 	def wwid(self):
@@ -85,7 +77,6 @@ class Lun(object):
 		list_all = []
 
 		list_all.append(self.__index)
-		list_all.append(self.__devmap)
 		list_all.append(self.__wwid)
 		list_all.append(self.__vendor)
 		list_all.append(self.__product)
@@ -101,8 +92,6 @@ class Lun(object):
 
 		if len(self.__index) > self.max_index_header:
 			self.max_index_header = len(self.__index)
-		if len(self.__devmap) > self.max_devmap_header:
-			self.max_devmap_header = len(self.__devmap)
 		if len(self.__wwid) > self.max_wwid_header:
 			self.max_wwid_header = len(self.__wwid)
 		if len(self.__vendor) > self.max_vendor_header:
@@ -115,7 +104,6 @@ class Lun(object):
 			self.max_name_header = len(self.__name)
 
 		self.list_max_lenghts.append(self.max_index_header)
-		self.list_max_lenghts.append(self.max_devmap_header)
 		self.list_max_lenghts.append(self.max_wwid_header)
 		self.list_max_lenghts.append(self.max_vendor_header)
 		self.list_max_lenghts.append(self.max_product_header)
@@ -135,7 +123,6 @@ class Lun(object):
 		temp_luns_list = []
 
 		reg_exps = [
-			re.compile(r'dm-\d*'),\
 			re.compile(r'\w{33}'),\
 			re.compile(r'(\w+)(?:,)'),\
 			re.compile(r'(?:,)(\w+)'),\
@@ -157,13 +144,12 @@ class Lun(object):
 
 		lun_index = 0
 		for lun_list in luns_list:
-			lun_devmap  = lun_list[0]
-			lun_wwid    = lun_list[1]
-			lun_vendor  = lun_list[2]
-			lun_product = lun_list[3]
-			lun_size    = lun_list[4]
-			lun_name    = lun_list[5]
-			self.add(Lun(index=str(lun_index), devmap=lun_devmap, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
+			lun_wwid    = lun_list[0]
+			lun_vendor  = lun_list[1]
+			lun_product = lun_list[2]
+			lun_size    = lun_list[3]
+			lun_name    = lun_list[4]
+			self.add(Lun(index=str(lun_index), wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
 			lun_index+=1
 	
 	def show(self):

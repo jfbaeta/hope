@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from Formatter import Formatter
+from Lun import Lun
 import re
 import os
 import subprocess
@@ -122,6 +123,9 @@ class PhysicalVolume(object):
 
 		self.detect()
 
+		luns = Lun()
+		luns.detect()
+
 		print 'Type LUN names that will be used as Physical Volumes:',
 		pvs = re.findall('\d+', raw_input())
 		
@@ -130,5 +134,7 @@ class PhysicalVolume(object):
 			for lun in luns.get():
 
 				if lun.index == pv:
+
 					cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)
 					os.system(cmd_pvcreate)
+
