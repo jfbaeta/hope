@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from Formatter import Formatter
+from PhysicalVolume import PhysicalVolume
 import re
 import os
 import subprocess
@@ -121,20 +122,32 @@ class VolumeGroup(object):
 
 	def create(self):
 
+		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+
 		self.detect()
+
+		pvs = PhysicalVolume()
+		pvs.detect()
 
 		for purpose in purposes[1:]:
 
 			print 'Type Volume Group name for %s:' % (purpose),
 			vg_name = raw_input()
-			
+
 			print 'Type Physical Volume names for %s:' % (vg_name),
-			pv_names = re.findall('\w{1,}', raw_input())
-			pv_names_str = ' /dev/mapper/'.join(pv_names)
-			
+			pv_indexes = re.findall('\d+', raw_input())
+			pv_names = ''
+
+			for pv_index in pv_indexes:
+
+				for pv in pvs.get():
+
+					if pv.index == pv_index:
+						pv_names += '%s ' % (pv.name)
+
 			if purpose == '/usr/sap':
-				cmd_vgcreate = 'vgcreate %s /dev/mapper/%s' % (vg_name, pv_names_str)
+				cmd_vgcreate = 'vgcreate %s %s' % (vg_name, pv_names)
 			else:
-				cmd_vgcreate = 'vgcreate -s 1M --dataalignment 1M %s /dev/mapper/%s' % (vg_name, pv_names_str)
-			
+				cmd_vgcreate = 'vgcreate -s 1M --dataalignment 1M %s %s' % (vg_name, pv_names)
+
 			os.system(cmd_vgcreate)

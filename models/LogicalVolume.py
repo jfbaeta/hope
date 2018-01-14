@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from Formatter import Formatter
+from VolumeGroup import VolumeGroup
 import re
 import os
 import subprocess
@@ -121,7 +122,12 @@ class LogicalVolume(object):
 
 	def create(self):
 
+		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+
 		self.detect()
+
+		vgs = VolumeGroup()
+		vgs.detect()
 
 		for purpose in purposes[1:]:
 
@@ -129,11 +135,16 @@ class LogicalVolume(object):
 			lv_name = raw_input()
 			
 			print 'Type Volume Group name for %s:' % (lv_name),
-			vg_name = raw_input()
+			vg_indexes = re.findall('\d+', raw_input())
+			vg_index = vg_indexes[0]
+
+			for vg in vgs.get():
+
+				if vg.index == vg_index:
 			
-			if purpose == '/hana/data':
-				cmd_lvcreate = 'lvcreate -i 4 -I 256K -l 100%%VG -n %s %s' % (lv_name, vg_name)
-			else:
-				cmd_lvcreate = 'lvcreate -l 100%%VG -n %s %s' % (lv_name, vg_name)
+					if purpose == '/hana/data':
+						cmd_lvcreate = 'lvcreate -i 4 -I 256K -l 100%%VG -n %s %s' % (lv_name, vg.name)
+					else:
+						cmd_lvcreate = 'lvcreate -l 100%%VG -n %s %s' % (lv_name, vg.name)
 			
-			os.system(cmd_lvcreate)
+					os.system(cmd_lvcreate)
