@@ -9,13 +9,14 @@ class Formatter(object):
 
 		first_resource         = resource.get()[0]
 		resources              = resource.get()
+		main_header            = resource.header
 		first_resource_headers = first_resource.list_headers
 		number_of_fields       = len(first_resource_headers)
 		number_of_columns      = number_of_fields - 1
 		line_adjustment        = number_of_columns - 2
 
 		danger  = ['/', 'root', 'swap', 'rootvg', 'system', '/dev/system/root', '/dev/system/swap', '/dev/mapper/system-root', '/dev/mapper/rootvg_part2']
-		warning = []
+		warning = ['/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
 		info    = ['no alias assigned']
 		success = []
 		
@@ -45,12 +46,20 @@ class Formatter(object):
 		success_string  = '\033[32m%s\033[0m'
 
 		print horizontal_line
+		
+		print left_column + (bold_string) % (main_header.ljust(len(horizontal_line) - 4)),
+		print right_column
+		
+		print horizontal_line
+		
 		loop_item_count = 0
 		for header in first_resource_headers:
 			print left_column + (bold_string) % (header.ljust(max_lengths[loop_item_count])),
 			loop_item_count+=1
 		print right_column
+		
 		print horizontal_line
+		
 		for resource_line in resources:
 			loop_item_count = 0
 			for resource_column in resource_line.all:
@@ -67,4 +76,5 @@ class Formatter(object):
 				print left_column + (content) % (resource_column.ljust(max_lengths[loop_item_count])),
 				loop_item_count+=1
 			print right_column
+		
 		print horizontal_line

@@ -84,6 +84,10 @@ class PhysicalVolume(object):
 
 		return self.list_max_lenghts
 
+	@property
+	def header(self):
+		return "Physical Volumes:"
+
 	def add(self, resource):
 		self.__list.append(resource)
 
@@ -127,7 +131,7 @@ class PhysicalVolume(object):
 		luns = Lun()
 		luns.detect()
 
-		print 'Type LUN names that will be used as Physical Volumes:',
+		print 'Type Lun \033[1mINDEXES\033[0m that will be used as Physical Volumes:',
 		pvs = re.findall('\d+', raw_input())
 		
 		for pv in pvs:
@@ -138,4 +142,3 @@ class PhysicalVolume(object):
 
 					cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)
 					os.system(cmd_pvcreate)
-

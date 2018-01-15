@@ -2,6 +2,11 @@
 
 from Formatter import Formatter
 from VolumeGroup import VolumeGroup
+from Root import Root
+from UsrSap import UsrSap
+from Data import Data
+from Log import Log
+from Shared import Shared
 import re
 import os
 import subprocess
@@ -84,6 +89,10 @@ class LogicalVolume(object):
 
 		return self.list_max_lenghts
 
+	@property
+	def header(self):
+		return "Logical Volumes:"
+
 	def add(self, resource):
 		self.__list.append(resource)
 
@@ -122,29 +131,31 @@ class LogicalVolume(object):
 
 	def create(self):
 
-		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+		rootvg = Root()
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [usrsap, data, log, shared]
 
 		self.detect()
 
 		vgs = VolumeGroup()
 		vgs.detect()
 
-		for purpose in purposes[1:]:
+		for purpose in purposes:		
 
-			print 'Type Logical Volume name for %s:' % (purpose),
+			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
 			lv_name = raw_input()
 			
-			print 'Type Volume Group name for %s:' % (lv_name),
+			print 'Type Volume Group \033[1mINDEX\033[0m for %s:' % (lv_name),
 			vg_indexes = re.findall('\d+', raw_input())
 			vg_index = vg_indexes[0]
 
 			for vg in vgs.get():
 
 				if vg.index == vg_index:
-			
-					if purpose == '/hana/data':
-						cmd_lvcreate = 'lvcreate -i 4 -I 256K -l 100%%VG -n %s %s' % (lv_name, vg.name)
-					else:
-						cmd_lvcreate = 'lvcreate -l 100%%VG -n %s %s' % (lv_name, vg.name)
-			
+
+					cmd_lvcreate = 'lvcreate %s -n %s %s' % (purpose.lv_args, lv_name, vg.name)
 					os.system(cmd_lvcreate)

@@ -112,6 +112,10 @@ class Lun(object):
 
 		return self.list_max_lenghts
 
+	@property
+	def header(self):
+		return "SAN Storage Volumes:"
+
 	def add(self, resource):
 		self.__list.append(resource)
 
@@ -168,11 +172,11 @@ class Lun(object):
 
 		for purpose in purposes:
 			
-			print 'Type current LUN(s) to be used for %s:' % (purpose),
+			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s:' % (purpose),
 			pvs = re.findall('\d+', raw_input())
 			pv_amount = len(pvs)
 
-			print 'Type Physical Volume name prefix for %s:' % (purpose),
+			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (purpose),
 			pv_prefix = raw_input()
 
 			pv_count = 1

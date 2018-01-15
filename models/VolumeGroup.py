@@ -2,6 +2,11 @@
 
 from Formatter import Formatter
 from PhysicalVolume import PhysicalVolume
+from Root import Root
+from UsrSap import UsrSap
+from Data import Data
+from Log import Log
+from Shared import Shared
 import re
 import os
 import subprocess
@@ -84,6 +89,10 @@ class VolumeGroup(object):
 
 		return self.list_max_lenghts
 
+	@property
+	def header(self):
+		return "Volume Groups:"
+
 	def add(self, resource):
 		self.__list.append(resource)
 
@@ -122,21 +131,27 @@ class VolumeGroup(object):
 
 	def create(self):
 
-		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+		rootvg = Root()
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [usrsap, data, log, shared]
 
 		self.detect()
 
 		pvs = PhysicalVolume()
 		pvs.detect()
 
-		for purpose in purposes[1:]:
+		for purpose in purposes:
 
-			print 'Type Volume Group name for %s:' % (purpose),
+			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
 			vg_name = raw_input()
 
-			print 'Type Physical Volume names for %s:' % (vg_name),
+			print 'Type Physical Volume \033[1mINDEXES\033[0m for %s:' % (vg_name),
 			pv_indexes = re.findall('\d+', raw_input())
-			pv_names = ''
+			pv_names = ''		
 
 			for pv_index in pv_indexes:
 
@@ -145,9 +160,5 @@ class VolumeGroup(object):
 					if pv.index == pv_index:
 						pv_names += '%s ' % (pv.name)
 
-			if purpose == '/usr/sap':
-				cmd_vgcreate = 'vgcreate %s %s' % (vg_name, pv_names)
-			else:
-				cmd_vgcreate = 'vgcreate -s 1M --dataalignment 1M %s %s' % (vg_name, pv_names)
-
+			cmd_vgcreate = 'vgcreate %s %s %s' % (purpose.vg_args, vg_name, pv_names)
 			os.system(cmd_vgcreate)

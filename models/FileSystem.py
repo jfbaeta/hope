@@ -2,6 +2,11 @@
 
 from Formatter import Formatter
 from LogicalVolume import LogicalVolume
+from Root import Root
+from UsrSap import UsrSap
+from Data import Data
+from Log import Log
+from Shared import Shared
 import re
 import os
 import subprocess
@@ -84,6 +89,10 @@ class FileSystem(object):
 
 		return self.list_max_lenghts
 
+	@property
+	def header(self):
+		return "File Systems:"
+
 	def add(self, resource):
 		self.__list.append(resource)
 
@@ -122,45 +131,44 @@ class FileSystem(object):
 
 	def create(self):
 
-		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+		rootvg = Root()
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [usrsap, data, log, shared]
 
 		self.detect()
 
 		lvs = LogicalVolume()
 		lvs.detect()
 
-		print 'Type the SID for this system:',
+		print 'Type the \033[1mSID\033[0m for this system:',
 		sid = raw_input()
 
-		for purpose in purposes[1:]:
+		for purpose in purposes:
 
-			print 'Type Logical Volume number for %s:' % (purpose),
+			print 'Type Logical Volume \033[1mINDEX\033[0m for %s:' % (purpose.fs_mount_point),
 			lv_index = raw_input()
-
-			if purpose == '/usr/sap':
-				fs_type = 'ext3'
-				fs_args = ''
-			else:
-				fs_type = 'xfs'
-				fs_args = '-b size=4096 -s size=4096'
 
 			for lv in lvs.get():
 					
 				if lv.index == lv_index:
 					
-					cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (fs_type, fs_args, lv.vgname, lv.name)
+					cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, lv.vgname, lv.name)
 					os.system(cmd_mkfs)
 		
-					cmd_mkdir = 'mkdir -p %s' % (purpose)
+					cmd_mkdir = 'mkdir -p %s' % (purpose.fs_mount_point)
 					os.system(cmd_mkdir)
 		
-					cmd_add_fstab = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (lv.vgname, lv.name, purpose, fs_type)
+					cmd_add_fstab = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (lv.vgname, lv.name, purpose.fs_mount_point, purpose.fs_type)
 					os.system(cmd_add_fstab)
 		
-					cmd_mount = 'mount %s' % (purpose)
+					cmd_mount = 'mount %s' % (purpose.fs_mount_point)
 					os.system(cmd_mount)
 		
-					cmd_mkdir_sid = 'mkdir -p %s/%s' % (purpose, sid)
+					cmd_mkdir_sid = 'mkdir -p %s/%s' % (purpose.fs_mount_point, sid)
 					os.system(cmd_mkdir_sid)
 
 		cmd_df = 'df -h'
