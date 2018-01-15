@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from models.models import *
 from models.Formatter import Formatter
 from models.Lun import Lun
 from models.PhysicalVolume import PhysicalVolume
