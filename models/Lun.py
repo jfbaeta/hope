@@ -160,6 +160,7 @@ class Lun(object):
 	def create(self):
 
 		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+		new_luns = Lun()
 
 		self.detect()
 
@@ -187,12 +188,12 @@ class Lun(object):
 				for lun in self.get():
 					
 					if lun.index == pv:
-						print 'LUN Purpose:   %s' % (purpose)
-						print 'LUN Choosed:   %s %s %s %s %s' % (lun.index, lun.wwid, lun.vendor, lun.product, lun.size)
 						lun.name = pv_new_name
-						print 'New LUN Name:  %s' % (lun.name)
+						new_luns.add(Lun(index=str(lun.index), wwid=lun.wwid, vendor=lun.vendor, product=lun.product, size=lun.size, name=lun.name))
 						str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
 
+			Formatter().show(new_luns)
+			
 		tpl_multipath_file = open('templates/template_multipath.txt', 'r')
 		
 		tpl_multipath_str = Template(tpl_multipath_file.read())
