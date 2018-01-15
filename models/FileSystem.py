@@ -97,7 +97,7 @@ class FileSystem(object):
 		reg_exps = [
 			re.compile(r'\/dev\/mapper\/[a-zA-Z0-9-_]*'),\
 			re.compile(r'(?:\/dev\/mapper\/[a-zA-Z0-9-_]*\s*)(\d*.\d*[MGT])'),\
-			re.compile(r'(?:%)(.*)')
+			re.compile(r'(?:%\s)(.*)')
 			]
 
 		cmd_fss_list = subprocess.Popen(['df -h -x tmpfs | grep -v Filesystem'], stdout=subprocess.PIPE, shell=True).communicate()[0]

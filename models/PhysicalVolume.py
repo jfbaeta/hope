@@ -97,7 +97,7 @@ class PhysicalVolume(object):
 		reg_exps = [
 			re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
 			re.compile(r'(?::)(.*)(?::)'),\
-			re.compile(r'(?:.*:)(.*)'),\
+			re.compile(r'(?:.*:)(.*)(?:\s)'),\
 		]
 		
 		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]

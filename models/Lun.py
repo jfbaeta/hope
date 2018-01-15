@@ -11,41 +11,45 @@ class Lun(object):
 	"""class Lun"""
 	
 	index_header   = 'Index:'
+	size_header    = 'Size:'
 	wwid_header    = 'WWID:'
 	vendor_header  = 'Vendor:'
 	product_header = 'Product:'
-	size_header    = 'Size:'
 	name_header    = 'Name:'
 
 	max_index_header   = len(index_header)
+	max_size_header    = len(size_header)
 	max_wwid_header    = len(wwid_header)
 	max_vendor_header  = len(vendor_header)
 	max_product_header = len(product_header)
-	max_size_header    = len(size_header)
 	max_name_header    = len(name_header)
 
 	list_headers = []
 	
 	list_headers.append(index_header)
+	list_headers.append(size_header)
 	list_headers.append(wwid_header)
 	list_headers.append(vendor_header)
 	list_headers.append(product_header)
-	list_headers.append(size_header)
 	list_headers.append(name_header)
 
-	def __init__(self, index='', wwid='', vendor='', product='', size='', name=''):
+	def __init__(self, index='', size='', wwid='', vendor='', product='', name=''):
 		super(Lun, self).__init__()
 		self.__list    = []
 		self.__index   = index
+		self.__size    = size
 		self.__wwid    = wwid
 		self.__vendor  = vendor
 		self.__product = product
-		self.__size    = size
 		self.__name    = name
 
 	@property
 	def index(self):
 		return self.__index
+
+	@property
+	def size(self):
+		return self.__size
 
 	@property
 	def wwid(self):
@@ -58,10 +62,6 @@ class Lun(object):
 	@property
 	def product(self):
 		return self.__product
-
-	@property
-	def size(self):
-		return self.__size
 
 	@property
 	def name(self):
@@ -77,10 +77,10 @@ class Lun(object):
 		list_all = []
 
 		list_all.append(self.__index)
+		list_all.append(self.__size)
 		list_all.append(self.__wwid)
 		list_all.append(self.__vendor)
 		list_all.append(self.__product)
-		list_all.append(self.__size)
 		list_all.append(self.__name)
 
 		return list_all
@@ -92,22 +92,22 @@ class Lun(object):
 
 		if len(self.__index) > self.max_index_header:
 			self.max_index_header = len(self.__index)
+		if len(self.__size) > self.max_size_header:
+			self.max_size_header = len(self.__size)
 		if len(self.__wwid) > self.max_wwid_header:
 			self.max_wwid_header = len(self.__wwid)
 		if len(self.__vendor) > self.max_vendor_header:
 			self.max_vendor_header = len(self.__vendor)
 		if len(self.__product) > self.max_product_header:
 			self.max_product_header = len(self.__product)
-		if len(self.__size) > self.max_size_header:
-			self.max_size_header = len(self.__size)
 		if len(self.__name) > self.max_name_header:
 			self.max_name_header = len(self.__name)
 
 		self.list_max_lenghts.append(self.max_index_header)
+		self.list_max_lenghts.append(self.max_size_header)
 		self.list_max_lenghts.append(self.max_wwid_header)
 		self.list_max_lenghts.append(self.max_vendor_header)
 		self.list_max_lenghts.append(self.max_product_header)
-		self.list_max_lenghts.append(self.max_size_header)
 		self.list_max_lenghts.append(self.max_name_header)
 
 		return self.list_max_lenghts
@@ -123,10 +123,10 @@ class Lun(object):
 		temp_luns_list = []
 
 		reg_exps = [
+			re.compile(r'(?:size=)(\d+\.?\d*[MGT])(?:[\s])'),\
 			re.compile(r'\w{33}'),\
 			re.compile(r'(\w+)(?:,)'),\
 			re.compile(r'(?:,)(\w+)'),\
-			re.compile(r'(?:size=)(\d+\.?\d*[MGT])(?:[\s])'),\
 			re.compile(r'(\w*)(?:\s\()'),\
 		]
 		
@@ -145,12 +145,12 @@ class Lun(object):
 
 		lun_index = 0
 		for lun_list in luns_list:
-			lun_wwid    = lun_list[0]
-			lun_vendor  = lun_list[1]
-			lun_product = lun_list[2]
-			lun_size    = lun_list[3]
+			lun_size    = lun_list[0]
+			lun_wwid    = lun_list[1]
+			lun_vendor  = lun_list[2]
+			lun_product = lun_list[3]
 			lun_name    = lun_list[4]
-			self.add(Lun(index=str(lun_index), wwid=lun_wwid, vendor=lun_vendor, product=lun_product, size=lun_size, name=lun_name))
+			self.add(Lun(index=str(lun_index), size=lun_size, wwid=lun_wwid, vendor=lun_vendor, product=lun_product, name=lun_name))
 			lun_index+=1
 	
 	def show(self):
@@ -189,7 +189,7 @@ class Lun(object):
 					
 					if lun.index == pv:
 						lun.name = pv_new_name
-						new_luns.add(Lun(index=str(lun.index), wwid=lun.wwid, vendor=lun.vendor, product=lun.product, size=lun.size, name=lun.name))
+						new_luns.add(Lun(index=str(lun.index), size=lun.size, wwid=lun.wwid, vendor=lun.vendor, product=lun.product, name=lun.name))
 						str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
 
 			Formatter().show(new_luns)

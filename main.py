@@ -32,7 +32,7 @@ def menu():
 		print '(10) Create Logical Volumes'
 		print '(11) Create File Systems'
 		print '(666) RESET MULTPATHS!'
-		print '(Q,q,E,e) Quit/Exit'
+		print '(Q,q,E,e,X,x) Quit/Exit'
 		print 'Choose your Option:',
 		option = raw_input()
 
@@ -60,7 +60,7 @@ def menu():
 			FileSystem().create()
 		elif (option == '666'):
 			Lun().remove()
-		elif (option in [ 'q' , 'Q' , 'e' , 'E' ]):
+		elif (option in [ 'q' , 'Q' , 'e' , 'E', 'X', 'x' ]):
 			break
 		else:
 			print 'Invalid Option!'
