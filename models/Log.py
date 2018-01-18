@@ -3,6 +3,8 @@
 class Log(object):
 	
 	"""class Log"""
+
+	name                    = '/hana/log'
 	
 	vg_physical_extent_size = '-s 1M'
 	vg_data_alignment       = '--dataalignment 1M'

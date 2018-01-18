@@ -163,7 +163,14 @@ class Lun(object):
 
 	def create(self):
 
-		purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+		rootvg = Root()
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [rootvg, usrsap, data, log, shared]
+
 		new_luns = Lun()
 
 		self.detect()
@@ -172,11 +179,11 @@ class Lun(object):
 
 		for purpose in purposes:
 			
-			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s:' % (purpose),
+			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s:' % (purpose.name),
 			pvs = re.findall('\d+', raw_input())
 			pv_amount = len(pvs)
 
-			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (purpose),
+			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (purpose.name),
 			pv_prefix = raw_input()
 
 			pv_count = 1

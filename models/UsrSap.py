@@ -4,6 +4,8 @@ class UsrSap(object):
 	
 	"""class UsrSap"""
 
+	name           = '/usr/sap'
+	
 	vg_args        = ''
 	
 	lv_size        = '-l 100%VG'	

@@ -144,9 +144,9 @@ class LogicalVolume(object):
 		vgs = VolumeGroup()
 		vgs.detect()
 
-		for purpose in purposes:		
+		for purpose in purposes:
 
-			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
+			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.name),
 			lv_name = raw_input()
 			
 			print 'Type Volume Group \033[1mINDEX\033[0m for %s:' % (lv_name),

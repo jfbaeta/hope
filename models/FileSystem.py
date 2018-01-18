@@ -149,7 +149,7 @@ class FileSystem(object):
 
 		for purpose in purposes:
 
-			print 'Type Logical Volume \033[1mINDEX\033[0m for %s:' % (purpose.fs_mount_point),
+			print 'Type Logical Volume \033[1mINDEX\033[0m for %s:' % (purpose.name),
 			lv_index = raw_input()
 
 			for lv in lvs.get():

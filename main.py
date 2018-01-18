@@ -9,10 +9,30 @@ from models.LogicalVolume import LogicalVolume
 from models.FileSystem import FileSystem
 from string import Template
 import re
+import optparse
 import os
 import subprocess
 
-purposes = ['rootvg', '/usr/sap', '/hana/data', '/hana/log', '/hana/shared']
+parser = optparse.OptionParser()
+
+parser.add_option('-c', '--create',         '--cr',             help='Creates')
+parser.add_option('-l', '--list',           '--ls',             help='List')
+parser.add_option('-r', '--remove',         '--rm',             help='Remove')
+parser.add_option('-v', '--version',                            help='Version')
+#parser.add_option('-h', '--help',                               help='Help')
+parser.add_option('-m', '--menu',                               help='Menu')
+parser.add_option('-S', '--sanvolume',      '--svol',   '--sv', help='SAN Volume')
+parser.add_option('-P', '--physicalvolume', '--pvol',   '--pv', help='Physical Volume')
+parser.add_option('-V', '--volumegroup',    '--volgrp', '--vg', help='Volume Group')
+parser.add_option('-L', '--logicalvolume',  '--lvol',   '--lv', help='Logical Volume')
+parser.add_option('-F', '--filesystem',     '--fs',             help='File System')
+parser.add_option('-U', '--usrsap',         '--sap',            help='/usr/sap')
+parser.add_option('-D', '--hanadata',       '--data',           help='/hana/data')
+parser.add_option('-G', '--hanalog',        '--log',            help='/hana/log')
+parser.add_option('-H', '--hanashared',     '--shared',         help='/hana/shared')
+parser.add_option('-a', '--all',                                help='All')
+
+(opts, args) = parser.parse_args()
 
 def menu():
 

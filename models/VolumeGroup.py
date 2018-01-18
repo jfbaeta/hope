@@ -146,7 +146,7 @@ class VolumeGroup(object):
 
 		for purpose in purposes:
 
-			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
+			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.name),
 			vg_name = raw_input()
 
 			print 'Type Physical Volume \033[1mINDEXES\033[0m for %s:' % (vg_name),
