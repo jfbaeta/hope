@@ -1,0 +1,157 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+from models.Formatter import Formatter
+from models.Lun import Lun
+from models.PhysicalVolume import PhysicalVolume
+from models.VolumeGroup import VolumeGroup
+from models.LogicalVolume import LogicalVolume
+from models.FileSystem import FileSystem
+from string import Template
+import re
+import optparse
+import os
+import subprocess
+
+lu = Lun()
+pv = PhysicalVolume()
+vg = VolumeGroup()
+lv = LogicalVolume()
+fs = FileSystem()
+
+def show(resource):
+	resource.show()
+
+def create(resource):
+	resource.create()
+
+def about():
+	print "HOPE - HANA on POWER Enhanced"
+	print "Version:      0"
+	print "Modification: 8"
+	print "Fix:          17"
+
+def menu():
+
+	option = True
+	
+	while option:
+		print '(1) Detect Storage Volumes'
+		print '(2) Detect Physical Volumes'
+		print '(3) Detect Volume Groups'
+		print '(4) Detect Logical Volumes'
+		print '(5) Detect File Systems'
+		print '(6) Create /etc/multipath.conf File'
+		print '(7) Reload Multipath to Change Volume Names'
+		print '(8) Create Physical Volumes'
+		print '(9) Create Volume Groups'
+		print '(10) Create Logical Volumes'
+		print '(11) Create File Systems'
+		print '(666) RESET MULTPATHS!'
+		print '(Q,q,E,e,X,x) Quit/Exit'
+		print 'Choose your Option:',
+		option = raw_input()
+
+		if (option == '1'):
+			lu = Lun()
+			show(lu)
+		elif (option == '2'):
+			pv = PhysicalVolume()
+			show(pv)
+		elif (option == '3'):
+			vg = VolumeGroup()
+			show(vg)
+		elif (option == '4'):
+			lv = LogicalVolume()
+			show(lv)
+		elif (option == '5'):
+			fs = FileSystem()
+			show(fs)
+		elif (option == '6'):
+			lu = Lun()
+			create(lu)
+		elif (option == '7'):
+			lu = Lun()
+			lu.rename()
+		elif (option == '8'):
+			pv = PhysicalVolume()
+			create(pv)
+		elif (option == '9'):
+			vg = VolumeGroup()
+			create(vg)
+		elif (option == '10'):
+			lv = LogicalVolume()
+			create(lv)
+		elif (option == '11'):
+			fs = FileSystem()
+			create(fs)
+		elif (option == '666'):
+			lu = Lun()
+			lu.remove()
+		elif (option in [ 'q' , 'Q' , 'e' , 'E', 'X', 'x' ]):
+			break
+		else:
+			print 'Invalid Option!'
+
+parser = optparse.OptionParser()
+
+parser.add_option('-c', '--create',         '--cr',     action='store_true', dest='create',         help='Creates Resources')
+parser.add_option('-l', '--list',           '--ls',     action='store_true', dest='list',           help='List Resources' )
+parser.add_option('-r', '--remove',         '--rm',     action='store_true', dest='remove',         help='Remove Resources' )
+parser.add_option('-v', '--version',                    action='store_true', dest='version',        help='Display Hope Version')
+parser.add_option('-m', '--menu',                       action='store_true', dest='menu',           help='Shows an Interactive Menu' )
+parser.add_option('-S', '--sanvolume',      '--sv',     action='store_true', dest='sanvolume',      help='Creates an /etc/multipath.conf')
+parser.add_option('-P', '--physicalvolume', '--pv',     action='store_true', dest='physicalvolume', help='Creates Physical Volumes')
+parser.add_option('-V', '--volumegroup',    '--vg',     action='store_true', dest='volumegroup',    help='Creates Volume Groups')
+parser.add_option('-L', '--logicalvolume',  '--lv',     action='store_true', dest='logicalvolume',  help='Creates Logical Volumes')
+parser.add_option('-F', '--filesystem',     '--fs',     action='store_true', dest='filesystem',     help='Creates File Systems')
+parser.add_option('-U', '--usrsap',         '--sap',    action='store_true', dest='usrsap',         help='/usr/sap')
+parser.add_option('-D', '--hanadata',       '--data',   action='store_true', dest='hanadata',       help='/hana/data')
+parser.add_option('-G', '--hanalog',        '--log',    action='store_true', dest='hanalog',        help='/hana/log')
+parser.add_option('-H', '--hanashared',     '--shared', action='store_true', dest='hanashared',     help='/hana/shared')
+parser.add_option('-a', '--all',                        action='store_true', dest='all',            help='Creates/List/Remove All Resources')
+
+(opts, args) = parser.parse_args()
+
+if opts.version:
+	about()
+
+if opts.menu:
+	menu()
+
+if opts.list and opts.sanvolume:
+	show(lu)
+
+if opts.list and opts.physicalvolume:
+	show(pv)
+
+if opts.list and opts.volumegroup:
+	show(vg)
+
+if opts.list and opts.logicalvolume:
+	show(lv)
+
+if opts.list and opts.filesystem:
+	show(fs)
+
+if opts.list and opts.all:
+	show(lu)
+	show(pv)
+	show(vg)
+	show(lv)
+	show(fs)
+
+if opts.create and opts.sanvolume:
+	create(lu)
+
+if opts.create and opts.physicalvolume:
+	create(pv)
+
+if opts.create and opts.volumegroup:
+	create(vg)
+
+if opts.create and opts.logicalvolume:
+	create(lv)
+
+if opts.create and opts.filesystem:
+	create(fs)
