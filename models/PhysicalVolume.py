@@ -150,4 +150,18 @@ class PhysicalVolume(object):
 					os.system(cmd_pvcreate)
 
 	def remove(self):
-		pass
+		
+		self.detect()
+
+		print 'Type Physical Volume \033[1mINDEXES\033[0m to remove:',
+		pv_indexes = re.findall('\d+', raw_input())
+
+		for pv_index in pv_indexes:
+
+			for pv in self.get():
+
+				if pv.index == pv_index:
+
+					cmd_pvremove = 'pvremove -f %s' % (pv.name)
+					os.system(cmd_pvremove)
+

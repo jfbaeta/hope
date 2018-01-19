@@ -162,4 +162,20 @@ class LogicalVolume(object):
 					os.system(cmd_lvcreate)
 
 	def remove(self):
-		pass
+		
+		self.detect()
+
+		print 'Type Logical Volume \033[1mINDEXES\033[0m to remove:',
+		lv_indexes = re.findall('\d+', raw_input())
+
+		for lv_index in lv_indexes:
+
+			for lv in self.get():
+
+				if lv.index == lv_index:
+
+					cmd_lvremove = 'lvremove -f %s/%s' % (lv.vgname, lv.name)
+					os.system(cmd_lvremove)
+
+
+

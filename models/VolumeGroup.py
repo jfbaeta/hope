@@ -165,4 +165,17 @@ class VolumeGroup(object):
 			os.system(cmd_vgcreate)
 
 	def remove(self):
-		pass
+		
+		self.detect()
+
+		print 'Type Volume Group \033[1mINDEXES\033[0m to remove:',
+		vg_indexes = re.findall('\d+', raw_input())
+
+		for vg_index in vg_indexes:
+
+			for vg in self.get():
+
+				if vg.index == vg_index:
+
+					cmd_vgremove = 'vgremove -f %s' % (vg.name)
+					os.system(cmd_vgremove)

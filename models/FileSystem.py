@@ -179,7 +179,7 @@ class FileSystem(object):
 
 		self.detect()
 
-		print 'Type File System \033[1mINDEX\033[0m to remove:',
+		print 'Type File System \033[1mINDEXES\033[0m to remove:',
 		fs_indexes = re.findall('\d+', raw_input())
 
 		for fs_index in fs_indexes:
