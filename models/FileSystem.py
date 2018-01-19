@@ -157,7 +157,7 @@ class FileSystem(object):
 					
 				if lv.index == lv_index:
 					
-					cmd_mkfs = 'mkfs.%s %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, lv.vgname, lv.name)
+					cmd_mkfs = 'mkfs.%s -f %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, lv.vgname, lv.name)
 					os.system(cmd_mkfs)
 		
 					cmd_mkdir = 'mkdir -p %s' % (purpose.fs_mount_point)
@@ -195,15 +195,15 @@ class FileSystem(object):
 					os.system(cmd_umount)
 
 					with open("/etc/fstab","r+") as etc_fstab_file:
-    					
-    					etc_fstab_file_lines = etc_fstab_file.readlines()
-    					etc_fstab_file.seek(0)
-    					
+
+						etc_fstab_file_lines = etc_fstab_file.readlines()
+						etc_fstab_file.seek(0)
+										
     					for line in etc_fstab_file_lines:
         					if fs.name not in line:
-            					etc_fstab_file.write(line)
-    					
-    					etc_fstab_file.truncate()
+        						etc_fstab_file.write(line)
+
+        				etc_fstab_file.truncate()
 
 
 
