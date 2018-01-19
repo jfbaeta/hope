@@ -19,17 +19,20 @@ vg = VolumeGroup()
 lv = LogicalVolume()
 fs = FileSystem()
 
+def about():
+	print "HOPE - HANA on POWER Enhanced"
+	print "Version:      0"
+	print "Modification: 8"
+	print "Fix:          19"
+
 def show(resource):
 	resource.show()
 
 def create(resource):
 	resource.create()
 
-def about():
-	print "HOPE - HANA on POWER Enhanced"
-	print "Version:      0"
-	print "Modification: 8"
-	print "Fix:          18"
+def remove(resource):
+	resource.remove()
 
 def menu():
 
@@ -151,3 +154,6 @@ if opts.create and opts.logicalvolume:
 
 if opts.create and opts.filesystem:
 	create(fs)
+
+if opts.remove and opts.filesystem:
+	remove(fs)

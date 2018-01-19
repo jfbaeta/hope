@@ -148,3 +148,6 @@ class PhysicalVolume(object):
 
 					cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)
 					os.system(cmd_pvcreate)
+
+	def remove(self):
+		pass

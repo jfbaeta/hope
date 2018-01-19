@@ -160,3 +160,6 @@ class LogicalVolume(object):
 
 					cmd_lvcreate = 'lvcreate %s -n %s %s' % (purpose.lv_args, lv_name, vg.name)
 					os.system(cmd_lvcreate)
+
+	def remove(self):
+		pass

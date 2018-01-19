@@ -174,3 +174,40 @@ class FileSystem(object):
 
 		cmd_df = 'df -h'
 		os.system(cmd_df)
+
+	def remove(self):
+
+		self.detect()
+
+		print 'Type File System \033[1mINDEX\033[0m to remove:',
+		fs_indexes = re.findall('\d+', raw_input())
+
+		for fs_index in fs_indexes:
+
+			for fs in self.get():
+
+				if fs.index == fs_index:
+
+					cmd_fuser = 'fuser -ck %s' % (fs.name)
+					os.system(cmd_fuser)
+
+					cmd_umount = 'umount -f %s' % (fs.name)
+					os.system(cmd_umount)
+
+					etc_fstab_file = open("/etc/fstab","r+")
+					etc_fstab_file_lines = etc_fstab_file.readlines()
+					etc_fstab_file.seek(0)
+					
+					for line in etc_fstab_file_lines:
+					    
+					    if fs.name not in line:
+					    
+					        etc_fstab_file.write(line)
+					
+					etc_fstab_file.truncate()
+					etc_fstab_file.close()
+
+
+
+
+

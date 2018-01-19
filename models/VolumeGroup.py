@@ -163,3 +163,6 @@ class VolumeGroup(object):
 
 			cmd_vgcreate = 'vgcreate %s %s %s' % (purpose.vg_args, vg_name, pv_names)
 			os.system(cmd_vgcreate)
+
+	def remove(self):
+		pass
