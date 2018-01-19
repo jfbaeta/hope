@@ -15,6 +15,7 @@ class Lun(object):
 	
 	"""class Lun"""
 	
+	general_header = "SAN Storage Volumes:"
 	index_header   = 'Index:'
 	size_header    = 'Size:'
 	wwid_header    = 'WWID:'
@@ -119,7 +120,7 @@ class Lun(object):
 
 	@property
 	def header(self):
-		return "SAN Storage Volumes:"
+		return self.general_header
 
 	def add(self, resource):
 		self.__list.append(resource)
@@ -194,7 +195,7 @@ class Lun(object):
 			pv_count = 1
 			for pv in pvs:
 				
-				if purpose in ('rootvg', '/usr/sap') and pv_amount == 1:
+				if purpose in (rootvg, usrsap) and pv_amount == 1:
 					pv_new_name = pv_prefix
 				else:
 					pv_suffix = str(pv_count)
@@ -210,7 +211,7 @@ class Lun(object):
 
 			Formatter().show(new_luns)
 			
-		tpl_multipath_file = open('templates/template_multipath.txt', 'r')
+		tpl_multipath_file = open('/opt/hope/templates/template_multipath.txt', 'r')
 		
 		tpl_multipath_str = Template(tpl_multipath_file.read())
 		
@@ -222,8 +223,6 @@ class Lun(object):
 			new_multipath_file.write(new_multipath_str)
 			new_multipath_file.close()
 
-	def rename(self):
-	
 		os.system('multipath -r')
 
 	def remove(self):

@@ -15,10 +15,11 @@ class PhysicalVolume(object):
 	
 	"""class PhysicalVolume"""
 	
-	index_header = 'Index:'
-	name_header  = 'Name:'
-	size_header  = 'Size:'
-	free_header  = 'Free:'
+	general_header = "Physical Volumes:"
+	index_header   = 'Index:'
+	name_header    = 'Name:'
+	size_header    = 'Size:'
+	free_header    = 'Free:'
 
 	max_index_header = len(index_header)
 	max_name_header  = len(name_header)
@@ -91,7 +92,7 @@ class PhysicalVolume(object):
 
 	@property
 	def header(self):
-		return "Physical Volumes:"
+		return self.general_header
 
 	def add(self, resource):
 		self.__list.append(resource)

@@ -15,10 +15,11 @@ class VolumeGroup(object):
 	
 	"""class VolumeGroup"""
 
-	index_header = 'Index:'
-	name_header  = 'Name:'
-	size_header  = 'Size:'
-	free_header  = 'Free:'
+	general_header = "Volume Groups:"
+	index_header   = 'Index:'
+	name_header    = 'Name:'
+	size_header    = 'Size:'
+	free_header    = 'Free:'
 
 	max_index_header = len(index_header)
 	max_name_header  = len(name_header)
@@ -91,7 +92,7 @@ class VolumeGroup(object):
 
 	@property
 	def header(self):
-		return "Volume Groups:"
+		return self.general_header
 
 	def add(self, resource):
 		self.__list.append(resource)

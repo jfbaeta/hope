@@ -15,10 +15,11 @@ class LogicalVolume(object):
 	
 	"""class LogicalVolume"""
 	
-	index_header  = 'Index:'
-	path_header   = 'Path:'
-	vgname_header = 'Volume Group:'
-	name_header   = 'Name:'
+	general_header = "Logical Volumes:"
+	index_header   = 'Index:'
+	path_header    = 'Path:'
+	vgname_header  = 'Volume Group:'
+	name_header    = 'Name:'
 
 	max_index_header  = len(index_header)
 	max_path_header   = len(path_header)
@@ -91,7 +92,7 @@ class LogicalVolume(object):
 
 	@property
 	def header(self):
-		return "Logical Volumes:"
+		return self.general_header
 
 	def add(self, resource):
 		self.__list.append(resource)

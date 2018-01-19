@@ -29,25 +29,24 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 8"
-	print "Fix:          17"
+	print "Fix:          18"
 
 def menu():
 
 	option = True
 	
 	while option:
-		print '(1) Detect Storage Volumes'
-		print '(2) Detect Physical Volumes'
-		print '(3) Detect Volume Groups'
-		print '(4) Detect Logical Volumes'
-		print '(5) Detect File Systems'
-		print '(6) Create /etc/multipath.conf File'
-		print '(7) Reload Multipath to Change Volume Names'
-		print '(8) Create Physical Volumes'
-		print '(9) Create Volume Groups'
-		print '(10) Create Logical Volumes'
-		print '(11) Create File Systems'
-		print '(666) RESET MULTPATHS!'
+		print '(1) List Multipath Storage Volumes'
+		print '(2) List Physical Volumes'
+		print '(3) List Volume Groups'
+		print '(4) List Logical Volumes'
+		print '(5) List File Systems'
+		print '(6) Create Multipath Storage Volumes'
+		print '(7) Create Physical Volumes'
+		print '(8) Create Volume Groups'
+		print '(9) Create Logical Volumes'
+		print '(10) Create File Systems'
+		print '(11) Remove Multipath Volumes'
 		print '(Q,q,E,e,X,x) Quit/Exit'
 		print 'Choose your Option:',
 		option = raw_input()
@@ -71,21 +70,18 @@ def menu():
 			lu = Lun()
 			create(lu)
 		elif (option == '7'):
-			lu = Lun()
-			lu.rename()
-		elif (option == '8'):
 			pv = PhysicalVolume()
 			create(pv)
-		elif (option == '9'):
+		elif (option == '8'):
 			vg = VolumeGroup()
 			create(vg)
-		elif (option == '10'):
+		elif (option == '9'):
 			lv = LogicalVolume()
 			create(lv)
-		elif (option == '11'):
+		elif (option == '10'):
 			fs = FileSystem()
 			create(fs)
-		elif (option == '666'):
+		elif (option == '11'):
 			lu = Lun()
 			lu.remove()
 		elif (option in [ 'q' , 'Q' , 'e' , 'E', 'X', 'x' ]):

@@ -15,10 +15,11 @@ class FileSystem(object):
 	
 	"""class FileSystem"""
 	
-	index_header  = 'Index:'
-	lvname_header = 'Logical Volume:'
-	size_header   = 'Size:'
-	name_header   = 'Mount Point:'
+	general_header = "File Systems:"
+	index_header   = 'Index:'
+	lvname_header  = 'Logical Volume:'
+	size_header    = 'Size:'
+	name_header    = 'Mount Point:'
 
 	max_index_header  = len(index_header)
 	max_lvname_header = len(lvname_header)
@@ -91,7 +92,7 @@ class FileSystem(object):
 
 	@property
 	def header(self):
-		return "File Systems:"
+		return self.general_header
 
 	def add(self, resource):
 		self.__list.append(resource)
