@@ -23,13 +23,16 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 8"
-	print "Fix:          23"
+	print "Fix:          24"
 
 def show(resource):
 	resource.show()
 
 def create(resource):
 	resource.create()
+
+def create_from_config_file(resource):
+	resource.create_from_config_file()
 
 def remove(resource):
 	resource.remove()
@@ -140,6 +143,28 @@ if opts.list and opts.all:
 	show(vg)
 	show(lv)
 	show(fs)
+
+if opts.configfile and opts.sanvolume:
+	create_from_config_file(lu)
+
+if opts.configfile and opts.physicalvolume:
+	create_from_config_file(pv)
+
+if opts.configfile and opts.volumegroup:
+	create_from_config_file(vg)
+
+if opts.configfile and opts.logicalvolume:
+	create_from_config_file(lv)
+
+if opts.configfile and opts.filesystem:
+	create_from_config_file(fs)
+
+if opts.configfile and opts.all:
+	create_from_config_file(lu)
+	create_from_config_file(pv)
+	create_from_config_file(vg)
+	create_from_config_file(lv)
+	create_from_config_file(fs)
 
 if opts.create and opts.sanvolume:
 	create(lu)

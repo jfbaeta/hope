@@ -1,0 +1,44 @@
+{
+   "sid" : "YOUR_SID_HERE",
+
+   "rootvg" : {
+      "pvs" : [
+        { "alias" : "YOUR_ROOTVG_LUN_ALIAS_HERE", "wwid" : "YOUR_ROOTVG_LUN_WWID_HERE" }
+      ]
+   },
+
+   "usrsap" : {
+      "vg" : "YOUR_USR_SAP_VOLUME_GROUP_NAME_HERE",
+      "lv" : "YOUR_USR_SAP_LOGICAL_VOLUME_NAME_HERE",
+      "pvs" : [
+         { "alias" : "YOUR_USR_SAP_LUN_ALIAS_HERE", "wwid" : "YOUR_USR_SAP_WWID_HERE" }
+      ]
+   },
+
+   "data" : {
+      "vg" : "YOUR_HANA_DATA_VOLUME_GROUP_NAME_HERE",
+      "lv" : "YOUR_HANA_DATA_LOGICAL_VOLUME_NAME_HERE",
+      "pvs": [
+         { "alias" : "YOUR_HANA_DATA_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_DATA_LUN_WWID_HERE" },
+         { "alias" : "YOUR_HANA_DATA_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_DATA_LUN_WWID_HERE" },
+         { "alias" : "YOUR_HANA_DATA_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_DATA_LUN_WWID_HERE" },
+         { "alias" : "YOUR_HANA_DATA_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_DATA_LUN_WWID_HERE" }
+      ]
+   },
+
+   "log" : {
+      "vg" : "YOUR_HANA_LOG_VOLUME_GROUP_NAME_HERE",
+      "lv" : "YOUR_HANA_LOG_LOGICAL_VOLUME_NAME_HERE",
+      "pvs": [
+         { "alias" : "YOUR_HANA_LOG_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_LOG_LUN_WWID_HERE" }
+      ]
+   },
+
+   "shared" : {
+      "vg" : "YOUR_HANA_SHARED_VOLUME_GROUP_NAME_HERE",
+      "lv" : "YOUR_HANA_SHARED_LOGICAL_VOLUME_NAME_HERE",
+      "pvs" : [
+         { "alias" : "YOUR_HANA_SHARED_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_SHARED_LUN_WWID_HERE" }
+      ]
+   }
+}

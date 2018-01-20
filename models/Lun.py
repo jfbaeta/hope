@@ -7,9 +7,7 @@ from Data import Data
 from Log import Log
 from Shared import Shared
 from string import Template
-import re
-import os
-import subprocess
+import json, os, re, subprocess
 
 class Lun(object):
 	
@@ -210,18 +208,36 @@ class Lun(object):
 						str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
 
 			Formatter().show(new_luns)
-			
-		tpl_multipath_file = open('/opt/hope/templates/template_multipath.txt', 'r')
-		
-		tpl_multipath_str = Template(tpl_multipath_file.read())
-		
-		new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
-		
-		tpl_multipath_file.close()
+
+		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
+			tpl_multipath_str = Template(tpl_multipath_file.read())
+			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
 
 		with open('/etc/multipath.conf', 'w') as new_multipath_file:
 			new_multipath_file.write(new_multipath_str)
-			new_multipath_file.close()
+
+		os.system('multipath -r')
+
+	def create_from_config_file(self):
+
+		str_mulitpaths = ''
+
+		with open('/opt/hope/config/config.json', 'r') as config_file:
+			config = json.load(config_file)
+
+		for purpose_key, purpose_value in config.items():
+			if purpose_key != 'sid':
+				for resource_key, resource_value in purpose_value.items():
+					if resource_key == 'pvs':
+						for lun in resource_value:
+							str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun['wwid'], lun['alias'])
+
+		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
+			tpl_multipath_str = Template(tpl_multipath_file.read())
+			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
+
+		with open('/etc/multipath.conf', 'w') as new_multipath_file:
+			new_multipath_file.write(new_multipath_str)
 
 		os.system('multipath -r')
 

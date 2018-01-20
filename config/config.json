@@ -15,7 +15,7 @@
       ]
    },
 
-   "hanadata" : {
+   "data" : {
       "vg" : "hanadatavg",
       "lv" : "lv_hana_data",
       "pvs": [
@@ -26,7 +26,7 @@
       ]
    },
 
-   "hanalog" : {
+   "log" : {
       "vg" : "hanalogvg",
       "lv" : "lv_hana_log",
       "pvs": [
@@ -34,7 +34,7 @@
       ]
    },
 
-   "hanashared" : {
+   "shared" : {
       "vg" : "hanasharedvg",
       "lv" : "lv_hana_shared",
       "pvs" : [
