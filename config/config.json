@@ -1,0 +1,44 @@
+{
+   "sid" : "LAB",
+
+   "rootvg" : {
+      "pvs" : [
+        { "alias" : "rootvg", "wwid" : "36005076802820187a800000000000195" }
+      ]
+   },
+
+   "usrsap" : {
+      "vg" : "sapvg",
+      "lv" : "lv_usr_sap",
+      "pvs" : [
+         { "alias" : "usr_sap", "wwid" : "36005076802820187a800000000000196" }
+      ]
+   },
+
+   "hanadata" : {
+      "vg" : "hanadatavg",
+      "lv" : "lv_hana_data",
+      "pvs": [
+         { "alias" : "hana_data_1", "wwid" : "36005076802820187a80000000000019a" },
+         { "alias" : "hana_data_2", "wwid" : "36005076802820187a800000000000199" },
+         { "alias" : "hana_data_3", "wwid" : "36005076802820187a800000000000198" },
+         { "alias" : "hana_data_4", "wwid" : "36005076802820187a800000000000197" }
+      ]
+   },
+
+   "hanalog" : {
+      "vg" : "hanalogvg",
+      "lv" : "lv_hana_log",
+      "pvs": [
+         { "alias" : "hana_log_1", "wwid" : "36005076802820187a80000000000019b" }
+      ]
+   },
+
+   "hanashared" : {
+      "vg" : "hanasharedvg",
+      "lv" : "lv_hana_shared",
+      "pvs" : [
+         { "alias" : "hana_shared_1", "wwid" : "36005076802820187a80000000000019c" }
+      ]
+   }
+}
