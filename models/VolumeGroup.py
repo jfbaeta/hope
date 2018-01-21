@@ -162,6 +162,19 @@ class VolumeGroup(object):
 			cmd_vgcreate = 'vgcreate %s %s %s' % (purpose.vg_args, vg_name, pv_names)
 			os.system(cmd_vgcreate)
 
+	def create_from_config_file(self):
+
+		with open('/opt/hope/config/config.json', 'r') as config_file:
+			config = json.load(config_file)
+
+		for purpose_key, purpose_value in config.items():
+			if purpose_key not in ['sid', 'rootvg']:
+				for resource_key, resource_value in purpose_value.items():
+					if resource_key == 'pvs':
+						for lun in resource_value:
+							cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun['alias'])
+							os.system(cmd_pvcreate)
+
 	def remove(self):
 		
 		self.detect()

@@ -192,16 +192,16 @@ class FileSystem(object):
 					cmd_umount = 'umount -f %s' % (fs.name)
 					os.system(cmd_umount)
 
-					with open("/etc/fstab","r+") as etc_fstab_file:
-
+					with open("/etc/fstab", "r+") as etc_fstab_file:
+						
 						etc_fstab_file_lines = etc_fstab_file.readlines()
 						etc_fstab_file.seek(0)
-										
-    					for line in etc_fstab_file_lines:
-        					if fs.name not in line:
-        						etc_fstab_file.write(line)
+						
+						for line in etc_fstab_file_lines:
+							if fs.name not in line:
+								etc_fstab_file.write(line)
 
-        				etc_fstab_file.truncate()
+						etc_fstab_file.truncate()
 
 
 

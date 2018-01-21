@@ -8,10 +8,7 @@ from models.VolumeGroup import VolumeGroup
 from models.LogicalVolume import LogicalVolume
 from models.FileSystem import FileSystem
 from string import Template
-import re
-import optparse
-import os
-import subprocess
+import optparse, os, re, subprocess
 
 lu = Lun()
 pv = PhysicalVolume()
@@ -23,7 +20,7 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 8"
-	print "Fix:          24"
+	print "Fix:          25"
 
 def show(resource):
 	resource.show()
