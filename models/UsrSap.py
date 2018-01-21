@@ -4,7 +4,7 @@ class UsrSap(object):
 	
 	"""class UsrSap"""
 
-	name           = '/usr/sap'
+	name           = 'usrsap'
 	
 	vg_args        = ''
 	

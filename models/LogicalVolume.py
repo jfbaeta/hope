@@ -145,7 +145,7 @@ class LogicalVolume(object):
 
 		for purpose in purposes:
 
-			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.name),
+			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
 			lv_name = raw_input()
 			
 			print 'Type Volume Group \033[1mINDEX\033[0m for %s:' % (lv_name),

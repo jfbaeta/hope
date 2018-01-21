@@ -145,7 +145,7 @@ class VolumeGroup(object):
 
 		for purpose in purposes:
 
-			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.name),
+			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
 			vg_name = raw_input()
 
 			print 'Type Physical Volume \033[1mINDEXES\033[0m for %s:' % (vg_name),
@@ -164,16 +164,39 @@ class VolumeGroup(object):
 
 	def create_from_config_file(self):
 
+		rootvg = Root()
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [usrsap, data, log, shared]
+
+		self.detect()
+
+		pvs = PhysicalVolume()
+		pvs.detect()
+
 		with open('/opt/hope/config/config.json', 'r') as config_file:
 			config = json.load(config_file)
 
-		for purpose_key, purpose_value in config.items():
-			if purpose_key not in ['sid', 'rootvg']:
-				for resource_key, resource_value in purpose_value.items():
-					if resource_key == 'pvs':
-						for lun in resource_value:
-							cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun['alias'])
-							os.system(cmd_pvcreate)
+		for purpose in purposes:
+
+			for purpose_key, purpose_value in config.items():
+
+				if purpose_key == purpose.name:
+
+					for resource_key, resource_value in purpose_value.items():
+
+						if resource_key == 'pvs':
+							pv_names = ''
+
+							for pv in resource_value:
+								pv_names += '/dev/mapper/%s ' % (pv['alias'])
+
+						if resource_key == 'vg':
+							cmd_vgcreate = 'vgcreate %s %s %s' % (purpose.vg_args, resource_value, pv_names)
+							os.system(cmd_vgcreate)	
 
 	def remove(self):
 		

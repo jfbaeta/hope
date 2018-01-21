@@ -4,7 +4,7 @@ class Shared(object):
 	
 	"""class Shared"""
 	
-	name                    = '/hana/shared'
+	name                    = 'shared'
 
 	vg_physical_extent_size = '-s 1M'
 	vg_data_alignment       = '--dataalignment 1M'

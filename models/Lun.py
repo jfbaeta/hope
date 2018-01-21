@@ -226,9 +226,13 @@ class Lun(object):
 			config = json.load(config_file)
 
 		for purpose_key, purpose_value in config.items():
+
 			if purpose_key != 'sid':
+
 				for resource_key, resource_value in purpose_value.items():
+
 					if resource_key == 'pvs':
+
 						for lun in resource_value:
 							str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun['wwid'], lun['alias'])
 

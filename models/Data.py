@@ -4,7 +4,7 @@ class Data(object):
 	
 	"""class Data"""
 
-	name                    = '/hana/data'
+	name                    = 'data'
 
 	vg_physical_extent_size = '-s 1M'
 	vg_data_alignment       = '--dataalignment 1M'

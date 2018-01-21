@@ -153,9 +153,13 @@ class PhysicalVolume(object):
 			config = json.load(config_file)
 
 		for purpose_key, purpose_value in config.items():
+
 			if purpose_key not in ['sid', 'rootvg']:
+
 				for resource_key, resource_value in purpose_value.items():
+
 					if resource_key == 'pvs':
+
 						for lun in resource_value:
 							cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun['alias'])
 							os.system(cmd_pvcreate)
