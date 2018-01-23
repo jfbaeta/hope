@@ -13,7 +13,7 @@ class LogicalVolume(object):
 	
 	"""class LogicalVolume"""
 	
-	general_header = "Logical Volumes:"
+	general_header = 'Logical Volumes:'
 	index_header   = 'Index:'
 	path_header    = 'Path:'
 	vgname_header  = 'Volume Group:'
@@ -130,7 +130,6 @@ class LogicalVolume(object):
 
 	def create(self):
 
-		rootvg = Root()
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -161,7 +160,6 @@ class LogicalVolume(object):
 
 	def create_from_config_file(self):
 
-		rootvg = Root()
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()

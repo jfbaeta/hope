@@ -13,7 +13,7 @@ class Lun(object):
 	
 	"""class Lun"""
 	
-	general_header = "SAN Storage Volumes:"
+	general_header = 'SAN Storage Volumes:'
 	index_header   = 'Index:'
 	size_header    = 'Size:'
 	wwid_header    = 'WWID:'

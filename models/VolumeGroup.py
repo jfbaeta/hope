@@ -13,7 +13,7 @@ class VolumeGroup(object):
 	
 	"""class VolumeGroup"""
 
-	general_header = "Volume Groups:"
+	general_header = 'Volume Groups:'
 	index_header   = 'Index:'
 	name_header    = 'Name:'
 	size_header    = 'Size:'
@@ -130,7 +130,6 @@ class VolumeGroup(object):
 
 	def create(self):
 
-		rootvg = Root()
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -164,7 +163,6 @@ class VolumeGroup(object):
 
 	def create_from_config_file(self):
 
-		rootvg = Root()
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()

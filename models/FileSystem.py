@@ -13,7 +13,7 @@ class FileSystem(object):
 	
 	"""class FileSystem"""
 	
-	general_header = "File Systems:"
+	general_header = 'File Systems:'
 	index_header   = 'Index:'
 	lvname_header  = 'Logical Volume:'
 	size_header    = 'Size:'
@@ -130,7 +130,6 @@ class FileSystem(object):
 
 	def create(self):
 
-		rootvg = Root()
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -155,23 +154,52 @@ class FileSystem(object):
 					
 				if lv.index == lv_index:
 					
-					cmd_mkfs = 'mkfs.%s -f %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, lv.vgname, lv.name)
-					os.system(cmd_mkfs)
-		
-					cmd_mkdir = 'mkdir -p %s' % (purpose.fs_mount_point)
-					os.system(cmd_mkdir)
-		
-					cmd_add_fstab = 'echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (lv.vgname, lv.name, purpose.fs_mount_point, purpose.fs_type)
-					os.system(cmd_add_fstab)
-		
-					cmd_mount = 'mount %s' % (purpose.fs_mount_point)
-					os.system(cmd_mount)
-		
-					cmd_mkdir_sid = 'mkdir -p %s/%s' % (purpose.fs_mount_point, sid)
-					os.system(cmd_mkdir_sid)
+					if purpose.fs_type == 'ext3':	
+						os.system('mkfs.%s %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, lv.vgname, lv.name))
+					else:
+						os.system('mkfs.%s -f %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, lv.vgname, lv.name))
+					os.system('mkdir -p %s' % (purpose.fs_mount_point))
+					os.system('echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (lv.vgname, lv.name, purpose.fs_mount_point, purpose.fs_type))
+					os.system('mount %s' % (purpose.fs_mount_point))
+					os.system('mkdir -p %s/%s' % (purpose.fs_mount_point, sid))
 
-		cmd_df = 'df -h'
-		os.system(cmd_df)
+		os.system('df -h')
+
+	def create_from_config_file(self):
+
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [usrsap, data, log, shared]
+
+		self.detect()
+
+		lvs = LogicalVolume()
+		lvs.detect()
+
+		with open('/opt/hope/config/config.json', 'r') as config_file:
+			config = json.load(config_file)
+
+		sid = config['sid']
+
+		for purpose in purposes:
+
+			for purpose_key, purpose_value in config.items():
+
+				if purpose_key == purpose.name:
+
+					if purpose.fs_type == 'ext3':
+						os.system('mkfs.%s %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, purpose_value['vg'], purpose_value['lv']))
+					else:
+						os.system('mkfs.%s -f %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, purpose_value['vg'], purpose_value['lv']))
+					os.system('mkdir -p %s' % (purpose.fs_mount_point))
+					os.system('echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (purpose_value['vg'], purpose_value['lv'], purpose.fs_mount_point, purpose.fs_type))
+					os.system('mount %s' % (purpose.fs_mount_point))
+					os.system('mkdir -p %s/%s' % (purpose.fs_mount_point, sid))
+		
+		os.system('df -h')
 
 	def remove(self):
 
@@ -202,7 +230,3 @@ class FileSystem(object):
 								etc_fstab_file.write(line)
 
 						etc_fstab_file.truncate()
-
-
-
-

@@ -13,7 +13,7 @@ class PhysicalVolume(object):
 	
 	"""class PhysicalVolume"""
 	
-	general_header = "Physical Volumes:"
+	general_header = 'Physical Volumes:'
 	index_header   = 'Index:'
 	name_header    = 'Name:'
 	size_header    = 'Size:'
