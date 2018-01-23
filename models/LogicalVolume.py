@@ -108,7 +108,7 @@ class LogicalVolume(object):
 			re.compile(r'(?:.*:)(.*)'),\
 		]
 		
-		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator :'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_lvs_list)
@@ -158,6 +158,32 @@ class LogicalVolume(object):
 
 					cmd_lvcreate = 'lvcreate %s -n %s %s' % (purpose.lv_args, lv_name, vg.name)
 					os.system(cmd_lvcreate)
+
+	def create_from_config_file(self):
+
+		rootvg = Root()
+		usrsap = UsrSap()
+		data   = Data()
+		log    = Log()
+		shared = Shared()
+
+		purposes = [usrsap, data, log, shared]
+
+		self.detect()
+
+		vgs = VolumeGroup()
+		vgs.detect()
+
+		with open('/opt/hope/config/config.json', 'r') as config_file:
+			config = json.load(config_file)
+
+		for purpose in purposes:
+
+			for purpose_key, purpose_value in config.items():
+
+				if purpose_key == purpose.name:
+
+					os.system('lvcreate %s -n %s %s' % (purpose.lv_args, purpose_value['lv'], purpose_value['vg']))
 
 	def remove(self):
 		
