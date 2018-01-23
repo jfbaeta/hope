@@ -194,6 +194,7 @@ class FileSystem(object):
 						os.system('mkfs.%s %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, purpose_value['vg'], purpose_value['lv']))
 					else:
 						os.system('mkfs.%s -f %s /dev/mapper/%s-%s' % (purpose.fs_type, purpose.fs_args, purpose_value['vg'], purpose_value['lv']))
+					
 					os.system('mkdir -p %s' % (purpose.fs_mount_point))
 					os.system('echo \"/dev/%s/%s\t\t%s\t%s\tdefaults\t0 0\" >> /etc/fstab' % (purpose_value['vg'], purpose_value['lv'], purpose.fs_mount_point, purpose.fs_type))
 					os.system('mount %s' % (purpose.fs_mount_point))

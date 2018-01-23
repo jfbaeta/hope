@@ -179,22 +179,18 @@ class VolumeGroup(object):
 			config = json.load(config_file)
 
 		for purpose in purposes:
-
+			
 			for purpose_key, purpose_value in config.items():
-
+				
 				if purpose_key == purpose.name:
-
-					for resource_key, resource_value in purpose_value.items():
-
-						if resource_key == 'pvs':
-							pv_names = ''
-
-							for pv in resource_value:
-								pv_names += '/dev/mapper/%s ' % (pv['alias'])
-
-						if resource_key == 'vg':
-							cmd_vgcreate = 'vgcreate %s %s %s' % (purpose.vg_args, resource_value, pv_names)
-							os.system(cmd_vgcreate)	
+					
+					pv_names = ''
+					
+					for pv in purpose_value['pvs']:
+						
+						pv_names += '/dev/mapper/%s ' % (pv['alias'])
+					
+					os.system('vgcreate %s %s %s' % (purpose.vg_args, purpose_value['vg'], pv_names))
 
 	def remove(self):
 		

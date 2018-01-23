@@ -108,7 +108,7 @@ class PhysicalVolume(object):
 			re.compile(r'(?:.*:)(.*)(?:\s)'),\
 		]
 		
-		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : --config \'devices{ filter = [ "a|/dev/mapper/*|", "r|.*|" ] }\''], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator :'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
@@ -154,15 +154,11 @@ class PhysicalVolume(object):
 
 		for purpose_key, purpose_value in config.items():
 
-			if purpose_key not in ['sid', 'rootvg']:
+			if purpose_key in ['usrsap', 'data', 'log', 'shared']:
 
-				for resource_key, resource_value in purpose_value.items():
+				for pv in purpose_value['pvs']:
 
-					if resource_key == 'pvs':
-
-						for lun in resource_value:
-							cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun['alias'])
-							os.system(cmd_pvcreate)
+					os.system('pvcreate /dev/mapper/%s' % (pv['alias']))
 
 	def remove(self):
 		

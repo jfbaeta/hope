@@ -165,6 +165,19 @@ class Lun(object):
 		self.detect()
 		return Formatter().show(self)
 
+	def create_multipath_conf(self, str_multipaths):
+
+		str_multipaths = str_multipaths
+
+		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
+			tpl_multipath_str = Template(tpl_multipath_file.read())
+			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_multipaths)
+
+		with open('/etc/multipath.conf', 'w') as new_multipath_file:
+			new_multipath_file.write(new_multipath_str)
+
+		os.system('multipath -r')
+
 	def create(self):
 
 		rootvg = Root()
@@ -179,15 +192,20 @@ class Lun(object):
 
 		self.detect()
 
-		str_mulitpaths = ''
+		str_multipaths = ''
 
 		for purpose in purposes:
 			
-			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s:' % (purpose.name),
+			if purpose == rootvg:
+				title = purpose.name
+			else:
+				title = purpose.fs_mount_point
+
+			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s:' % (title),
 			pvs = re.findall('\d+', raw_input())
 			pv_amount = len(pvs)
 
-			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (purpose.name),
+			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (title),
 			pv_prefix = raw_input()
 
 			pv_count = 1
@@ -205,45 +223,28 @@ class Lun(object):
 					if lun.index == pv:
 						lun.name = pv_new_name
 						new_luns.add(Lun(index=str(lun.index), size=lun.size, wwid=lun.wwid, vendor=lun.vendor, product=lun.product, name=lun.name))
-						str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
+						str_multipaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun.wwid, lun.name)
 
 			Formatter().show(new_luns)
 
-		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
-			tpl_multipath_str = Template(tpl_multipath_file.read())
-			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
-
-		with open('/etc/multipath.conf', 'w') as new_multipath_file:
-			new_multipath_file.write(new_multipath_str)
-
-		os.system('multipath -r')
+		self.create_multipath_conf(str_multipaths)
 
 	def create_from_config_file(self):
 
-		str_mulitpaths = ''
+		str_multipaths = ''
 
 		with open('/opt/hope/config/config.json', 'r') as config_file:
 			config = json.load(config_file)
 
 		for purpose_key, purpose_value in config.items():
 
-			if purpose_key != 'sid':
+			if purpose_key in ['rootvg', 'usrsap', 'data', 'log', 'shared']:
+				
+				for lun in purpose_value['pvs']:
 
-				for resource_key, resource_value in purpose_value.items():
+					str_multipaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun['wwid'], lun['alias'])
 
-					if resource_key == 'pvs':
-
-						for lun in resource_value:
-							str_mulitpaths += '\tmultipath {\n\t\twwid %s\n\t\talias %s\n\t}\n' % (lun['wwid'], lun['alias'])
-
-		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
-			tpl_multipath_str = Template(tpl_multipath_file.read())
-			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_mulitpaths)
-
-		with open('/etc/multipath.conf', 'w') as new_multipath_file:
-			new_multipath_file.write(new_multipath_str)
-
-		os.system('multipath -r')
+		self.create_multipath_conf(str_multipaths)
 
 	def remove(self):
 

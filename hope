@@ -20,7 +20,7 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 8"
-	print "Fix:          28"
+	print "Fix:          29"
 
 def show(resource):
 	resource.show()
@@ -192,3 +192,10 @@ if opts.remove and opts.logicalvolume:
 
 if opts.remove and opts.filesystem:
 	remove(fs)
+
+if opts.remove and opts.all:
+	remove(fs)
+	remove(lv)
+	remove(vg)
+	remove(pv)
+	remove(lu)

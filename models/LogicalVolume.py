@@ -198,6 +198,3 @@ class LogicalVolume(object):
 
 					cmd_lvremove = 'lvremove -f %s/%s' % (lv.vgname, lv.name)
 					os.system(cmd_lvremove)
-
-
-
