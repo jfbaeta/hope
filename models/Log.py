@@ -1,8 +1,10 @@
- #-*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 
 class Log(object):
-	
-	"""class Log"""
+	'''
+	Class used for /hana/log attributes.
+	Attributes and methods are passed to other LVM Classes.
+	'''
 
 	name                    = 'log'
 	

@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 
 class Shared(object):
-	
-	"""class Shared"""
+	'''
+	Class used for /hana/shared attributes.
+	Attributes and methods are passed to other LVM Classes.
+	'''
 	
 	name                    = 'shared'
 

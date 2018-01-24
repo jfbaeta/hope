@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 
 class Root(object):
-	
-	"""class Root"""
+	'''
+	Class used for rootvg attributes.
+	Attributes and methods are passed to other LVM Classes.
+	'''
 
 	name = 'rootvg'
 	

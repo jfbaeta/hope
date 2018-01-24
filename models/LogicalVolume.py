@@ -10,9 +10,10 @@ from Shared import Shared
 import json, os, re, subprocess
 
 class LogicalVolume(object):
-	
-	"""class LogicalVolume"""
-	
+	'''
+	Class used for List, Creation and Removal of Logical Volumes.
+	Attributes and methods are used by Formatter Class to output results.
+	'''
 	general_header = 'Logical Volumes:'
 	index_header   = 'Index:'
 	path_header    = 'Path:'
@@ -99,7 +100,10 @@ class LogicalVolume(object):
 		return self.__list
 
 	def detect(self):
-		
+		'''
+		Method to detect current LVM Logical Volumes.
+		It relies on 'lvs' output.
+		'''		
 		temp_lvs_list = []
 
 		reg_exps = [
@@ -125,11 +129,18 @@ class LogicalVolume(object):
 			lv_index+=1
 		
 	def show(self):
+		'''
+		Method to show current LVM Logical Volumes.
+		It uses detect method to parse results and Formatter class to output it.
+		'''
 		self.detect()
 		return Formatter().show(self)
 
 	def create(self):
-
+		'''
+		Method to create LVM Logical Volumes based on interactive user input.
+		It relies on 'lvcreate' command.
+		'''
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -147,7 +158,7 @@ class LogicalVolume(object):
 			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
 			lv_name = raw_input()
 			
-			print 'Type Volume Group \033[1mINDEX\033[0m for %s:' % (lv_name),
+			print 'Type Volume Group \033[1mINDEX\033[0m for %s (comma-separated):' % (lv_name),
 			vg_indexes = re.findall('\d+', raw_input())
 			vg_index = vg_indexes[0]
 
@@ -159,7 +170,10 @@ class LogicalVolume(object):
 					os.system(cmd_lvcreate)
 
 	def create_from_config_file(self):
-
+		'''
+		Method to create LVM Volume Groups based on a JSON config file.
+		It relies on 'vgcreate' command.
+		'''
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -184,10 +198,13 @@ class LogicalVolume(object):
 					os.system('lvcreate %s -n %s %s' % (purpose.lv_args, purpose_value['lv'], purpose_value['vg']))
 
 	def remove(self):
-		
+		'''
+		Method to remove LVM Logical Volumes file and reload multipaths.
+		It doesn't detect if there's LVM in place neither asks for user confirmation.
+		'''		
 		self.detect()
 
-		print 'Type Logical Volume \033[1mINDEXES\033[0m to remove:',
+		print 'Type Logical Volume \033[1mINDEXES\033[0m to remove (comma-separated):',
 		lv_indexes = re.findall('\d+', raw_input())
 
 		for lv_index in lv_indexes:

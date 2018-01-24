@@ -10,9 +10,10 @@ from Shared import Shared
 import json, os, re, subprocess
 
 class FileSystem(object):
-	
-	"""class FileSystem"""
-	
+	'''
+	Class used for List, Creation and Removal of File Systems.
+	Attributes and methods are used by Formatter Class to output results.
+	'''
 	general_header = 'File Systems:'
 	index_header   = 'Index:'
 	lvname_header  = 'Logical Volume:'
@@ -99,7 +100,10 @@ class FileSystem(object):
 		return self.__list
 
 	def detect(self):
-		
+		'''
+		Method to detect current File Systems.
+		It relies on 'df' output. It doesn't check /etc/fstab yet.
+		'''		
 		temp_fss_list = []
 
 		reg_exps = [
@@ -125,11 +129,18 @@ class FileSystem(object):
 			fs_index+=1
 		
 	def show(self):
+		'''
+		Method to show current File Systems.
+		It uses detect method to parse results and Formatter class to output it.
+		'''
 		self.detect()
 		return Formatter().show(self)
 
 	def create(self):
-
+		'''
+		Method to create File Systems based on interactive user input.
+		It creates File Systems, full-path directories with SAP SID, add it to /etc/fstab and mount it.
+		'''
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -147,7 +158,7 @@ class FileSystem(object):
 
 		for purpose in purposes:
 
-			print 'Type Logical Volume \033[1mINDEX\033[0m for %s:' % (purpose.fs_mount_point),
+			print 'Type Logical Volume \033[1mINDEX\033[0m for %s (comma-separated):' % (purpose.fs_mount_point),
 			lv_index = raw_input()
 
 			for lv in lvs.get():
@@ -166,7 +177,10 @@ class FileSystem(object):
 		os.system('df -h')
 
 	def create_from_config_file(self):
-
+		'''
+		Method to create LVM Volume Groups based on a JSON config file.
+		It relies on 'vgcreate' command.
+		'''
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -203,10 +217,13 @@ class FileSystem(object):
 		os.system('df -h')
 
 	def remove(self):
-
+		'''
+		Method to remove File Systems file and reload multipaths.
+		It doesn't detect if there's LVM in place neither asks for user confirmation.
+		'''
 		self.detect()
 
-		print 'Type File System \033[1mINDEXES\033[0m to remove:',
+		print 'Type File System \033[1mINDEXES\033[0m to remove (comma-separated):',
 		fs_indexes = re.findall('\d+', raw_input())
 
 		for fs_index in fs_indexes:

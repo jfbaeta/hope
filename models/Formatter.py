@@ -1,7 +1,11 @@
+# -*- coding: UTF-8 -*-
+
 class Formatter(object):
-	
-	"""class Formatter"""
-	
+	'''
+	Class used to get results from other Classes and output results.
+	It builds dynamic lines, fields, columns, frames and colors depending on the data received.
+	'''
+
 	def __init__(self):
 		super(Formatter, self).__init__()
 

@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 
 class Data(object):
-	
-	"""class Data"""
+	'''
+	Class used for /hana/data attributes.
+	Attributes and methods are passed to other LVM Classes.
+	'''
 
 	name                    = 'data'
 

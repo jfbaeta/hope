@@ -10,9 +10,10 @@ from string import Template
 import json, os, re, subprocess
 
 class Lun(object):
-	
-	"""class Lun"""
-	
+	'''
+	Class used for List, Creation and Removal of Luns.
+	Attributes and methods are used by Formatter Class to output results.
+	'''
 	general_header = 'SAN Storage Volumes:'
 	index_header   = 'Index:'
 	size_header    = 'Size:'
@@ -127,7 +128,10 @@ class Lun(object):
 		return self.__list
 
 	def detect(self):
-
+		'''
+		Method to detect current SAN Storage Multipath LUNs.
+		It relies on 'multipath -ll' output.
+		'''
 		temp_luns_list = []
 
 		reg_exps = [
@@ -162,11 +166,18 @@ class Lun(object):
 			lun_index+=1
 	
 	def show(self):
+		'''
+		Method to show current SAN Storage Multipath LUNs.
+		It uses detect method to parse results and Formatter class to output it.
+		'''
 		self.detect()
 		return Formatter().show(self)
 
 	def create_multipath_conf(self, str_multipaths):
-
+		'''
+		Method to read a template file, create /etc/multipath.conf and reload multipaths.
+		Currently only support IBM Storwize Storage and doesn't check if there is an existing file.
+		'''
 		str_multipaths = str_multipaths
 
 		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
@@ -179,7 +190,10 @@ class Lun(object):
 		os.system('multipath -r')
 
 	def create(self):
-
+		'''
+		Method to create /etc/multipath.conf aliases and wwids based on interactive user input.
+		It puts a suffix for multiple LUNs.
+		'''
 		rootvg = Root()
 		usrsap = UsrSap()
 		data   = Data()
@@ -201,7 +215,7 @@ class Lun(object):
 			else:
 				title = purpose.fs_mount_point
 
-			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s:' % (title),
+			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s (comma-separated):' % (title),
 			pvs = re.findall('\d+', raw_input())
 			pv_amount = len(pvs)
 
@@ -230,7 +244,10 @@ class Lun(object):
 		self.create_multipath_conf(str_multipaths)
 
 	def create_from_config_file(self):
-
+		'''
+		Method to create /etc/multipath.conf aliases and wwids based on a JSON config file.
+		It puts a suffix for multiple LUNs.
+		'''
 		str_multipaths = ''
 
 		with open('/opt/hope/config/config.json', 'r') as config_file:
@@ -247,6 +264,9 @@ class Lun(object):
 		self.create_multipath_conf(str_multipaths)
 
 	def remove(self):
-
+		'''
+		Method to remove /etc/multipath.conf file and reload multipaths.
+		It doesn't detect if there's LVM in place neither asks for user confirmation.
+		'''
 		os.remove('/etc/multipath.conf')
 		os.system('multipath -r')

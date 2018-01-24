@@ -10,9 +10,10 @@ from Shared import Shared
 import json, os, re, subprocess
 
 class VolumeGroup(object):
-	
-	"""class VolumeGroup"""
-
+	'''
+	Class used for List, Creation and Removal of Volume Groups.
+	Attributes and methods are used by Formatter Class to output results.
+	'''
 	general_header = 'Volume Groups:'
 	index_header   = 'Index:'
 	name_header    = 'Name:'
@@ -99,7 +100,10 @@ class VolumeGroup(object):
 		return self.__list
 
 	def detect(self):
-
+		'''
+		Method to detect current LVM Volume Groups.
+		It relies on 'vgs' output.
+		'''
 		temp_vgs_list = []
 
 		reg_exps = [
@@ -125,11 +129,18 @@ class VolumeGroup(object):
 			vg_index+=1
 
 	def show(self):
+		'''
+		Method to show current LVM Volume Groups.
+		It uses detect method to parse results and Formatter class to output it.
+		'''
 		self.detect()
 		return Formatter().show(self)
 
 	def create(self):
-
+		'''
+		Method to create LVM Volume Groups based on interactive user input.
+		It relies on 'vgcreate' command.
+		'''
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -147,7 +158,7 @@ class VolumeGroup(object):
 			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
 			vg_name = raw_input()
 
-			print 'Type Physical Volume \033[1mINDEXES\033[0m for %s:' % (vg_name),
+			print 'Type Physical Volume \033[1mINDEXES\033[0m for %s (comma-separated):' % (vg_name),
 			pv_indexes = re.findall('\d+', raw_input())
 			pv_names = ''		
 
@@ -162,7 +173,10 @@ class VolumeGroup(object):
 			os.system(cmd_vgcreate)
 
 	def create_from_config_file(self):
-
+		'''
+		Method to create LVM Volume Groups based on a JSON config file.
+		It relies on 'vgcreate' command.
+		'''
 		usrsap = UsrSap()
 		data   = Data()
 		log    = Log()
@@ -193,10 +207,13 @@ class VolumeGroup(object):
 					os.system('vgcreate %s %s %s' % (purpose.vg_args, purpose_value['vg'], pv_names))
 
 	def remove(self):
-		
+		'''
+		Method to remove LVM Volume Groups file and reload multipaths.
+		It doesn't detect if there's LVM in place neither asks for user confirmation.
+		'''		
 		self.detect()
 
-		print 'Type Volume Group \033[1mINDEXES\033[0m to remove:',
+		print 'Type Volume Group \033[1mINDEXES\033[0m to remove (comma-separated):',
 		vg_indexes = re.findall('\d+', raw_input())
 
 		for vg_index in vg_indexes:

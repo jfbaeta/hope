@@ -10,9 +10,10 @@ from Shared import Shared
 import json, os, re, subprocess
 
 class PhysicalVolume(object):
-	
-	"""class PhysicalVolume"""
-	
+	'''
+	Class used for List, Creation and Removal of Physical Volumes.
+	Attributes and methods are used by Formatter Class to output results.
+	'''
 	general_header = 'Physical Volumes:'
 	index_header   = 'Index:'
 	name_header    = 'Name:'
@@ -99,7 +100,10 @@ class PhysicalVolume(object):
 		return self.__list
 
 	def detect(self):
-
+		'''
+		Method to detect current LVM Physical Volumes.
+		It relies on 'pvs' output.
+		'''
 		temp_pvs_list = []
 
 		reg_exps = [
@@ -125,17 +129,24 @@ class PhysicalVolume(object):
 			pv_index+=1
 
 	def show(self):
+		'''
+		Method to show current LVM Physical Volumes.
+		It uses detect method to parse results and Formatter class to output it.
+		'''
 		self.detect()
 		return Formatter().show(self)
 
 	def create(self):
-
+		'''
+		Method to create LVM Physical Volumes based on interactive user input.
+		It relies on 'pvcreate' command.
+		'''
 		self.detect()
 
 		luns = Lun()
 		luns.detect()
 
-		print 'Type Lun \033[1mINDEXES\033[0m that will be used as Physical Volumes:',
+		print 'Type Lun \033[1mINDEXES\033[0m that will be used as Physical Volumes (comma-separated):',
 		pvs = re.findall('\d+', raw_input())
 		
 		for pv in pvs:
@@ -148,7 +159,10 @@ class PhysicalVolume(object):
 					os.system(cmd_pvcreate)
 
 	def create_from_config_file(self):
-
+		'''
+		Method to create LVM Physical Volumes based on a JSON config file.
+		It relies on 'pvcreate' command.
+		'''
 		with open('/opt/hope/config/config.json', 'r') as config_file:
 			config = json.load(config_file)
 
@@ -161,10 +175,13 @@ class PhysicalVolume(object):
 					os.system('pvcreate /dev/mapper/%s' % (pv['alias']))
 
 	def remove(self):
-		
+		'''
+		Method to remove LVM Physical Volumes file and reload multipaths.
+		It doesn't detect if there's LVM in place neither asks for user confirmation.
+		'''
 		self.detect()
 
-		print 'Type Physical Volume \033[1mINDEXES\033[0m to remove:',
+		print 'Type Physical Volume \033[1mINDEXES\033[0m to remove (comma-separated):',
 		pv_indexes = re.findall('\d+', raw_input())
 
 		for pv_index in pv_indexes:

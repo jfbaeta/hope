@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 
 class UsrSap(object):
-	
-	"""class UsrSap"""
+	'''
+	Class used for /usr/sap attributes.
+	Attributes and methods are passed to other LVM Classes.
+	'''
 
 	name           = 'usrsap'
 	
