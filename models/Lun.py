@@ -268,5 +268,8 @@ class Lun(object):
 		Method to remove /etc/multipath.conf file and reload multipaths.
 		It doesn't detect if there's LVM in place neither asks for user confirmation.
 		'''
-		os.remove('/etc/multipath.conf')
-		os.system('multipath -r')
+		if not os.path.exists('/etc/multipath.conf'):
+			print 'There is no /etc/multipath.conf file. Skipping...'
+		else:
+			os.remove('/etc/multipath.conf')
+			os.system('multipath -r')
