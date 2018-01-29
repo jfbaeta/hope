@@ -20,7 +20,7 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 9"
-	print "Fix:          0"
+	print "Fix:          1"
 
 def show(resource):
 	resource.show()
