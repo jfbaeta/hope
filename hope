@@ -20,7 +20,7 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 9"
-	print "Fix:          1"
+	print "Fix:          3"
 
 def show(resource):
 	resource.show()
@@ -146,18 +146,18 @@ def menu():
 
 parser = optparse.OptionParser()
 
-parser.add_option('-c', '--create',         '--cr',  action='store_true', dest='create',         help='Creates Resources'                 )
-parser.add_option('-l', '--list',           '--ls',  action='store_true', dest='list',           help='List Resources'                    )
-parser.add_option('-r', '--remove',         '--rm',  action='store_true', dest='remove',         help='Remove Resources'                  )
-parser.add_option('-v', '--version',                 action='store_true', dest='version',        help='Display Hope Version'              )
-parser.add_option('-m', '--menu',                    action='store_true', dest='menu',           help='Shows an Interactive Menu'         )
-parser.add_option('-S', '--sanvolume',      '--sv',  action='store_true', dest='sanvolume',      help='Creates an /etc/multipath.conf'    )
-parser.add_option('-P', '--physicalvolume', '--pv',  action='store_true', dest='physicalvolume', help='Creates Physical Volumes'          )
-parser.add_option('-V', '--volumegroup',    '--vg',  action='store_true', dest='volumegroup',    help='Creates Volume Groups'             )
-parser.add_option('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes'           )
-parser.add_option('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems'              )
-parser.add_option('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File')
-parser.add_option('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources' )
+parser.add_option('-c', '--create',         '--cr',  action='store_true', dest='create',         help='Creates Resources.'                 )
+parser.add_option('-l', '--list',           '--ls',  action='store_true', dest='list',           help='List Resources.'                    )
+parser.add_option('-r', '--remove',         '--rm',  action='store_true', dest='remove',         help='Remove Resources.'                  )
+parser.add_option('-v', '--version',                 action='store_true', dest='version',        help='Display Hope Version.'              )
+parser.add_option('-m', '--menu',                    action='store_true', dest='menu',           help='Shows an Interactive Menu.'         )
+parser.add_option('-S', '--sanvolume',      '--sv',  action='store_true', dest='sanvolume',      help='Creates /etc/multipath.conf File.'  )
+parser.add_option('-P', '--physicalvolume', '--pv',  action='store_true', dest='physicalvolume', help='Creates Physical Volumes.'          )
+parser.add_option('-V', '--volumegroup',    '--vg',  action='store_true', dest='volumegroup',    help='Creates Volume Groups.'             )
+parser.add_option('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes.'           )
+parser.add_option('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems.'              )
+parser.add_option('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File.')
+parser.add_option('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources.' )
 
 (opts, args) = parser.parse_args()
 

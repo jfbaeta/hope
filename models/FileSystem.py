@@ -7,7 +7,7 @@ from UsrSap import UsrSap
 from Data import Data
 from Log import Log
 from Shared import Shared
-import json, os, re, subprocess
+import json, os, re, subprocess, sys
 
 class FileSystem(object):
 	'''
@@ -136,6 +136,13 @@ class FileSystem(object):
 		self.detect()
 		return Formatter().show(self)
 
+	def check_is_sid_is_ok(self, sid):
+		'''
+		Method to check if SAP System ID (SID) is alpha-numeric and has three characters.
+		'''
+		sid = sid
+		return sid.isalnum() and len(sid) == 3
+
 	def create(self):
 		'''
 		Method to create File Systems based on interactive user input.
@@ -153,8 +160,13 @@ class FileSystem(object):
 		lvs = LogicalVolume()
 		lvs.detect()
 
-		print 'Type the \033[1mSID\033[0m for this system:',
-		sid = raw_input()
+		while True:
+			print 'Type the \033[1mSID\033[0m for this system:',
+			sid = raw_input().upper()
+			if self.check_is_sid_is_ok(sid):
+				break
+			else:
+				print 'SAP System ID (SID) must have 3 digits and be alpha-numeric.'
 
 		for purpose in purposes:
 
@@ -197,6 +209,11 @@ class FileSystem(object):
 			config = json.load(config_file)
 
 		sid = config['sid']
+
+		if not self.check_is_sid_is_ok(sid):
+			print 'Current SID in your JSON config file: \033[1m%s\033[0m' % (sid)
+			print 'SAP System ID (SID) must have 3 digits and be alpha-numeric.'
+			sys.exit(1)
 
 		for purpose in purposes:
 
