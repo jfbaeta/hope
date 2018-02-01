@@ -5,7 +5,6 @@ class Log(object):
 	Class used for /hana/log attributes.
 	Attributes and methods are passed to other LVM Classes.
 	'''
-
 	name                    = 'log'
 	
 	vg_physical_extent_size = '-s 1M'

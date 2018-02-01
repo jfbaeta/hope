@@ -40,5 +40,19 @@
       "pvs" : [
          { "alias" : "hana_shared_1", "wwid" : "36005076802820187a80000000000019c" }
       ]
+   },
+
+   "hana" : {
+      "hana_software_path" : "/root/softwares/hana_software",
+      "component_medium" : "/hana/shared",
+      "components" : "client,server,afl",
+      "root_password" : "He4ooQua",
+      "number" : "00",
+      "db_mode" : "single_container",
+      "system_usage" : "custom",
+      "sapadm_password" : "Hana2018",
+      "password" : "Hana2018",
+      "system_user_password" : "Hana2018",
+      "action" : "install"
    }
 }

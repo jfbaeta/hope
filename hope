@@ -7,6 +7,7 @@ from models.PhysicalVolume import PhysicalVolume
 from models.VolumeGroup import VolumeGroup
 from models.LogicalVolume import LogicalVolume
 from models.FileSystem import FileSystem
+from models.Hana import Hana
 from string import Template
 import optparse, os, re, subprocess
 
@@ -15,12 +16,13 @@ pv = PhysicalVolume()
 vg = VolumeGroup()
 lv = LogicalVolume()
 fs = FileSystem()
+sw = Hana()
 
 def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
-	print "Modification: 9"
-	print "Fix:          3"
+	print "Modification: 10"
+	print "Fix:          0"
 
 def show(resource):
 	resource.show()
@@ -33,6 +35,11 @@ def create_from_config_file(resource):
 
 def remove(resource):
 	resource.remove()
+
+def install_hana():
+	sw.check_and_install_unrar()
+	sw.extract_hana_software()
+	sw.install()
 
 def menu():
 
@@ -157,6 +164,7 @@ parser.add_option('-V', '--volumegroup',    '--vg',  action='store_true', dest='
 parser.add_option('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes.'           )
 parser.add_option('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems.'              )
 parser.add_option('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File.')
+parser.add_option('-i', '--install',                 action='store_true', dest='install',        help='Install SAP HANA Software.'         )
 parser.add_option('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources.' )
 
 (opts, args) = parser.parse_args()
@@ -204,12 +212,16 @@ if opts.configfile and opts.logicalvolume:
 if opts.configfile and opts.filesystem:
 	create_from_config_file(fs)
 
+if opts.configfile and opts.install:
+	install_hana()
+
 if opts.configfile and opts.all:
 	create_from_config_file(lu)
 	create_from_config_file(pv)
 	create_from_config_file(vg)
 	create_from_config_file(lv)
 	create_from_config_file(fs)
+	install_hana()
 
 if opts.create and opts.sanvolume:
 	create(lu)

@@ -40,5 +40,19 @@
       "pvs" : [
          { "alias" : "YOUR_HANA_SHARED_LUN_ALIAS_HERE", "wwid" : "YOUR_HANA_SHARED_LUN_WWID_HERE" }
       ]
+   },
+
+   "hana" : {
+      "hana_software_path" : "PATH_WHERE_HANA_SOFTWARE_IS_LOCATED",
+      "component_medium" : "PATH_TO_EXTRACT_HANA_SOFTWARE",
+      "components" : "COMMA_SEPARATED_COMPONENTS_TO_INSTALL_E.G._SERVER_CLIENT_AFL_ETC",
+      "root_password" : "ROOT_PASSWORD",
+      "number" : "SAP_INSTANCE_NUMBER",
+      "db_mode" : "SINGLE_OR_MULTIPLE_CONTAINERS",
+      "system_usage" : "USAGE_E.G._CUSTOM_PRODUCTION_DEVELOPMENT_ETC",
+      "sapadm_password" : "SAPADM_PASSWORD",
+      "password" : "SIDADM_PASSWORD",
+      "system_user_password" : "SYSTEM_PASSWORD",
+      "action" : "ACTION_TO_PERFORM_E.G._INSTALL_EXIT_ETC"
    }
 }
