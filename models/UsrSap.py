@@ -5,7 +5,6 @@ class UsrSap(object):
 	Class used for /usr/sap attributes.
 	Attributes and methods are passed to other LVM Classes.
 	'''
-
 	name           = 'usrsap'
 	
 	vg_args        = ''

@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
-import json, os
+
+from string import Template
+import json, os, subprocess
 
 class Hana(object):
 	'''
@@ -87,3 +89,14 @@ class Hana(object):
 			       	  password, \
 			       	  system_user_password, \
 			       	  action))
+
+	def remove(self):
+		'''
+		Method used to uninstall SAP HANA from System.
+		'''
+		with open('/opt/hope/config/config.json', 'r') as config_file:
+			config = json.load(config_file)
+
+		sid = config['sid']
+		
+		os.system('/hana/shared/%s/global/hdb/install/bin/hdbuninst --batch' % (sid))

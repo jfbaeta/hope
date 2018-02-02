@@ -1,0 +1,20 @@
+{
+"use_hdb":false,
+"blades":["$hostname"],
+    "tests": [{
+	    "package": "FilesystemTest",
+            "test_timeout": 0,
+            "id": 1,
+            "config": {"mount":{"$hostname":["/hana/data/$sid"]},
+			"duration":"long"},
+            "class": "DataVolumeIO"
+	},{
+	    "package": "FilesystemTest",
+            "test_timeout": 0,
+            "id": 2,
+            "config": {"mount":{"$hostname":["/hana/log/$sid"]},
+			"duration":"long"},
+            "class": "LogVolumeIO"
+	}
+]
+}

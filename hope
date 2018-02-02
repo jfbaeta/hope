@@ -8,6 +8,7 @@ from models.VolumeGroup import VolumeGroup
 from models.LogicalVolume import LogicalVolume
 from models.FileSystem import FileSystem
 from models.Hana import Hana
+from models.Hwcct import Hwcct
 from string import Template
 import optparse, os, re, subprocess
 
@@ -17,11 +18,12 @@ vg = VolumeGroup()
 lv = LogicalVolume()
 fs = FileSystem()
 sw = Hana()
+hw = Hwcct()
 
 def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
-	print "Modification: 10"
+	print "Modification: 11"
 	print "Fix:          0"
 
 def show(resource):
@@ -39,7 +41,26 @@ def remove(resource):
 def install_hana():
 	sw.check_and_install_unrar()
 	sw.extract_hana_software()
+	hw.extract()
 	sw.install()
+
+def uninstall_hana():
+	sw.remove()
+	
+def run_hwcct_eval_os():
+	test_eval_os  = ['/opt/hope/templates/template_hwcct_eval_os.json' , '/opt/hope/config/eval_os.json']
+	hw.generate_files(test_eval_os)
+	hw.run_test(test_eval_os)
+
+def run_hwcct_fs_short():
+	test_fs_short = ['/opt/hope/templates/template_hwcct_fs_short.json', '/opt/hope/config/fs_short.json']
+	hw.generate_files(test_fs_short)
+	hw.run_test(test_fs_short)
+
+def run_hwcct_fs_long():
+	test_fs_long  = ['/opt/hope/templates/template_hwcct_fs_long.json' , '/opt/hope/config/fs_long.json']
+	hw.generate_files(test_fs_long)
+	hw.run_test(test_fs_long)
 
 def menu():
 
@@ -153,19 +174,23 @@ def menu():
 
 parser = optparse.OptionParser()
 
-parser.add_option('-c', '--create',         '--cr',  action='store_true', dest='create',         help='Creates Resources.'                 )
-parser.add_option('-l', '--list',           '--ls',  action='store_true', dest='list',           help='List Resources.'                    )
-parser.add_option('-r', '--remove',         '--rm',  action='store_true', dest='remove',         help='Remove Resources.'                  )
-parser.add_option('-v', '--version',                 action='store_true', dest='version',        help='Display Hope Version.'              )
-parser.add_option('-m', '--menu',                    action='store_true', dest='menu',           help='Shows an Interactive Menu.'         )
-parser.add_option('-S', '--sanvolume',      '--sv',  action='store_true', dest='sanvolume',      help='Creates /etc/multipath.conf File.'  )
-parser.add_option('-P', '--physicalvolume', '--pv',  action='store_true', dest='physicalvolume', help='Creates Physical Volumes.'          )
-parser.add_option('-V', '--volumegroup',    '--vg',  action='store_true', dest='volumegroup',    help='Creates Volume Groups.'             )
-parser.add_option('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes.'           )
-parser.add_option('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems.'              )
-parser.add_option('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File.')
-parser.add_option('-i', '--install',                 action='store_true', dest='install',        help='Install SAP HANA Software.'         )
-parser.add_option('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources.' )
+parser.add_option('-c', '--create',         '--cr',  action='store_true', dest='create',         help='Creates Resources.'                    )
+parser.add_option('-l', '--list',           '--ls',  action='store_true', dest='list',           help='List Resources.'                       )
+parser.add_option('-r', '--remove',         '--rm',  action='store_true', dest='remove',         help='Remove Resources.'                     )
+parser.add_option('-v', '--version',                 action='store_true', dest='version',        help='Display Hope Version.'                 )
+parser.add_option('-m', '--menu',                    action='store_true', dest='menu',           help='Shows an Interactive Menu.'            )
+parser.add_option('-S', '--sanvolume',      '--sv',  action='store_true', dest='sanvolume',      help='Creates /etc/multipath.conf File.'     )
+parser.add_option('-P', '--physicalvolume', '--pv',  action='store_true', dest='physicalvolume', help='Creates Physical Volumes.'             )
+parser.add_option('-V', '--volumegroup',    '--vg',  action='store_true', dest='volumegroup',    help='Creates Volume Groups.'                )
+parser.add_option('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes.'              )
+parser.add_option('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems.'                 )
+parser.add_option('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File.'   )
+parser.add_option('-i', '--install',                 action='store_true', dest='install',        help='Install SAP HANA Software.'            )
+parser.add_option('-u', '--uninstall',               action='store_true', dest='uninstall',      help='Uninstall SAP HANA Software.'          )
+parser.add_option('-e', '--evalos',                  action='store_true', dest='evalos',         help='Runs HWCCT EvalOs.'                    )
+parser.add_option('-k', '--kpi_short',               action='store_true', dest='kpi_short',      help='Runs HWCCT for I/O KPIs in Short Mode.')
+parser.add_option('-K', '--kpi_long',                action='store_true', dest='kpi_long',       help='Runs HWCCT for I/O KPIs in Long Mode.' )
+parser.add_option('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources.'    )
 
 (opts, args) = parser.parse_args()
 
@@ -215,6 +240,18 @@ if opts.configfile and opts.filesystem:
 if opts.configfile and opts.install:
 	install_hana()
 
+if opts.configfile and opts.uninstall:
+	uninstall_hana()
+
+if opts.configfile and opts.evalos:
+	run_hwcct_eval_os()
+
+if opts.configfile and opts.kpi_short:
+	run_hwcct_fs_short()
+
+if opts.configfile and opts.kpi_long:
+	run_hwcct_fs_long()
+
 if opts.configfile and opts.all:
 	create_from_config_file(lu)
 	create_from_config_file(pv)
@@ -222,6 +259,9 @@ if opts.configfile and opts.all:
 	create_from_config_file(lv)
 	create_from_config_file(fs)
 	install_hana()
+	run_hwcct_eval_os()
+	run_hwcct_fs_short()
+	run_hwcct_fs_long()
 
 if opts.create and opts.sanvolume:
 	create(lu)

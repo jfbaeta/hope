@@ -5,7 +5,6 @@ class Data(object):
 	Class used for /hana/data attributes.
 	Attributes and methods are passed to other LVM Classes.
 	'''
-
 	name                    = 'data'
 
 	vg_physical_extent_size = '-s 1M'

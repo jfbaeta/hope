@@ -5,7 +5,6 @@ class Shared(object):
 	Class used for /hana/shared attributes.
 	Attributes and methods are passed to other LVM Classes.
 	'''
-	
 	name                    = 'shared'
 
 	vg_physical_extent_size = '-s 1M'
