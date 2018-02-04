@@ -136,12 +136,36 @@ class FileSystem(object):
 		self.detect()
 		return Formatter().show(self)
 
-	def check_is_sid_is_ok(self, sid):
+	def check_if_sid_is_ok(self, sid):
 		'''
-		Method to check if SAP System ID (SID) is alpha-numeric and has three characters.
+		Method to check if SAP System ID (SID) follows SAP rules.
 		'''
-		sid = sid
-		return sid.isalnum() and len(sid) == 3
+		forbidden_sids = ('ADD', 'ALL', 'AMD', 'AND', 'ANY', 'ARE', 'ASC', 'AUX', 'AVG', 'BIT', 'CDC', 'COM', \
+			'CON', 'DBA', 'END', 'EPS', 'FOR', 'GET', 'GID', 'IBM', 'INT', 'KEY', 'LOG', 'LPT', 'MAP', 'MAX', \
+			'MIN', 'MON', 'NIX', 'NOT', 'NUL', 'OFF', 'OLD', 'OMS', 'OUT', 'PAD', 'PRN', 'RAW', 'REF', 'ROW', \
+			'SAP', 'SET', 'SGA', 'SHG', 'SID', 'SQL', 'SUM', 'SYS', 'TMP', 'TOP', 'UID', 'USE', 'USR', 'VAR')
+
+		if sid in forbidden_sids:
+			print '\nInvalid SAP HANA System ID. The following SIDs are forbidden:'
+			for forbidden_sid in forbidden_sids:
+				index = forbidden_sids.index(forbidden_sid)
+				if index % 9 == 0 and index > 0:
+					print '\n',
+				if forbidden_sid == sid:
+					print '\033[31m%s\033[0m ' % (forbidden_sid),
+				else:
+					print '%s ' % (forbidden_sid),
+			print '\n'
+			return True
+		elif not sid.isalnum():
+			print '\nInvalid SAP HANA System ID. SID must be alpha-numeric.\n'
+			return True
+		elif len(sid) != 3:
+			print '\nInvalid SAP HANA System ID. SID must have 3 digits.\n'
+			return True
+		elif not sid[0].isalpha():
+			print '\nInvalid SAP HANA System ID. The first character has to be an upper case letter.\n'
+			return True
 
 	def create(self):
 		'''
@@ -163,10 +187,8 @@ class FileSystem(object):
 		while True:
 			print 'Type the \033[1mSID\033[0m for this system:',
 			sid = raw_input().upper()
-			if self.check_is_sid_is_ok(sid):
+			if not self.check_if_sid_is_ok(sid):
 				break
-			else:
-				print 'SAP System ID (SID) must have 3 digits and be alpha-numeric.'
 
 		for purpose in purposes:
 
@@ -210,9 +232,8 @@ class FileSystem(object):
 
 		sid = config['sid']
 
-		if not self.check_is_sid_is_ok(sid):
+		if self.check_if_sid_is_ok(sid):
 			print 'Current SID in your JSON config file: \033[1m%s\033[0m' % (sid)
-			print 'SAP System ID (SID) must have 3 digits and be alpha-numeric.'
 			sys.exit(1)
 
 		for purpose in purposes:
@@ -249,19 +270,28 @@ class FileSystem(object):
 
 				if fs.index == fs_index:
 
-					cmd_fuser = 'fuser -ck %s' % (fs.name)
-					os.system(cmd_fuser)
+					if fs.name == '/':
 
-					cmd_umount = 'umount -f %s' % (fs.name)
-					os.system(cmd_umount)
+						print 'Root File System will not be removed by Hope. Do it by yourself.'
 
-					with open("/etc/fstab", "r+") as etc_fstab_file:
+					else:
+
+						cmd_fuser = 'fuser -ck %s' % (fs.name)
+						os.system(cmd_fuser)
+
+						cmd_umount = 'umount -f %s' % (fs.name)
+						os.system(cmd_umount)
+
+						with open("/etc/fstab", "r+") as etc_fstab_file:
+							
+							etc_fstab_file_lines = etc_fstab_file.readlines()
+							etc_fstab_file.seek(0)
+							
+							for line in etc_fstab_file_lines:
+								if fs.name not in line:
+									etc_fstab_file.write(line)
+
+							etc_fstab_file.truncate()
+
+						subprocess.Popen(['rm -rf %s' % fs.name], cwd='/', shell=True).communicate()[0]
 						
-						etc_fstab_file_lines = etc_fstab_file.readlines()
-						etc_fstab_file.seek(0)
-						
-						for line in etc_fstab_file_lines:
-							if fs.name not in line:
-								etc_fstab_file.write(line)
-
-						etc_fstab_file.truncate()

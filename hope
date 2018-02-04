@@ -24,7 +24,7 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 11"
-	print "Fix:          0"
+	print "Fix:          1"
 
 def show(resource):
 	resource.show()
@@ -167,7 +167,7 @@ def menu():
 			remove(vg)
 			remove(pv)
 			remove(lu)
-		elif (option in [ 'q' , 'Q' , 'e' , 'E', 'X', 'x' ]):
+		elif (option in ['q' , 'Q' , 'e' , 'E', 'X', 'x']):
 			break
 		else:
 			print 'Invalid Option!'
