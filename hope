@@ -24,7 +24,7 @@ def about():
 	print "HOPE - HANA on POWER Enhanced"
 	print "Version:      0"
 	print "Modification: 11"
-	print "Fix:          2"
+	print "Fix:          3"
 
 def show(resource):
 	resource.show()
@@ -41,8 +41,8 @@ def remove(resource):
 def install_hana():
 	sw.check_and_install_unrar()
 	sw.extract_hana_software()
-	hw.extract()
 	sw.install()
+	hw.extract()
 
 def uninstall_hana():
 	sw.remove()
