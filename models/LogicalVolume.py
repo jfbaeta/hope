@@ -141,17 +141,14 @@ class LogicalVolume(object):
 		Method to create LVM Logical Volumes based on interactive user input.
 		It relies on 'lvcreate' command.
 		'''
-		usrsap = UsrSap()
-		data   = Data()
-		log    = Log()
-		shared = Shared()
-
+		usrsap   = UsrSap()
+		data     = Data()
+		log      = Log()
+		shared   = Shared()
+		vgs      = VolumeGroup()
 		purposes = [usrsap, data, log, shared]
 
-		self.detect()
-
-		vgs = VolumeGroup()
-		vgs.detect()
+		vgs.show()
 
 		for purpose in purposes:
 
@@ -169,22 +166,18 @@ class LogicalVolume(object):
 					cmd_lvcreate = 'lvcreate %s -n %s %s' % (purpose.lv_args, lv_name, vg.name)
 					os.system(cmd_lvcreate)
 
+		self.show()
+
 	def create_from_config_file(self):
 		'''
 		Method to create LVM Volume Groups based on a JSON config file.
 		It relies on 'vgcreate' command.
 		'''
-		usrsap = UsrSap()
-		data   = Data()
-		log    = Log()
-		shared = Shared()
-
+		usrsap   = UsrSap()
+		data     = Data()
+		log      = Log()
+		shared   = Shared()
 		purposes = [usrsap, data, log, shared]
-
-		self.detect()
-
-		vgs = VolumeGroup()
-		vgs.detect()
 
 		with open('/opt/hope/config/config.json', 'r') as config_file:
 			config = json.load(config_file)
@@ -197,12 +190,16 @@ class LogicalVolume(object):
 
 					os.system('lvcreate %s -n %s %s' % (purpose.lv_args, purpose_value['lv'], purpose_value['vg']))
 
+		self.show()
+
 	def remove(self):
 		'''
 		Method to remove LVM Logical Volumes file and reload multipaths.
 		It doesn't detect if there's LVM in place neither asks for user confirmation.
-		'''		
-		self.detect()
+		'''
+		lvs = LogicalVolume()
+
+		self.show()
 
 		print 'Type Logical Volume \033[1mINDEXES\033[0m to remove (comma-separated):',
 		lv_indexes = re.findall('\d+', raw_input())
@@ -215,3 +212,5 @@ class LogicalVolume(object):
 
 					cmd_lvremove = 'lvremove -f %s/%s' % (lv.vgname, lv.name)
 					os.system(cmd_lvremove)
+
+		lvs.show()

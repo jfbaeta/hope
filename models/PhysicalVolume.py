@@ -141,10 +141,9 @@ class PhysicalVolume(object):
 		Method to create LVM Physical Volumes based on interactive user input.
 		It relies on 'pvcreate' command.
 		'''
-		self.detect()
-
 		luns = Lun()
-		luns.detect()
+
+		luns.show()
 
 		print 'Type Lun \033[1mINDEXES\033[0m that will be used as Physical Volumes (comma-separated):',
 		pvs = re.findall('\d+', raw_input())
@@ -157,6 +156,8 @@ class PhysicalVolume(object):
 
 					cmd_pvcreate = 'pvcreate /dev/mapper/%s' % (lun.name)
 					os.system(cmd_pvcreate)
+
+		self.show()
 
 	def create_from_config_file(self):
 		'''
@@ -174,12 +175,16 @@ class PhysicalVolume(object):
 
 					os.system('pvcreate /dev/mapper/%s' % (pv['alias']))
 
+		self.show()
+
 	def remove(self):
 		'''
 		Method to remove LVM Physical Volumes file and reload multipaths.
 		It doesn't detect if there's LVM in place neither asks for user confirmation.
 		'''
-		self.detect()
+		pvs = PhysicalVolume()
+
+		self.show()
 
 		print 'Type Physical Volume \033[1mINDEXES\033[0m to remove (comma-separated):',
 		pv_indexes = re.findall('\d+', raw_input())
@@ -193,3 +198,4 @@ class PhysicalVolume(object):
 					cmd_pvremove = 'pvremove -f %s' % (pv.name)
 					os.system(cmd_pvremove)
 
+		pvs.show()

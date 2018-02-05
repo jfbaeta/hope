@@ -180,12 +180,17 @@ class Lun(object):
 		'''
 		str_multipaths = str_multipaths
 
-		with open('/opt/hope/templates/template_multipath.txt', 'r') as tpl_multipath_file:
+		with open('/opt/hope/templates/template_multipath_ibm_2145.txt', 'r') as tpl_multipath_file:
+			print 'Generating /etc/multipath.conf file...'
 			tpl_multipath_str = Template(tpl_multipath_file.read())
 			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_multipaths)
 
 		with open('/etc/multipath.conf', 'w') as new_multipath_file:
 			new_multipath_file.write(new_multipath_str)
+
+		with open('/etc/multipath.conf', 'r') as multipath_conf:	
+			print '/etc/multipath.conf file created:'
+			print multipath_conf.read()
 
 		os.system('multipath -r')
 
@@ -194,19 +199,17 @@ class Lun(object):
 		Method to create /etc/multipath.conf aliases and wwids based on interactive user input.
 		It puts a suffix for multiple LUNs.
 		'''
-		rootvg = Root()
-		usrsap = UsrSap()
-		data   = Data()
-		log    = Log()
-		shared = Shared()
-
-		purposes = [rootvg, usrsap, data, log, shared]
-
-		new_luns = Lun()
-
-		self.detect()
-
+		rootvg         = Root()
+		usrsap         = UsrSap()
+		data           = Data()
+		log            = Log()
+		shared         = Shared()
+		new_luns       = Lun()
+		final_luns     = Lun()
+		purposes       = [rootvg, usrsap, data, log, shared]
 		str_multipaths = ''
+
+		self.show()
 
 		for purpose in purposes:
 			
@@ -243,11 +246,14 @@ class Lun(object):
 
 		self.create_multipath_conf(str_multipaths)
 
+		final_luns.show()
+
 	def create_from_config_file(self):
 		'''
 		Method to create /etc/multipath.conf aliases and wwids based on a JSON config file.
 		It puts a suffix for multiple LUNs.
 		'''
+		final_luns     = Lun()
 		str_multipaths = ''
 
 		with open('/opt/hope/config/config.json', 'r') as config_file:
@@ -263,13 +269,21 @@ class Lun(object):
 
 		self.create_multipath_conf(str_multipaths)
 
+		final_luns.show()
+
 	def remove(self):
 		'''
 		Method to remove /etc/multipath.conf file and reload multipaths.
 		It doesn't detect if there's LVM in place neither asks for user confirmation.
 		'''
+		luns = Lun()
+
+		self.show()
+
 		if not os.path.exists('/etc/multipath.conf'):
 			print 'There is no /etc/multipath.conf file. Skipping...'
 		else:
 			os.remove('/etc/multipath.conf')
 			os.system('multipath -r')
+
+		luns.show()
