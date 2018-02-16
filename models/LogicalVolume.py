@@ -112,7 +112,7 @@ class LogicalVolume(object):
 			re.compile(r'(?:.*:)(.*)'),\
 		]
 		
-		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator :'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_lvs_list)

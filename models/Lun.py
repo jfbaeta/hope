@@ -6,6 +6,7 @@ from UsrSap import UsrSap
 from Data import Data
 from Log import Log
 from Shared import Shared
+from Linux import Linux
 from string import Template
 import json, os, re, subprocess
 
@@ -178,7 +179,7 @@ class Lun(object):
 		Method to read a template file, create /etc/multipath.conf and reload multipaths.
 		Currently only support IBM Storwize Storage and doesn't check if there is an existing file.
 		'''
-		str_multipaths = str_multipaths
+		linux = Linux()
 
 		with open('/opt/hope/templates/template_multipath_ibm_2145.txt', 'r') as tpl_multipath_file:
 			print 'Generating /etc/multipath.conf file...'
@@ -192,7 +193,12 @@ class Lun(object):
 			print '/etc/multipath.conf file created:'
 			print multipath_conf.read()
 
-		os.system('multipath -r')
+		if linux.distribution in ['SLES', 'SLES_SAP'] and linux.version == '11.4':
+			os.system('multipath -r')
+		else:
+			os.system('systemctl reload multipathd')
+			os.system('systemctl status multipathd')
+			os.system('multipath -r')
 
 	def create(self):
 		'''
@@ -221,6 +227,9 @@ class Lun(object):
 			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s (comma-separated):' % (title),
 			pvs = re.findall('\d+', raw_input())
 			pv_amount = len(pvs)
+
+			if not pvs:
+				continue
 
 			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (title),
 			pv_prefix = raw_input()
@@ -276,14 +285,24 @@ class Lun(object):
 		Method to remove /etc/multipath.conf file and reload multipaths.
 		It doesn't detect if there's LVM in place neither asks for user confirmation.
 		'''
-		luns = Lun()
+		linux = Linux()
+		#luns  = Lun()
 
 		self.show()
 
 		if not os.path.exists('/etc/multipath.conf'):
 			print 'There is no /etc/multipath.conf file. Skipping...'
 		else:
+			print 'Removing /etc/multipath.conf...'
 			os.remove('/etc/multipath.conf')
-			os.system('multipath -r')
+			
+			print 'Reloading Multipath...'
+			if linux.version != '11.4':
+				print 'Reloading Multipath...'
+				subprocess.Popen(['systemctl reload multipathd'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+				print 'Checking Multipath Status...'
+				subprocess.Popen(['systemctl status multipathd'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
-		luns.show()
+			subprocess.Popen(['multipath -r'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+
+		Lun().show()

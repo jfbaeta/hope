@@ -112,7 +112,7 @@ class VolumeGroup(object):
 			re.compile(r'(?:.*:)(.*)'),\
 		]
 		
-		cmd_vgs_list = subprocess.Popen(['vgs -o vg_name,vg_size,vg_free --noheadings --unbuffered --separator :'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_vgs_list = subprocess.Popen(['vgs -o vg_name,vg_size,vg_free --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_vgs_list)

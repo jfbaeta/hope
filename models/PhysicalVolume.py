@@ -107,12 +107,12 @@ class PhysicalVolume(object):
 		temp_pvs_list = []
 
 		reg_exps = [
-			re.compile(r'(\/dev\/.*\/.*?)(?::)'),\
+			re.compile(r'(\/dev\/.*?)(?::)'),\
 			re.compile(r'(?::)(.*)(?::)'),\
 			re.compile(r'(?:.*:)(.*)(?:\s)'),\
 		]
 		
-		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator :'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
