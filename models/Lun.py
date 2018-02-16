@@ -286,7 +286,7 @@ class Lun(object):
 		It doesn't detect if there's LVM in place neither asks for user confirmation.
 		'''
 		linux = Linux()
-		#luns  = Lun()
+		luns  = Lun()
 
 		self.show()
 
@@ -294,15 +294,14 @@ class Lun(object):
 			print 'There is no /etc/multipath.conf file. Skipping...'
 		else:
 			print 'Removing /etc/multipath.conf...'
-			os.remove('/etc/multipath.conf')
-			
+			os.remove('/etc/multipath.conf')			
 			print 'Reloading Multipath...'
 			if linux.version != '11.4':
-				print 'Reloading Multipath...'
+				print 'Reloading Multipath Services...'
 				subprocess.Popen(['systemctl reload multipathd'], stdout=subprocess.PIPE, shell=True).communicate()[0]
-				print 'Checking Multipath Status...'
+				print 'Checking Multipath Services Status...'
 				subprocess.Popen(['systemctl status multipathd'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 			subprocess.Popen(['multipath -r'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
-		Lun().show()
+		luns.show()

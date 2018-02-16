@@ -11,8 +11,8 @@ class Linux(object):
 
 	reg_exps = [
 		re.compile(r'(?:^NAME=")(.*)(?:")'),\
-		re.compile(r'(?:^VERSION=")(.*)(?:")'),\
-		re.compile(r'(?:^PRETTY_NAME=")(.*)(?:")')
+		re.compile(r'(?:VERSION=")(.*)(?:")'),\
+		re.compile(r'(?:PRETTY_NAME=")(.*)(?:")')
 		]
 
 	@property
@@ -22,7 +22,7 @@ class Linux(object):
 		'''
 		with open('/etc/os-release', 'r') as os_release_file:
 
-			os_name = re.findall(self.reg_exps[0], os_release_file.read())
+			os_name = re.findall(self.reg_exps[0], os_release_file.read())[0]
 
 		return os_name
 
@@ -33,7 +33,7 @@ class Linux(object):
 		'''
 		with open('/etc/os-release', 'r') as os_release_file:
 
-			os_version = re.findall(self.reg_exps[1], os_release_file.read())
+			os_version = re.findall(self.reg_exps[1], os_release_file.read())[0]
 
 		return os_version
 
@@ -44,6 +44,6 @@ class Linux(object):
 		'''
 		with open('/etc/os-release', 'r') as os_release_file:
 
-			os_pretty_name = re.findall(self.reg_exps[2], os_release_file.read())
+			os_pretty_name = re.findall(self.reg_exps[2], os_release_file.read())[0]
 
 		return os_pretty_name
