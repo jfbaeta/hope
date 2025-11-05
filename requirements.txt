@@ -1,0 +1,5 @@
+# HOPE - HANA on POWER Enhanced Requirements
+# Python 3.6+ required
+
+# No external dependencies required
+# The project uses only Python standard library modules

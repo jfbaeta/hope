@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from string import Template
 import json, os, subprocess
 
@@ -36,19 +34,19 @@ class Hwcct(object):
 			config = json.load(config_file)
 
 		sid      = config['sid']
-		hostname = subprocess.Popen(['hostname'], stdout=subprocess.PIPE, shell=True).communicate()[0].strip()
+		hostname = subprocess.Popen(['hostname'], stdout=subprocess.PIPE, shell=True).communicate()[0].decode('utf-8').strip()
 
 		with open(test_type[0], 'r') as hwcct_test_file:
-			print 'Generating JSON file for HWCCT Test...'
+			print('Generating JSON file for HWCCT Test...')
 			tpl_hwcct_str = Template(hwcct_test_file.read())
 			new_hwcct_str = tpl_hwcct_str.safe_substitute(hostname=hostname, sid=sid)
 
 		with open(test_type[1], 'w') as new_hwcct_test_file:
 			new_hwcct_test_file.write(new_hwcct_str)
-		
-		with open(test_type[1], 'r') as file:	
-			print 'JSON File generated for HWCCT Test: %s' % test_type[1]
-			print file.read()
+
+		with open(test_type[1], 'r') as file:
+			print('JSON File generated for HWCCT Test: %s' % test_type[1])
+			print(file.read())
 
 	def run_test(self, test_type):
 		'''

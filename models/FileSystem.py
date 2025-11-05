@@ -1,12 +1,10 @@
-# -*- coding: UTF-8 -*-
-
-from Formatter import Formatter
-from LogicalVolume import LogicalVolume
-from Root import Root
-from UsrSap import UsrSap
-from Data import Data
-from Log import Log
-from Shared import Shared
+from models.Formatter import Formatter
+from models.LogicalVolume import LogicalVolume
+from models.Root import Root
+from models.UsrSap import UsrSap
+from models.Data import Data
+from models.Log import Log
+from models.Shared import Shared
 import json, os, re, subprocess, sys
 
 class FileSystem(object):
@@ -112,13 +110,13 @@ class FileSystem(object):
 			re.compile(r'(?:%\s)(.*)')
 			]
 
-		cmd_fss_list = subprocess.Popen(['df -h -x tmpfs | grep -v Filesystem'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_fss_list = subprocess.Popen(['df -h -x tmpfs | grep -v Filesystem'], stdout=subprocess.PIPE, shell=True).communicate()[0].decode('utf-8')
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_fss_list)
 			temp_fss_list.append(reg_exp_result)
 
-		fss_list = zip(*temp_fss_list)
+		fss_list = list(zip(*temp_fss_list))
 
 		fs_index = 0
 		for fs_list in fss_list:
@@ -146,25 +144,25 @@ class FileSystem(object):
 			'SAP', 'SET', 'SGA', 'SHG', 'SID', 'SQL', 'SUM', 'SYS', 'TMP', 'TOP', 'UID', 'USE', 'USR', 'VAR')
 
 		if sid in forbidden_sids:
-			print '\nInvalid SAP HANA System ID. The following SIDs are forbidden:'
+			print('\nInvalid SAP HANA System ID. The following SIDs are forbidden:')
 			for forbidden_sid in forbidden_sids:
 				index = forbidden_sids.index(forbidden_sid)
 				if index % 9 == 0 and index > 0:
-					print '\n',
+					print('\n', end=' ')
 				if forbidden_sid == sid:
-					print '\033[31m%s\033[0m ' % (forbidden_sid),
+					print('\033[31m%s\033[0m ' % (forbidden_sid), end=' ')
 				else:
-					print '%s ' % (forbidden_sid),
-			print '\n'
+					print('%s ' % (forbidden_sid), end=' ')
+			print('\n')
 			return True
 		elif not sid.isalnum():
-			print '\nInvalid SAP HANA System ID. SID must be alpha-numeric.\n'
+			print('\nInvalid SAP HANA System ID. SID must be alpha-numeric.\n')
 			return True
 		elif len(sid) != 3:
-			print '\nInvalid SAP HANA System ID. SID must have 3 digits.\n'
+			print('\nInvalid SAP HANA System ID. SID must have 3 digits.\n')
 			return True
 		elif not sid[0].isalpha():
-			print '\nInvalid SAP HANA System ID. The first character has to be an upper case letter.\n'
+			print('\nInvalid SAP HANA System ID. The first character has to be an upper case letter.\n')
 			return True
 
 	def create(self):
@@ -182,15 +180,15 @@ class FileSystem(object):
 		lvs.show()
 
 		while True:
-			print 'Type the \033[1mSID\033[0m for this system:',
-			sid = raw_input().upper()
+			print('Type the \033[1mSID\033[0m for this system:', end=' ')
+			sid = input().upper()
 			if not self.check_if_sid_is_ok(sid):
 				break
 
 		for purpose in purposes:
 
-			print 'Type Logical Volume \033[1mINDEX\033[0m for %s (comma-separated):' % (purpose.fs_mount_point),
-			lv_index = raw_input()
+			print('Type Logical Volume \033[1mINDEX\033[0m for %s (comma-separated):' % (purpose.fs_mount_point), end=' ')
+			lv_index = input()
 
 			for lv in lvs.get():
 					
@@ -224,7 +222,7 @@ class FileSystem(object):
 		sid = config['sid']
 
 		if self.check_if_sid_is_ok(sid):
-			print 'Current SID in your JSON config file: \033[1m%s\033[0m' % (sid)
+			print('Current SID in your JSON config file: \033[1m%s\033[0m' % (sid))
 			sys.exit(1)
 
 		for purpose in purposes:
@@ -254,8 +252,8 @@ class FileSystem(object):
 
 		self.show()
 
-		print 'Type File System \033[1mINDEXES\033[0m to remove (comma-separated):',
-		fs_indexes = re.findall('\d+', raw_input())
+		print('Type File System \033[1mINDEXES\033[0m to remove (comma-separated):', end=' ')
+		fs_indexes = re.findall('\d+', input())
 
 		for fs_index in fs_indexes:
 
@@ -265,7 +263,7 @@ class FileSystem(object):
 
 					if fs.name == '/':
 
-						print 'Root File System will not be removed by Hope. Do it by yourself.'
+						print('Root File System will not be removed by Hope. Do it by yourself.')
 
 					else:
 

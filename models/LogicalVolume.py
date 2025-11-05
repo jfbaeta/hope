@@ -1,12 +1,10 @@
-# -*- coding: UTF-8 -*-
-
-from Formatter import Formatter
-from VolumeGroup import VolumeGroup
-from Root import Root
-from UsrSap import UsrSap
-from Data import Data
-from Log import Log
-from Shared import Shared
+from models.Formatter import Formatter
+from models.VolumeGroup import VolumeGroup
+from models.Root import Root
+from models.UsrSap import UsrSap
+from models.Data import Data
+from models.Log import Log
+from models.Shared import Shared
 import json, os, re, subprocess
 
 class LogicalVolume(object):
@@ -112,13 +110,13 @@ class LogicalVolume(object):
 			re.compile(r'(?:.*:)(.*)'),\
 		]
 		
-		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_lvs_list = subprocess.Popen(['lvs -o lv_path,vg_name,lv_name --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0].decode('utf-8')
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_lvs_list)
 			temp_lvs_list.append(reg_exp_result)
 
-		lvs_list = zip(*temp_lvs_list)
+		lvs_list = list(zip(*temp_lvs_list))
 
 		lv_index = 0
 		for lv_list in lvs_list:
@@ -152,11 +150,11 @@ class LogicalVolume(object):
 
 		for purpose in purposes:
 
-			print 'Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
-			lv_name = raw_input()
-			
-			print 'Type Volume Group \033[1mINDEX\033[0m for %s (comma-separated):' % (lv_name),
-			vg_indexes = re.findall('\d+', raw_input())
+			print('Type Logical Volume \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point), end=' ')
+			lv_name = input()
+
+			print('Type Volume Group \033[1mINDEX\033[0m for %s (comma-separated):' % (lv_name), end=' ')
+			vg_indexes = re.findall('\d+', input())
 			vg_index = vg_indexes[0]
 
 			for vg in vgs.get():
@@ -201,8 +199,8 @@ class LogicalVolume(object):
 
 		self.show()
 
-		print 'Type Logical Volume \033[1mINDEXES\033[0m to remove (comma-separated):',
-		lv_indexes = re.findall('\d+', raw_input())
+		print('Type Logical Volume \033[1mINDEXES\033[0m to remove (comma-separated):', end=' ')
+		lv_indexes = re.findall('\d+', input())
 
 		for lv_index in lv_indexes:
 

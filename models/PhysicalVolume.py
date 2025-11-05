@@ -1,12 +1,10 @@
-# -*- coding: UTF-8 -*-
-
-from Formatter import Formatter
-from Lun import Lun
-from Root import Root
-from UsrSap import UsrSap
-from Data import Data
-from Log import Log
-from Shared import Shared
+from models.Formatter import Formatter
+from models.Lun import Lun
+from models.Root import Root
+from models.UsrSap import UsrSap
+from models.Data import Data
+from models.Log import Log
+from models.Shared import Shared
 import json, os, re, subprocess
 
 class PhysicalVolume(object):
@@ -112,13 +110,13 @@ class PhysicalVolume(object):
 			re.compile(r'(?:.*:)(.*)(?:\s)'),\
 		]
 		
-		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_pvs_list = subprocess.Popen(['pvs -o pv_name,pv_size,pv_free --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0].decode('utf-8')
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_pvs_list)
 			temp_pvs_list.append(reg_exp_result)
 
-		pvs_list = zip(*temp_pvs_list)
+		pvs_list = list(zip(*temp_pvs_list))
 
 		pv_index = 0
 		for pv_list in pvs_list:
@@ -145,8 +143,8 @@ class PhysicalVolume(object):
 
 		luns.show()
 
-		print 'Type Lun \033[1mINDEXES\033[0m that will be used as Physical Volumes (comma-separated):',
-		pvs = re.findall('\d+', raw_input())
+		print('Type Lun \033[1mINDEXES\033[0m that will be used as Physical Volumes (comma-separated):', end=' ')
+		pvs = re.findall('\d+', input())
 		
 		for pv in pvs:
 		
@@ -186,8 +184,8 @@ class PhysicalVolume(object):
 
 		self.show()
 
-		print 'Type Physical Volume \033[1mINDEXES\033[0m to remove (comma-separated):',
-		pv_indexes = re.findall('\d+', raw_input())
+		print('Type Physical Volume \033[1mINDEXES\033[0m to remove (comma-separated):', end=' ')
+		pv_indexes = re.findall('\d+', input())
 
 		for pv_index in pv_indexes:
 

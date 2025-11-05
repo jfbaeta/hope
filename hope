@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env python3
 
 from models.Formatter import Formatter
 from models.Lun import Lun
@@ -10,7 +9,7 @@ from models.FileSystem import FileSystem
 from models.Hana import Hana
 from models.Hwcct import Hwcct
 from string import Template
-import optparse, os, re, subprocess
+import argparse, os, re, subprocess
 
 lu = Lun()
 pv = PhysicalVolume()
@@ -21,10 +20,10 @@ sw = Hana()
 hw = Hwcct()
 
 def about():
-	print "HOPE - HANA on POWER Enhanced"
-	print "Version:      0"
-	print "Modification: 11"
-	print "Fix:          3"
+	print("HOPE - HANA on POWER Enhanced")
+	print("Version:      0")
+	print("Modification: 11")
+	print("Fix:          3")
 
 def show(resource):
 	resource.show()
@@ -67,27 +66,27 @@ def menu():
 	option = True
 	
 	while option:
-		print '(1)  \033[32mList\033[0m   Multipath Storage Volumes'
-		print '(2)  \033[32mList\033[0m   Physical Volumes'
-		print '(3)  \033[32mList\033[0m   Volume Groups'
-		print '(4)  \033[32mList\033[0m   Logical Volumes'
-		print '(5)  \033[32mList\033[0m   File Systems'
-		print '(6)  \033[32mList\033[0m   ALL Resources' + '\n'
-		print '(7)  \033[33mCreate\033[0m Multipath Storage Volumes'
-		print '(8)  \033[33mCreate\033[0m Physical Volumes'
-		print '(9)  \033[33mCreate\033[0m Volume Groups'
-		print '(10) \033[33mCreate\033[0m Logical Volumes'
-		print '(11) \033[33mCreate\033[0m File Systems'
-		print '(12) \033[33mCreate\033[0m ALL Resources' + '\n'
-		print '(13) \033[31mREMOVE\033[0m Multipath Storage Volumes'
-		print '(14) \033[31mREMOVE\033[0m Physical Volumes'
-		print '(15) \033[31mREMOVE\033[0m Volume Groups'
-		print '(16) \033[31mREMOVE\033[0m Logical Volumes'
-		print '(17) \033[31mREMOVE\033[0m File Systems'
-		print '(18) \033[31mREMOVE\033[0m ALL Resources' + '\n'
-		print '(Q,q,E,e,X,x) Quit/Exit' + '\n'
-		print 'Choose your Option:',
-		option = raw_input()
+		print('(1)  \033[32mList\033[0m   Multipath Storage Volumes')
+		print('(2)  \033[32mList\033[0m   Physical Volumes')
+		print('(3)  \033[32mList\033[0m   Volume Groups')
+		print('(4)  \033[32mList\033[0m   Logical Volumes')
+		print('(5)  \033[32mList\033[0m   File Systems')
+		print('(6)  \033[32mList\033[0m   ALL Resources' + '\n')
+		print('(7)  \033[33mCreate\033[0m Multipath Storage Volumes')
+		print('(8)  \033[33mCreate\033[0m Physical Volumes')
+		print('(9)  \033[33mCreate\033[0m Volume Groups')
+		print('(10) \033[33mCreate\033[0m Logical Volumes')
+		print('(11) \033[33mCreate\033[0m File Systems')
+		print('(12) \033[33mCreate\033[0m ALL Resources' + '\n')
+		print('(13) \033[31mREMOVE\033[0m Multipath Storage Volumes')
+		print('(14) \033[31mREMOVE\033[0m Physical Volumes')
+		print('(15) \033[31mREMOVE\033[0m Volume Groups')
+		print('(16) \033[31mREMOVE\033[0m Logical Volumes')
+		print('(17) \033[31mREMOVE\033[0m File Systems')
+		print('(18) \033[31mREMOVE\033[0m ALL Resources' + '\n')
+		print('(Q,q,E,e,X,x) Quit/Exit' + '\n')
+		print('Choose your Option:', end=' ')
+		option = input()
 
 		if (option == '1'):
 			lu = Lun()
@@ -170,29 +169,29 @@ def menu():
 		elif (option in ['q' , 'Q' , 'e' , 'E', 'X', 'x']):
 			break
 		else:
-			print 'Invalid Option!'
+			print('Invalid Option!')
 
-parser = optparse.OptionParser()
+parser = argparse.ArgumentParser(description='HOPE - HANA on POWER Enhanced')
 
-parser.add_option('-c', '--create',         '--cr',  action='store_true', dest='create',         help='Creates Resources.'                    )
-parser.add_option('-l', '--list',           '--ls',  action='store_true', dest='list',           help='List Resources.'                       )
-parser.add_option('-r', '--remove',         '--rm',  action='store_true', dest='remove',         help='Remove Resources.'                     )
-parser.add_option('-v', '--version',                 action='store_true', dest='version',        help='Display Hope Version.'                 )
-parser.add_option('-m', '--menu',                    action='store_true', dest='menu',           help='Shows an Interactive Menu.'            )
-parser.add_option('-S', '--sanvolume',      '--sv',  action='store_true', dest='sanvolume',      help='Creates /etc/multipath.conf File.'     )
-parser.add_option('-P', '--physicalvolume', '--pv',  action='store_true', dest='physicalvolume', help='Creates Physical Volumes.'             )
-parser.add_option('-V', '--volumegroup',    '--vg',  action='store_true', dest='volumegroup',    help='Creates Volume Groups.'                )
-parser.add_option('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes.'              )
-parser.add_option('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems.'                 )
-parser.add_option('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File.'   )
-parser.add_option('-i', '--install',                 action='store_true', dest='install',        help='Install SAP HANA Software.'            )
-parser.add_option('-u', '--uninstall',               action='store_true', dest='uninstall',      help='Uninstall SAP HANA Software.'          )
-parser.add_option('-e', '--evalos',                  action='store_true', dest='evalos',         help='Runs HWCCT EvalOs.'                    )
-parser.add_option('-k', '--kpi_short',               action='store_true', dest='kpi_short',      help='Runs HWCCT for I/O KPIs in Short Mode.')
-parser.add_option('-K', '--kpi_long',                action='store_true', dest='kpi_long',       help='Runs HWCCT for I/O KPIs in Long Mode.' )
-parser.add_option('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources.'    )
+parser.add_argument('-c', '--create',         '--cr',  action='store_true', dest='create',         help='Creates Resources.'                    )
+parser.add_argument('-l', '--list',           '--ls',  action='store_true', dest='list',           help='List Resources.'                       )
+parser.add_argument('-r', '--remove',         '--rm',  action='store_true', dest='remove',         help='Remove Resources.'                     )
+parser.add_argument('-v', '--version',                 action='store_true', dest='version',        help='Display Hope Version.'                 )
+parser.add_argument('-m', '--menu',                    action='store_true', dest='menu',           help='Shows an Interactive Menu.'            )
+parser.add_argument('-S', '--sanvolume',      '--sv',  action='store_true', dest='sanvolume',      help='Creates /etc/multipath.conf File.'     )
+parser.add_argument('-P', '--physicalvolume', '--pv',  action='store_true', dest='physicalvolume', help='Creates Physical Volumes.'             )
+parser.add_argument('-V', '--volumegroup',    '--vg',  action='store_true', dest='volumegroup',    help='Creates Volume Groups.'                )
+parser.add_argument('-L', '--logicalvolume',  '--lv',  action='store_true', dest='logicalvolume',  help='Creates Logical Volumes.'              )
+parser.add_argument('-F', '--filesystem',     '--fs',  action='store_true', dest='filesystem',     help='Creates File Systems.'                 )
+parser.add_argument('-C', '--configfile',     '--cfg', action='store_true', dest='configfile',     help='Creates Resources from Config File.'   )
+parser.add_argument('-i', '--install',                 action='store_true', dest='install',        help='Install SAP HANA Software.'            )
+parser.add_argument('-u', '--uninstall',               action='store_true', dest='uninstall',      help='Uninstall SAP HANA Software.'          )
+parser.add_argument('-e', '--evalos',                  action='store_true', dest='evalos',         help='Runs HWCCT EvalOs.'                    )
+parser.add_argument('-k', '--kpi_short',               action='store_true', dest='kpi_short',      help='Runs HWCCT for I/O KPIs in Short Mode.')
+parser.add_argument('-K', '--kpi_long',                action='store_true', dest='kpi_long',       help='Runs HWCCT for I/O KPIs in Long Mode.' )
+parser.add_argument('-a', '--all',                     action='store_true', dest='all',            help='Creates/List/Remove All Resources.'    )
 
-(opts, args) = parser.parse_args()
+opts = parser.parse_args()
 
 if opts.version:
 	about()

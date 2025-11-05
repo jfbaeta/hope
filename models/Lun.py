@@ -1,12 +1,10 @@
-# -*- coding: UTF-8 -*-
-
-from Formatter import Formatter
-from Root import Root
-from UsrSap import UsrSap
-from Data import Data
-from Log import Log
-from Shared import Shared
-from Linux import Linux
+from models.Formatter import Formatter
+from models.Root import Root
+from models.UsrSap import UsrSap
+from models.Data import Data
+from models.Log import Log
+from models.Shared import Shared
+from models.Linux import Linux
 from string import Template
 import json, os, re, subprocess
 
@@ -143,7 +141,7 @@ class Lun(object):
 			re.compile(r'(\w*)(?:\s\()'),\
 		]
 		
-		cmd_multipath_list = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_multipath_list = subprocess.Popen(['multipath -ll | grep dm- -A 1'], stdout=subprocess.PIPE, shell=True).communicate()[0].decode('utf-8')
 		
 		lun_amount = len(re.findall(reg_exps[0], cmd_multipath_list))
 		
@@ -154,7 +152,7 @@ class Lun(object):
 					reg_exp_result.append('no alias assigned')
 			temp_luns_list.append(reg_exp_result)
 
-		luns_list = zip(*temp_luns_list)
+		luns_list = list(zip(*temp_luns_list))
 
 		lun_index = 0
 		for lun_list in luns_list:
@@ -182,16 +180,16 @@ class Lun(object):
 		linux = Linux()
 
 		with open('/opt/hope/templates/template_multipath_ibm_2145.txt', 'r') as tpl_multipath_file:
-			print 'Generating /etc/multipath.conf file...'
+			print('Generating /etc/multipath.conf file...')
 			tpl_multipath_str = Template(tpl_multipath_file.read())
 			new_multipath_str = tpl_multipath_str.safe_substitute(new_multipaths=str_multipaths)
 
 		with open('/etc/multipath.conf', 'w') as new_multipath_file:
 			new_multipath_file.write(new_multipath_str)
 
-		with open('/etc/multipath.conf', 'r') as multipath_conf:	
-			print '/etc/multipath.conf file created:'
-			print multipath_conf.read()
+		with open('/etc/multipath.conf', 'r') as multipath_conf:
+			print('/etc/multipath.conf file created:')
+			print(multipath_conf.read())
 
 		if linux.distribution in ['SLES', 'SLES_SAP'] and linux.version == '11.4':
 			os.system('multipath -r')
@@ -224,15 +222,15 @@ class Lun(object):
 			else:
 				title = purpose.fs_mount_point
 
-			print 'Type current LUN \033[1mINDEXES\033[0m to be used for %s (comma-separated):' % (title),
-			pvs = re.findall('\d+', raw_input())
+			print('Type current LUN \033[1mINDEXES\033[0m to be used for %s (comma-separated):' % (title), end=' ')
+			pvs = re.findall('\d+', input())
 			pv_amount = len(pvs)
 
 			if not pvs:
 				continue
 
-			print 'Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (title),
-			pv_prefix = raw_input()
+			print('Type Physical Volume name \033[1mPREFIX\033[0m for %s:' % (title), end=' ')
+			pv_prefix = input()
 
 			pv_count = 1
 			for pv in pvs:
@@ -291,15 +289,15 @@ class Lun(object):
 		self.show()
 
 		if not os.path.exists('/etc/multipath.conf'):
-			print 'There is no /etc/multipath.conf file. Skipping...'
+			print('There is no /etc/multipath.conf file. Skipping...')
 		else:
-			print 'Removing /etc/multipath.conf...'
-			os.remove('/etc/multipath.conf')			
-			print 'Reloading Multipath...'
+			print('Removing /etc/multipath.conf...')
+			os.remove('/etc/multipath.conf')
+			print('Reloading Multipath...')
 			if linux.version != '11.4':
-				print 'Reloading Multipath Services...'
+				print('Reloading Multipath Services...')
 				subprocess.Popen(['systemctl reload multipathd'], stdout=subprocess.PIPE, shell=True).communicate()[0]
-				print 'Checking Multipath Services Status...'
+				print('Checking Multipath Services Status...')
 				subprocess.Popen(['systemctl status multipathd'], stdout=subprocess.PIPE, shell=True).communicate()[0]
 
 			subprocess.Popen(['multipath -r'], stdout=subprocess.PIPE, shell=True).communicate()[0]
