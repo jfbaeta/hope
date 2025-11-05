@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 class Formatter(object):
 	'''
 	Class used to get results from other Classes and output results.
@@ -48,21 +46,21 @@ class Formatter(object):
 		info_string     = '\033[34m%s\033[0m'
 		success_string  = '\033[32m%s\033[0m'
 
-		print horizontal_line
-		
-		print left_column + (bold_string) % (main_header.ljust(len(horizontal_line) - 4)),
-		print right_column
-		
-		print horizontal_line
-		
+		print(horizontal_line)
+
+		print(left_column + (bold_string) % (main_header.ljust(len(horizontal_line) - 4)), end=' ')
+		print(right_column)
+
+		print(horizontal_line)
+
 		loop_item_count = 0
 		for header in first_resource_headers:
-			print left_column + (bold_string) % (header.ljust(max_lengths[loop_item_count])),
+			print(left_column + (bold_string) % (header.ljust(max_lengths[loop_item_count])), end=' ')
 			loop_item_count+=1
-		print right_column
-		
-		print horizontal_line
-		
+		print(right_column)
+
+		print(horizontal_line)
+
 		for resource_line in resources:
 			loop_item_count = 0
 			for resource_column in resource_line.all:
@@ -76,8 +74,8 @@ class Formatter(object):
 					content = success_string
 				else:
 					content = normal_string
-				print left_column + (content) % (resource_column.ljust(max_lengths[loop_item_count])),
+				print(left_column + (content) % (resource_column.ljust(max_lengths[loop_item_count])), end=' ')
 				loop_item_count+=1
-			print right_column
-		
-		print horizontal_line
+			print(right_column)
+
+		print(horizontal_line)

@@ -1,12 +1,10 @@
-# -*- coding: UTF-8 -*-
-
-from Formatter import Formatter
-from PhysicalVolume import PhysicalVolume
-from Root import Root
-from UsrSap import UsrSap
-from Data import Data
-from Log import Log
-from Shared import Shared
+from models.Formatter import Formatter
+from models.PhysicalVolume import PhysicalVolume
+from models.Root import Root
+from models.UsrSap import UsrSap
+from models.Data import Data
+from models.Log import Log
+from models.Shared import Shared
 import json, os, re, subprocess
 
 class VolumeGroup(object):
@@ -112,13 +110,13 @@ class VolumeGroup(object):
 			re.compile(r'(?:.*:)(.*)'),\
 		]
 		
-		cmd_vgs_list = subprocess.Popen(['vgs -o vg_name,vg_size,vg_free --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0]
+		cmd_vgs_list = subprocess.Popen(['vgs -o vg_name,vg_size,vg_free --noheadings --unbuffered --separator : 2> /dev/null'], stdout=subprocess.PIPE, shell=True).communicate()[0].decode('utf-8')
 
 		for reg_exp in reg_exps:
 			reg_exp_result = re.findall(reg_exp, cmd_vgs_list)
 			temp_vgs_list.append(reg_exp_result)
 
-		vgs_list = zip(*temp_vgs_list)
+		vgs_list = list(zip(*temp_vgs_list))
 
 		vg_index = 0
 		for vg_list in vgs_list:
@@ -152,11 +150,11 @@ class VolumeGroup(object):
 
 		for purpose in purposes:
 
-			print 'Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point),
-			vg_name = raw_input()
+			print('Type Volume Group \033[1mNAME\033[0m for %s:' % (purpose.fs_mount_point), end=' ')
+			vg_name = input()
 
-			print 'Type Physical Volume \033[1mINDEXES\033[0m for %s (comma-separated):' % (vg_name),
-			pv_indexes = re.findall('\d+', raw_input())
+			print('Type Physical Volume \033[1mINDEXES\033[0m for %s (comma-separated):' % (vg_name), end=' ')
+			pv_indexes = re.findall('\d+', input())
 			pv_names = ''		
 
 			for pv_index in pv_indexes:
@@ -210,8 +208,8 @@ class VolumeGroup(object):
 
 		self.show()
 
-		print 'Type Volume Group \033[1mINDEXES\033[0m to remove (comma-separated):',
-		vg_indexes = re.findall('\d+', raw_input())
+		print('Type Volume Group \033[1mINDEXES\033[0m to remove (comma-separated):', end=' ')
+		vg_indexes = re.findall('\d+', input())
 
 		for vg_index in vg_indexes:
 

@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from string import Template
 import json, os, subprocess
 
@@ -17,10 +15,10 @@ class Hana(object):
 		It will try to install unrar through zypper, looking at enabled repos.
 		'''
 		if os.system('rpm -qa | grep unrar') is 256:
-			print 'Package unrar is not installed. Trying to install it through zypper...'
+			print('Package unrar is not installed. Trying to install it through zypper...')
 			os.system('zypper -v -n install unrar')
 		else:
-			print 'Package unrar found.'
+			print('Package unrar found.')
 
 	def extract_hana_software(self):
 		'''
