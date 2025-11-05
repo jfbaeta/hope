@@ -22,8 +22,8 @@ hw = Hwcct()
 def about():
 	print("HOPE - HANA on POWER Enhanced")
 	print("Version:      0")
-	print("Modification: 11")
-	print("Fix:          3")
+	print("Modification: 12")
+	print("Fix:          0")
 
 def show(resource):
 	resource.show()
